@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>clinicOS — AI infrastructure for the top 1% of clinics</title>
+<meta name="description" content="clinicOS automates routine front-desk admin and eliminates lost appointments. AI reception built for dental clinics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,opsz,wght@0..100,0..1,9..144,300..700&family=Inter+Tight:wght@300;400;450;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.className += " js";</script>
+<link rel="stylesheet" href="css/main.css?v=1788686767">
+</head>
+<body>
+
+<!-- ================= preloader ================= -->
+<div class="pre" id="pre">
+  <div class="pre__inner">
+    <span class="brand">
+      <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="18.5" stroke="url(#pg)" stroke-width="1.2"/>
+        <path d="M20 7c7.2 0 13 5.8 13 13 0 5-4 9-9 9-4.4 0-8-3.6-8-8 0-3.9 3.1-7 7-7 3.3 0 6 2.7 6 6" stroke="url(#pg2)" stroke-width="1.7" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="pg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#93a690" stop-opacity=".5"/><stop offset="1" stop-color="#2e6b4b"/></linearGradient>
+          <linearGradient id="pg2" x1="8" y1="6" x2="34" y2="30"><stop stop-color="#2e6b4b"/><stop offset="1" stop-color="#b0543a"/></linearGradient>
+        </defs>
+      </svg>
+      <span class="brand__word" data-brand>clinic<b>OS</b></span>
+    </span>
+    <span class="pre__bar"><i id="preBar"></i></span>
+    <span class="pre__pct" id="prePct">00</span>
+  </div>
+</div>
+
+<!-- ================= overlays ================= -->
+<div class="progress" id="progress"></div>
+<div class="spot" id="spot"></div>
+<svg class="grain" aria-hidden="true"><filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency=".82" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#grainF)"/></svg>
+
+<!-- ================= nav ================= -->
+<nav class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="clinicOS home">
+    <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="18.5" stroke="url(#ng)" stroke-width="1.2"/>
+      <path d="M20 7c7.2 0 13 5.8 13 13 0 5-4 9-9 9-4.4 0-8-3.6-8-8 0-3.9 3.1-7 7-7 3.3 0 6 2.7 6 6" stroke="url(#ng2)" stroke-width="1.7" stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="ng" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#93a690" stop-opacity=".5"/><stop offset="1" stop-color="#2e6b4b"/></linearGradient>
+        <linearGradient id="ng2" x1="8" y1="6" x2="34" y2="30"><stop stop-color="#2e6b4b"/><stop offset="1" stop-color="#b0543a"/></linearGradient>
+      </defs>
+    </svg>
+    <span class="brand__word" data-brand>clinic<b>OS</b></span>
+  </a>
+
+  <div class="nav__links" id="navLinks">
+    <span class="nav__pip" id="navPip"></span>
+    <a href="#product">Product</a>
+    <a href="#apollo">Apollo</a>
+    <a href="#programme">Programme</a>
+    <a href="#results">Results</a>
+  </div>
+
+  <div class="nav__cta">
+    <a class="btn btn--primary btn--sm" href="#signup" data-magnet><span>Sign up</span></a>
+    <button class="nav__burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="sheet" id="sheet">
+  <a href="#product">Product</a>
+  <a href="#apollo">Apollo</a>
+  <a href="#programme">Programme</a>
+  <a href="#results">Results</a>
+  <a class="btn btn--primary btn--lg" href="#signup"><span>Sign up</span></a>
+</div>
+
+<main id="top">
+
+<!-- ================= hero ================= -->
+<section class="hero">
+  <canvas class="hero__canvas" id="silk" aria-hidden="true"></canvas>
+  <div class="hero__vignette"></div>
+
+  <div class="shell hero__inner">
+    <span class="pill" data-reveal><i></i>AI reception, live 24/7</span>
+
+    <h1 class="d1"><span class="split" data-split>AI Infrastructure for top 1% clinics</span></h1>
+
+    <p class="lede" data-reveal style="--rd:.55s">Automate routine admin, eliminate lost appointments.</p>
+
+    <div class="hero__orbspace" aria-hidden="true"></div>
+
+    <div class="hero__actions" data-reveal style="--rd:.68s">
+      <a class="btn btn--primary btn--lg" href="#signup" data-magnet>
+        <span><span class="wave"><i></i><i></i><i></i><i></i></span> Talk to AI</span>
+      </a>
+      <a class="btn btn--ghost btn--lg" href="#product" data-magnet>
+        <span>See how it works
+          <svg class="arw" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+    </div>
+
+    <p class="hero__note" data-reveal style="--rd:.8s">Experience what the future feels like.</p>
+  </div>
+
+  <div class="hero__scroll" aria-hidden="true">
+    <span class="rail"></span>
+    <span class="micro">Scroll</span>
+  </div>
+</section>
+
+<!-- ================= logo marquee ================= -->
+<div class="marq" aria-label="Trusted by">
+  <div class="marq__track" id="marqTrack"></div>
+</div>
+
+<!-- ================= values bento ================= -->
+<section class="band" id="product">
+  <div class="shell">
+    <header class="sec-head">
+      <span class="pill" data-reveal><i></i>Values</span>
+      <h2 class="d2"><span class="split" data-split>Why practices choose clinicOS</span></h2>
+      <p class="lede" data-reveal style="--rd:.3s">Automation that delivers measurable results — not another dashboard nobody opens.</p>
+    </header>
+
+    <div class="bento" data-crosshair>
+      <article class="cell" data-reveal data-tilt style="--rd:.05s">
+        <span class="cell__ico"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.2" stroke="currentColor" stroke-width="1.3"/><path d="M10 6v4.3l2.9 1.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        <h3>More time for treatment</h3>
+        <p>Doctors and assistants focus on complex cases and procedures requiring full concentration.</p>
+      </article>
+
+      <article class="cell" data-reveal data-tilt style="--rd:.13s">
+        <span class="cell__ico"><svg viewBox="0 0 20 20" fill="none"><path d="M3 14.5V6.2A1.2 1.2 0 0 1 4.2 5h11.6A1.2 1.2 0 0 1 17 6.2v6.1a1.2 1.2 0 0 1-1.2 1.2H7.4L3 16.4v-1.9Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 9.3h6M7 11.4h3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        <h3>Reception quality audit</h3>
+        <p>Call analysis, feedback and ready-made scripts maintain a high standard of service on every line.</p>
+      </article>
+
+      <article class="cell cell--soft" data-reveal data-tilt style="--rd:.21s">
+        <span class="cell__stat" data-count="24" data-suffix="/7">0/7</span>
+        <h3>Never a missed call</h3>
+        <p>Nights, weekends, holidays and lunch breaks — the line is always answered.</p>
+      </article>
+
+      <article class="cell cell--soft" data-reveal data-tilt style="--rd:.29s">
+        <span class="cell__stat" data-count="15" data-suffix=" min">0 min</span>
+        <h3>Schedules stay fresh</h3>
+        <p>Doctor availability re-syncs every quarter hour, so a booking never lands on a closed slot.</p>
+      </article>
+
+      <article class="cell" data-reveal data-tilt style="--rd:.37s">
+        <span class="cell__ico"><svg viewBox="0 0 20 20" fill="none"><path d="m4 12.6 3.4-3.4 2.6 2.6 5.6-5.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.4 6.2h3.6v3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>Fewer errors</h3>
+        <p>Automation reduces the risk of mistakes in scheduling, reports and notes while ensuring full documentation.</p>
+      </article>
+
+      <article class="cell" data-reveal data-tilt style="--rd:.45s">
+        <span class="cell__ico"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M6.6 6.4h5a2.3 2.3 0 0 1 0 4.6H8.4a2.3 2.3 0 0 0 0 4.6h5.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        <h3>Revenue maximisation</h3>
+        <p>We reduce no-shows by 69%, fill your schedule and keep patients coming back with higher satisfaction.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= how it works ================= -->
+<section class="band band--tint">
+  <div class="shell">
+    <header class="sec-head">
+      <span class="pill" data-reveal><i></i>Step by step</span>
+      <h2 class="d2"><span class="split" data-split>How It Works</span></h2>
+      <p class="lede" data-reveal style="--rd:.3s">From the first ring to a confirmed chair — four moves, none of them yours.</p>
+    </header>
+
+    <div class="steps" id="steps">
+      <div class="steps__list">
+        <article class="step on" data-step="0" data-reveal>
+          <span class="step__n">01</span>
+          <h3>The phone rings</h3>
+          <p>clinicOS picks up on the first ring, in your clinic's voice, in the patient's language.</p>
+        </article>
+        <article class="step" data-step="1" data-reveal style="--rd:.08s">
+          <span class="step__n">02</span>
+          <h3>It understands the ask</h3>
+          <p>Intent, urgency, insurance, history — pulled live from a pipeline of 8000+ patient records.</p>
+        </article>
+        <article class="step" data-step="2" data-reveal style="--rd:.16s">
+          <span class="step__n">03</span>
+          <h3>It books the right slot</h3>
+          <p>Doctor schedules refresh every 15 minutes, so the offered time is a time that actually exists.</p>
+        </article>
+        <article class="step" data-step="3" data-reveal style="--rd:.24s">
+          <span class="step__n">04</span>
+          <h3>You get the outcome</h3>
+          <p>Transcript, summary, follow-up and deposit status land in your system before the call ends.</p>
+        </article>
+      </div>
+
+      <div class="screen" data-reveal style="--rd:.12s">
+        <div class="screen__bar"><i></i><i></i><i></i><span class="lbl">clinicOS · live session</span></div>
+        <div class="screen__body">
+
+          <div class="pane on" data-pane="0">
+            <div class="call">
+              <div class="call__ring">
+                <svg width="26" height="26" viewBox="0 0 20 20" fill="none"><path d="M6.4 3.5 8 6.6 6.3 8.3c.7 1.7 2.7 3.7 4.4 4.4l1.7-1.7 3.1 1.6v3c0 .6-.5 1.1-1.1 1C7.6 16 4 12.4 3.5 5.6c0-.6.4-1.1 1-1.1h1.9Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="call__name">Incoming — +48 601 ••• 214</div>
+              <div class="call__sub">Answered in 0.4s · Polish detected</div>
+              <div class="eq"><i></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.7s"></i><i style="animation-delay:.8s"></i></div>
+            </div>
+          </div>
+
+          <div class="pane" data-pane="1">
+            <div class="chat">
+              <div class="bub bub--in"><small>Patient</small>Hi — I chipped a molar last night, is there anything today?</div>
+              <div class="bub bub--ai"><small>clinicOS</small>That sounds urgent. I can see Dr. Nowak has an emergency slot at 15:40 today.</div>
+              <div class="bub bub--in"><small>Patient</small>Is that covered? I'm on the Signal plan.</div>
+              <div class="bub bub--ai"><small>clinicOS</small>Yes — emergency restoration is covered at 80%. Shall I hold 15:40 for you?</div>
+            </div>
+          </div>
+
+          <div class="pane" data-pane="2">
+            <div class="cal">
+              <div class="cal__head"><b>October</b><span class="micro">Synced 14s ago</span></div>
+              <div class="cal__grid" id="calGrid"></div>
+            </div>
+          </div>
+
+          <div class="pane" data-pane="3">
+            <div class="outc">
+              <div class="outc__big" data-count="69" data-suffix="%">0%</div>
+              <div class="call__sub">fewer missed appointments</div>
+              <div class="outc__row">
+                <span class="chip">Transcript saved</span>
+                <span class="chip">Deposit requested</span>
+                <span class="chip">SMS reminder queued</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= problems ================= -->
+<section class="band">
+  <div class="shell">
+    <header class="sec-head">
+      <span class="pill" data-reveal><i></i>Eliminate problems</span>
+      <h2 class="d2"><span class="split" data-split>Chaotic front desk — sounds familiar?</span></h2>
+      <p class="lede" data-reveal style="--rd:.3s">See how clinicOS solves the everyday problems of a busy practice.</p>
+    </header>
+
+    <div class="probs" data-reveal>
+      <article class="prob" data-prob>
+        <div>
+          <h3>Chaos</h3>
+          <p>at the front desk and a suboptimal calendar</p>
+          <div class="prob__solve">clinicOS holds the queue, triages by urgency and rebuilds the day around the highest-value chair time.</div>
+        </div>
+        <button class="prob__go" aria-label="Show the fix">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </article>
+
+      <article class="prob" data-prob>
+        <div>
+          <h3>No shows</h3>
+          <p>blocking your clinic's schedule</p>
+          <div class="prob__solve">Deposits, staged reminders and one-tap rescheduling cut no-shows by 69% and refill the gap automatically.</div>
+        </div>
+        <button class="prob__go" aria-label="Show the fix">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </article>
+
+      <article class="prob" data-prob>
+        <div>
+          <h3>Busy line</h3>
+          <p>and late or no callback</p>
+          <div class="prob__solve">Unlimited parallel lines. Every caller is answered on the first ring — nights, weekends and lunch included.</div>
+        </div>
+        <button class="prob__go" aria-label="Show the fix">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= comparison ================= -->
+<section class="band band--tint" id="results">
+  <div class="shell">
+    <header class="sec-head">
+      <span class="pill" data-reveal><i></i>Comparison</span>
+      <h2 class="d2"><span class="split" data-split>Real progress with clinicOS</span></h2>
+
+      <div class="seg" id="seg" data-reveal style="--rd:.3s">
+        <span class="seg__pip" id="segPip"></span>
+        <button class="on" data-seg="on">clinicOS</button>
+        <button data-seg="off">no rOS</button>
+      </div>
+    </header>
+
+    <div class="compare on" id="compare">
+      <article class="metric" data-reveal>
+        <span class="metric__v" data-on="69" data-off="0" data-suffix="%">0%</span>
+        <span class="metric__k">fewer missed appointments</span>
+        <span class="metric__bar"><i data-on="69" data-off="6"></i></span>
+      </article>
+      <article class="metric" data-reveal style="--rd:.08s">
+        <span class="metric__v" data-on="100" data-off="41" data-suffix="%">0%</span>
+        <span class="metric__k">of calls answered on the first ring</span>
+        <span class="metric__bar"><i data-on="100" data-off="41"></i></span>
+      </article>
+      <article class="metric" data-reveal style="--rd:.16s">
+        <span class="metric__v" data-on="20" data-off="3" data-suffix="%">0%</span>
+        <span class="metric__k">revenue growth in the first year</span>
+        <span class="metric__bar"><i data-on="20" data-off="3"></i></span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= programme ================= -->
+<section class="band prog" id="programme">
+  <canvas class="prog__arch" id="arch" aria-hidden="true"></canvas>
+  <div class="shell prog__inner">
+    <span class="pill" data-reveal><i></i>Top 1% Digital Clinic Programme</span>
+    <h2 class="d2" style="max-width:20ch"><span class="split" data-split>Join the Top 1% Digital Clinic Programme by clinicOS.</span></h2>
+
+    <div class="price" data-reveal style="--rd:.35s"><span data-count="69">0</span> <sup>PLN / day</sup></div>
+
+    <div class="perks">
+      <div class="perk" data-reveal style="--rd:.42s">
+        <svg viewBox="0 0 16 16" fill="none"><path d="m3 8.3 3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Only one clinic per region — check if your area is still open.
+      </div>
+      <div class="perk" data-reveal style="--rd:.5s">
+        <svg viewBox="0 0 16 16" fill="none"><path d="m3 8.3 3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Full AI reception automation — your clinic operates 24/7 without extra staff.
+      </div>
+      <div class="perk" data-reveal style="--rd:.58s">
+        <svg viewBox="0 0 16 16" fill="none"><path d="m3 8.3 3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Priority onboarding and dedicated support from day one.
+      </div>
+    </div>
+
+    <a class="btn btn--primary btn--lg" href="#signup" data-magnet data-reveal style="--rd:.66s"><span>Join waitlist</span></a>
+  </div>
+</section>
+
+<!-- ================= apollo ================= -->
+<section class="band" id="apollo">
+  <div class="shell">
+    <header class="sec-head">
+      <span class="pill" data-reveal><i></i>AI manager</span>
+      <h2 class="d2"><span class="split" data-split>Apollo. AI manager of your clinic</span></h2>
+      <p class="lede" data-reveal style="--rd:.3s">
+        directly in your favourite messenger
+        <span class="msgrs" aria-hidden="true">
+          <span><svg viewBox="0 0 16 16" fill="none"><path d="M8 2.4a5.6 5.6 0 0 0-4.8 8.5L2.4 13.6l2.8-.8A5.6 5.6 0 1 0 8 2.4Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg></span>
+          <span><svg viewBox="0 0 16 16" fill="none"><path d="M13.6 3.4 2.9 7.5c-.6.2-.6.7 0 .9l2.7.8 1 3.1c.2.5.5.6.9.2l1.5-1.4 2.8 2.1c.5.3.9.1 1-.5l1.6-8.5c.1-.6-.2-.9-.8-.8Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg></span>
+          <span><svg viewBox="0 0 16 16" fill="none"><rect x="2.6" y="3.4" width="10.8" height="9.2" rx="2.4" stroke="currentColor" stroke-width="1.1"/><path d="m5 6.5 3 2.2 3-2.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </span>
+      </p>
+    </header>
+
+    <div class="apollo">
+      <figure class="bust" data-reveal data-parallax="0.05" style="margin:0">
+        <span class="bust__halo" aria-hidden="true"></span>
+        <canvas class="mind" id="mind" role="img"
+                aria-label="Animated sphere of connected nodes representing Apollo, the clinic's AI manager"></canvas>
+        <figcaption class="bust__cap"><span>Apollo</span><i></i>online · 8,412 patient records in context</figcaption>
+      </figure>
+
+      <div>
+        <h3 class="d3" data-reveal>Everything you need. Always at hand.</h3>
+        <p class="lede" data-reveal style="--rd:.08s; margin-top:14px; max-width:52ch">
+          Message it on WhatsApp like an assistant that never sleeps. It has access to everything — a pipeline of 8000+ patients,
+          doctor schedules updated every 15 minutes, call transcripts, emails, SMS. Full context of every interaction.
+        </p>
+
+        <div class="feat">
+          <article class="fcard" data-reveal style="--rd:.12s">
+            <span class="fcard__ico"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3.2v3M10 3.2 7.6 5.6M10 3.2l2.4 2.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="3.6" y="6.6" width="12.8" height="10.2" rx="2.2" stroke="currentColor" stroke-width="1.3"/><path d="M7.4 10.6h5.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+            <div><h4>Start of day</h4><p>Today's appointments, outstanding deposits, leads waiting for contact.</p></div>
+          </article>
+          <article class="fcard" data-reveal style="--rd:.2s">
+            <span class="fcard__ico"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 6.2V10l2.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+            <div><h4>During the day</h4><p>Real-time alerts: cancelled appointment, waitlist suggestion, post-procedure follow-up.</p></div>
+          </article>
+          <article class="fcard" data-reveal style="--rd:.28s">
+            <span class="fcard__ico"><svg viewBox="0 0 20 20" fill="none"><path d="M4 15.4V9.2M8 15.4V5.6M12 15.4v-4.6M16 15.4V7.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+            <div><h4>End of day</h4><p>Revenue, chair utilisation, tomorrow's risk list — one message, no dashboard.</p></div>
+          </article>
+        </div>
+
+        <h3 class="d3" data-reveal style="--rd:.1s; margin-top:38px">You decide how much autonomy to give it.</h3>
+        <p class="lede" data-reveal style="--rd:.16s; margin-top:12px; max-width:52ch">
+          At the start it informs and suggests. Over time it takes over routine confirmations, follow-ups and reminders.
+          Medical and financial decisions? Always yours.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= case study ================= -->
+<section class="band">
+  <div class="shell">
+    <header class="sec-head">
+      <span class="pill" data-reveal><i></i>Case study</span>
+      <h2 class="d2"><span class="split" data-split>20% Growth at Apolonia Dental</span></h2>
+      <p class="lede" data-reveal style="--rd:.3s">How Apolonia Dental increased revenue by 20%, reduced one full-time reception position, and gained 115 positive reviews.</p>
+    </header>
+
+    <div class="case" data-reveal>
+      <div class="case__frame" data-parallax="0.05">
+        <span class="case__bracket tl"></span><span class="case__bracket tr"></span>
+        <span class="case__bracket bl"></span><span class="case__bracket br"></span>
+        <svg class="growth" id="growth" viewBox="0 0 1200 630" role="img" aria-label="Monthly revenue at Apolonia Dental, rising sharply after clinicOS goes live in June"></svg>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b data-count="20" data-suffix="%">0%</b><span>revenue growth</span></div>
+        <div class="stat"><b data-count="115" data-suffix="">0</b><span>new 5-star reviews</span></div>
+        <div class="stat"><b data-count="1" data-suffix=" FTE">0 FTE</b><span>reception role saved</span></div>
+        <div class="stat"><b data-count="8" data-suffix=" mo">0 mo</b><span>to full payback</span></div>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-top:36px">
+        <a class="btn btn--ghost btn--lg" href="#signup" data-magnet data-reveal>
+          <span>View report <svg class="arw" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= final cta ================= -->
+<section class="final" id="signup">
+  <span class="final__glow" aria-hidden="true"></span>
+  <div class="shell final__inner">
+    <h2 class="d2"><span class="split" data-split>Ready to join the top 1% of clinics?</span></h2>
+    <p class="lede" data-reveal style="--rd:.3s">Sign up for the waitlist.</p>
+
+    <div class="circuit" data-reveal style="--rd:.36s" aria-hidden="true">
+      <svg viewBox="0 0 560 300" fill="none">
+        <g stroke="#b0543a" stroke-opacity=".5" stroke-width="1.4" class="trace">
+          <path d="M20 74h120l32 32h48M20 150h96l30-30h54M20 226h130l30-32h40"/>
+          <path d="M540 74H420l-32 32h-48M540 150h-96l-30-30h-54M540 226H410l-30-32h-40"/>
+        </g>
+        <g stroke="currentColor" stroke-opacity=".22" stroke-width="1">
+          <rect x="188" y="76" width="184" height="148" rx="10"/>
+          <rect x="204" y="92" width="152" height="116" rx="8"/>
+        </g>
+        <g fill="#2e6b4b">
+          <circle cx="188" cy="76" r="4"/><circle cx="372" cy="76" r="4"/>
+          <circle cx="188" cy="224" r="4"/><circle cx="372" cy="224" r="4"/>
+        </g>
+        <g id="fanLines" stroke="#b0543a" stroke-width="1" stroke-opacity=".5"></g>
+        <circle cx="280" cy="150" r="26" fill="url(#coreG)"/>
+        <circle cx="280" cy="150" r="26" stroke="#8c3f2a" stroke-opacity=".45" stroke-width="1.2"/>
+        <defs>
+          <radialGradient id="coreG" cx=".38" cy=".33" r=".72">
+            <stop offset="0" stop-color="#f0c3ae"/><stop offset=".45" stop-color="#b0543a"/><stop offset="1" stop-color="#6d2c1b"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <a class="btn btn--primary btn--lg" href="#signup" data-magnet data-reveal style="--rd:.44s"><span>Sign up</span></a>
+    <p class="micro" data-reveal style="--rd:.5s">One clinic per region · No card required</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= footer ================= -->
+<footer class="foot">
+  <div class="shell">
+    <div class="foot__grid">
+      <div class="foot__col">
+        <a class="brand" href="#top">
+          <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <circle cx="20" cy="20" r="18.5" stroke="url(#fg)" stroke-width="1.2"/>
+            <path d="M20 7c7.2 0 13 5.8 13 13 0 5-4 9-9 9-4.4 0-8-3.6-8-8 0-3.9 3.1-7 7-7 3.3 0 6 2.7 6 6" stroke="url(#fg2)" stroke-width="1.7" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="fg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#93a690" stop-opacity=".5"/><stop offset="1" stop-color="#2e6b4b"/></linearGradient>
+              <linearGradient id="fg2" x1="8" y1="6" x2="34" y2="30"><stop stop-color="#2e6b4b"/><stop offset="1" stop-color="#b0543a"/></linearGradient>
+            </defs>
+          </svg>
+          <span class="brand__word" data-brand>clinic<b>OS</b></span>
+        </a>
+        <p class="foot__note">AI reception infrastructure for dental clinics. Built so the phone is never the reason a chair sits empty.</p>
+      </div>
+      <div class="foot__col">
+        <h5>Product</h5>
+        <a href="#product">Overview</a><a href="#apollo">Apollo</a><a href="#results">Results</a><a href="#programme">Pricing</a>
+      </div>
+      <div class="foot__col">
+        <h5>Company</h5>
+        <a href="#top">About</a><a href="#top">Careers</a><a href="#top">Press</a><a href="#top">Contact</a>
+      </div>
+      <div class="foot__col">
+        <h5>Legal</h5>
+        <a href="#top">Privacy</a><a href="#top">Terms</a><a href="#top">GDPR</a><a href="#top">Security</a>
+      </div>
+    </div>
+
+    <h2 class="bigmark" data-bigmark>clinicOS</h2>
+
+    <div class="foot__bar">
+      <span>© 2026 clinicOS. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=1788686767"></script>
+</body>
+</html>

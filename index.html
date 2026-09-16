@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090a" />
+  <title>Aaron Michael — Portfolio</title>
+  <meta name="description" content="Portfolio of Aaron Michael." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap" rel="stylesheet" />
+
+  <script type="module" src="/src/js/main.js"></script>
+</head>
+<body class="is-loading">
+
+  <!-- ===================== PRELOADER ===================== -->
+  <div class="preloader" id="preloader" role="status" aria-label="Loading">
+
+    <!-- reveal panels: slide up at the end to uncover the site -->
+    <div class="preloader__panels" aria-hidden="true">
+      <span class="panel"></span>
+      <span class="panel"></span>
+      <span class="panel"></span>
+      <span class="panel"></span>
+      <span class="panel"></span>
+    </div>
+
+    <div class="preloader__grain" aria-hidden="true"></div>
+
+    <div class="preloader__inner">
+
+      <div class="counter" aria-hidden="true">
+        <span class="counter__mask">
+          <span class="counter__value" id="counterValue">0</span>
+        </span>
+      </div>
+
+      <div class="brand">
+        <span class="brand__mask">
+          <span class="brand__text" id="brandText">Aaron Michael</span>
+        </span>
+      </div>
+
+      <div class="bar" aria-hidden="true">
+        <span class="bar__fill" id="barFill"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== SITE ===================== -->
+  <main class="site" id="site">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <canvas class="hero__canvas" id="clouds" aria-hidden="true"></canvas>
+      <div class="hero__veil" aria-hidden="true"></div>
+      <div class="ghost-cursor" id="ghostCursor" aria-hidden="true"></div>
+
+      <header class="nav">
+        <p class="nav__tag js-reveal"><span class="nav__dot"></span>SHIPPING IDEAS INTO REALITY.</p>
+      </header>
+
+      <div class="hero__centre">
+        <div class="pressure" id="pressure"></div>
+        <p class="hero__caption js-reveal">CRAFTING INTERFACES THAT PEOPLE REMEMBER.</p>
+      </div>
+
+      <footer class="hero__foot">
+        <p class="hero__bio js-reveal">
+          FULL-STACK DEVELOPER &amp; CREATIVE TECHNOLOGIST ENGINEERING FAST,
+          IMMERSIVE, AND MOTION-DRIVEN DIGITAL PRODUCTS.
+        </p>
+        <div class="hero__cta">
+          <a href="#projects" class="btn btn--solid js-reveal"><span class="btn__arrow">&#8599;</span> EXPLORE WORK <span>&#8594;</span></a>
+          <a href="#contact" class="btn btn--ghost js-reveal">LET&rsquo;S TALK <span>&#8594;</span></a>
+        </div>
+      </footer>
+    </section>
+
+    <!-- VISION -->
+    <section class="vision" id="vision">
+      <div class="vision__sticky">
+
+        <figure class="vision__media" id="visionMedia">
+          <img src="/assets/vision.jpg" alt="" loading="lazy" decoding="async" />
+        </figure>
+
+        <h2 class="vision__title" id="visionTitle">THE VISION</h2>
+
+        <!-- header + statement are one centred stack -->
+        <div class="vision__block">
+          <p class="vision__label" id="visionLabel">VISION</p>
+
+          <p class="vision__copy" id="visionCopy">
+            I BELIEVE TRUE MASTERY IS BORN AT THE INTERSECTION OF REASON AND
+            DIVINE INTUITION. EVERY STROKE, EVERY SILHOUETTE, AND EVERY SILENT
+            SPACES IS A SACRED DEVOTION TO BRING ORDER OUT OF CHAOS, STIRRING
+            THE HUMAN SOUL TO REMEMBER BEAUTY.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- PROJECTS -->
+    <section class="projects" id="projects">
+      <div class="projects__glow" aria-hidden="true"></div>
+
+      <header class="projects__head">
+        <p class="projects__eyebrow"><span class="projects__rule"></span>FEATURED WORK</p>
+        <h2 class="projects__title">Selected Projects</h2>
+      </header>
+
+      <!-- To add a project: copy a card, set its title, tag and href, and put
+           an <img> in .card__thumb (or a .plate, for one with no screenshot).
+           Spans are set by .card--feature / .card--wide; keep the grid filled. -->
+      <div class="projects__grid">
+        <a class="card card--feature" href="/work/obsidian/index.html" target="_blank" rel="noopener">
+          <span class="card__inner">
+            <span class="card__thumb">
+              <img src="/assets/obsidian.jpg" alt="" style="object-position: 50% 26%" />
+            </span>
+            <span class="card__meta">
+              <span class="card__index">01</span>
+              <span class="card__text">
+                <span class="card__title">OBSIDIAN</span>
+                <span class="card__tag">THREE.JS · 2026</span>
+              </span>
+            </span>
+            <span class="card__arrow" aria-hidden="true">&#8599;</span>
+            <span class="card__sheen" aria-hidden="true"></span>
+          </span>
+        </a>
+        <a class="card" href="/work/clinicos/index.html" target="_blank" rel="noopener">
+          <span class="card__inner">
+            <span class="card__thumb card__thumb--plate card__thumb--clinicos">
+              <span class="plate">
+                <span class="plate__mark">clinicOS</span>
+                <span class="plate__line"><i class="plate__dot"></i>AI reception, live 24/7</span>
+              </span>
+            </span>
+            <span class="card__meta">
+              <span class="card__index">02</span>
+              <span class="card__text">
+                <span class="card__title">clinicOS</span>
+                <span class="card__tag">PRODUCT SITE · 2026</span>
+              </span>
+            </span>
+            <span class="card__arrow" aria-hidden="true">&#8599;</span>
+            <span class="card__sheen" aria-hidden="true"></span>
+          </span>
+        </a>
+        <a class="card" href="/work/solara/index.html" target="_blank" rel="noopener">
+          <span class="card__inner">
+            <span class="card__thumb">
+              <img src="/assets/solara.jpg" alt="" style="object-position: 50% 42%" />
+            </span>
+            <span class="card__meta">
+              <span class="card__index">03</span>
+              <span class="card__text">
+                <span class="card__title">Solara Roasters</span>
+                <span class="card__tag">GSAP · LENIS · 2026</span>
+              </span>
+            </span>
+            <span class="card__arrow" aria-hidden="true">&#8599;</span>
+            <span class="card__sheen" aria-hidden="true"></span>
+          </span>
+        </a>
+        <a class="card card--wide" href="/work/arco/index.html" target="_blank" rel="noopener">
+          <span class="card__inner">
+            <span class="card__thumb card__thumb--plate card__thumb--arco">
+              <span class="plate">
+                <span class="plate__mark">ARCO</span>
+                <span class="plate__line"><i class="plate__dot"></i>Cucina Italiana</span>
+              </span>
+            </span>
+            <span class="card__meta">
+              <span class="card__index">04</span>
+              <span class="card__text">
+                <span class="card__title">ARCO</span>
+                <span class="card__tag">EDITORIAL · 2026</span>
+              </span>
+            </span>
+            <span class="card__arrow" aria-hidden="true">&#8599;</span>
+            <span class="card__sheen" aria-hidden="true"></span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section class="exp" id="experience">
+      <div class="exp__sticky">
+
+        <header class="exp__head">
+          <p class="exp__eyebrow"><span class="exp__rule"></span>EXPERIENCE</p>
+          <h2 class="exp__title">Where I&rsquo;ve Been</h2>
+          <p class="exp__lede">My professional journey through different roles and environments.</p>
+        </header>
+
+        <!-- the thread draws itself across the cards as you scroll -->
+        <!-- No viewBox on purpose: without one, a user unit IS a pixel, so the
+             dash that draws the line and the point the dot rides are measured
+             in the same space. The `d` is written by experience.js, which
+             resolves the curve against the frame's real size. -->
+        <svg class="exp__thread" fill="none" aria-hidden="true">
+          <path id="expPath" />
+        </svg>
+        <!-- the dot rides the thread as a DOM node, not an SVG circle: the
+             stretched viewBox would squash a circle into an ellipse -->
+        <span class="exp__dot" id="expDot" aria-hidden="true"></span>
+
+        <div class="exp__cards">
+          <article class="exp-card">
+            <span class="exp-card__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <h3 class="exp-card__role">Full Stack Developer</h3>
+            <p class="exp-card__meta">Freelance / Independent · 2026 — Present</p>
+            <p class="exp-card__body">Building premium web experiences for clients worldwide. Specializing in interactive frontends, scalable backends, and AI-powered applications.</p>
+            <ul class="exp-card__points">
+              <li>Delivered 20+ projects across diverse industries</li>
+              <li>Implemented CI/CD pipelines and cloud architecture</li>
+              <li>Created custom animation systems with GSAP and Three.js</li>
+            </ul>
+            <span class="exp-card__index" aria-hidden="true">01</span>
+          </article>
+          <article class="exp-card exp-card--solid">
+            <span class="exp-card__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <h3 class="exp-card__role">Contributor &amp; Maintainer</h3>
+            <p class="exp-card__meta">Open Source · 2026 — Present</p>
+            <p class="exp-card__body">Contributing to the developer ecosystem through open-source projects, libraries, and educational content.</p>
+            <ul class="exp-card__points">
+              <li>Maintained React component libraries</li>
+              <li>Published npm packages with 1000+ weekly downloads</li>
+              <li>Wrote technical documentation and tutorials</li>
+            </ul>
+            <span class="exp-card__index" aria-hidden="true">02</span>
+          </article>
+          <article class="exp-card">
+            <span class="exp-card__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <h3 class="exp-card__role">Creative Technologist</h3>
+            <p class="exp-card__meta">Self-Directed Learning · 2023 — 2025</p>
+            <p class="exp-card__body">Intensive self-education period exploring web technologies, creative coding, and modern development practices.</p>
+            <ul class="exp-card__points">
+              <li>Completed 500+ hours of hands-on development</li>
+              <li>Mastered React, Node.js, and TypeScript ecosystem</li>
+              <li>Built portfolio of 15+ production-ready projects</li>
+            </ul>
+            <span class="exp-card__index" aria-hidden="true">03</span>
+          </article>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <!-- ================= HOW I WORK =================
+         The thread falls out of the section above at 50% of the width. This
+         catches it: the seam continues the line, the section opens along it,
+         and then the same line becomes the spine the four steps hang off.
+         ============================================== -->
+    <section class="practice" id="practice">
+
+      <!-- The seam starts well ABOVE this section, so the line that left the
+           frame above carries on falling through the dark instead of the gap
+           between the two reading as empty. It sits outside the curtain so the
+           parting halves cannot clip it. -->
+      <span class="practice__seam" aria-hidden="true"></span>
+
+      <!-- the two halves the section parts into. They sit OPEN in CSS and are
+           closed by JS, so the section is never hidden without the script. -->
+      <div class="practice__curtain" aria-hidden="true">
+        <span class="practice__half practice__half--l"></span>
+        <span class="practice__half practice__half--r"></span>
+      </div>
+
+      <div class="practice__inner">
+
+        <!-- what the line falls into -->
+        <figure class="mind" aria-hidden="true">
+          <canvas class="mind__canvas" id="practiceMind"></canvas>
+        </figure>
+
+        <header class="practice__head">
+          <p class="practice__eyebrow"><span class="practice__rule"></span>HOW I WORK</p>
+          <h2 class="practice__title">Built like it has to last</h2>
+          <p class="practice__lede">
+            Most of what makes a project go well happens before anyone opens an
+            editor. This is the order I work in, and what you get at each step.
+          </p>
+        </header>
+
+        <!-- the line, carried on down through the steps -->
+        <span class="practice__spine" aria-hidden="true"></span>
+
+        <ol class="practice__steps">
+          <li class="pstep">
+            <div class="pstep__body">
+              <span class="pstep__num">01</span>
+              <h3 class="pstep__title">Discovery</h3>
+              <p class="pstep__copy">
+                What the thing is for, who it is for, and what counts as done.
+                Scope goes in writing before anything is estimated.
+              </p>
+              <p class="pstep__out">You get &mdash; a written scope and a fixed price</p>
+            </div>
+          </li>
+          <li class="pstep">
+            <div class="pstep__body">
+              <span class="pstep__num">02</span>
+              <h3 class="pstep__title">Architecture</h3>
+              <p class="pstep__copy">
+                Data model, states and edge cases mapped first. The dull
+                decisions made early, so the interesting ones stay cheap.
+              </p>
+              <p class="pstep__out">You get &mdash; a schema, a state map, a stack you own</p>
+            </div>
+          </li>
+          <li class="pstep">
+            <div class="pstep__body">
+              <span class="pstep__num">03</span>
+              <h3 class="pstep__title">Build</h3>
+              <p class="pstep__copy">
+                Shipped in reviewable slices, each one deployable on its own.
+                You see it working weekly, not at the end.
+              </p>
+              <p class="pstep__out">You get &mdash; a staging URL from week one</p>
+            </div>
+          </li>
+          <li class="pstep">
+            <div class="pstep__body">
+              <span class="pstep__num">04</span>
+              <h3 class="pstep__title">Handover</h3>
+              <p class="pstep__copy">
+                Documented, tested and yours. No black boxes, and nothing that
+                needs me to keep it running.
+              </p>
+              <p class="pstep__out">You get &mdash; the repo, a walkthrough, and support after</p>
+            </div>
+          </li>
+        </ol>
+
+        <!-- REPLACE with your real terms -->
+        <div class="practice__terms">
+          <div class="pterm">
+            <dt>Engagements</dt>
+            <dd>Project&nbsp;&middot; Retainer&nbsp;&middot; Advisory</dd>
+          </div>
+          <div class="pterm">
+            <dt>Typical timeline</dt>
+            <dd>4 &ndash; 12 weeks, start to handover</dd>
+          </div>
+          <div class="pterm">
+            <dt>Working hours</dt>
+            <dd>IST, with overlap for EU and US&nbsp;East</dd>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= PROCESS =================
+         Sticky index on the left, a panel on the right that swaps as each
+         step takes over. The panels show what actually lands in your inbox
+         at that point in a job, rather than a mock browser window.
+         ========================================== -->
+    <section class="process" id="process">
+      <div class="process__inner">
+
+        <header class="process__head">
+          <p class="process__eyebrow"><span class="process__rule"></span>STEP BY STEP</p>
+          <h2 class="process__title">From first message to a repo that&rsquo;s yours</h2>
+          <p class="process__lede">
+            Four moves. You see it running in week one, and nothing at the end
+            needs me around to keep it alive.
+          </p>
+        </header>
+
+        <div class="process__body">
+
+          <ol class="process__list">
+            <li class="pr-step is-on" data-step="0">
+              <span class="pr-step__num">01</span>
+              <div class="pr-step__body">
+                <h3 class="pr-step__title">The brief lands</h3>
+                <p class="pr-step__copy">
+                  Send whatever you have &mdash; a doc, a Figma, or three
+                  paragraphs. You get a reply the same day with the questions
+                  I&rsquo;d need answered to quote it properly.
+                </p>
+              </div>
+            </li>
+            <li class="pr-step" data-step="1">
+              <span class="pr-step__num">02</span>
+              <div class="pr-step__body">
+                <h3 class="pr-step__title">We pin the scope down</h3>
+                <p class="pr-step__copy">
+                  One call, then it goes in writing. Fixed price, named
+                  deliverables, and the awkward edge cases agreed before they
+                  are expensive rather than after.
+                </p>
+              </div>
+            </li>
+            <li class="pr-step" data-step="2">
+              <span class="pr-step__num">03</span>
+              <div class="pr-step__body">
+                <h3 class="pr-step__title">You watch it ship</h3>
+                <p class="pr-step__copy">
+                  Reviewable slices, deployed as they land. A staging URL from
+                  week one, so you are never waiting until the end to find out
+                  what you bought.
+                </p>
+              </div>
+            </li>
+            <li class="pr-step" data-step="3">
+              <span class="pr-step__num">04</span>
+              <div class="pr-step__body">
+                <h3 class="pr-step__title">You own the whole thing</h3>
+                <p class="pr-step__copy">
+                  The repo, the documentation and a recorded walkthrough.
+                  No black boxes, and no part of it that quietly depends on me
+                  still being here.
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="process__screen" aria-hidden="true">
+            <div class="pr-screen__bar">
+              <span class="pr-screen__live"><i></i>Live</span>
+              <span class="pr-screen__meta">Aaron Michael &middot; studio</span>
+            </div>
+
+            <div class="pr-screen__body">
+
+              <!-- 01 — the brief arrives -->
+              <div class="pr-pane is-on" data-pane="0">
+                <div class="pr-brief">
+                  <span class="pr-brief__mark">
+                    <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                      <rect x="3" y="5.5" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.3"/>
+                      <path d="m4.5 7.5 7.5 5.5 7.5-5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <p class="pr-brief__from">New brief &mdash; a booking tool for a studio</p>
+                  <p class="pr-brief__meta">Read at 09:12 &middot; replied same day</p>
+                  <span class="pr-eq">
+                    <i></i><i style="animation-delay:.12s"></i><i style="animation-delay:.24s"></i><i style="animation-delay:.36s"></i><i style="animation-delay:.48s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.72s"></i>
+                  </span>
+                </div>
+              </div>
+
+              <!-- 02 — scoping it -->
+              <div class="pr-pane" data-pane="1">
+                <div class="pr-chat">
+                  <p class="pr-bub pr-bub--them"><small>Client</small>Can it take deposits, or is that phase two?</p>
+                  <p class="pr-bub pr-bub--me"><small>Aaron</small>Phase one. It changes the data model, so it is cheaper now than bolted on later.</p>
+                  <p class="pr-bub pr-bub--them"><small>Client</small>And if we need a second location next year?</p>
+                  <p class="pr-bub pr-bub--me"><small>Aaron</small>Built multi&#8209;tenant from the start. Adding the second one is a row, not a rewrite.</p>
+                </div>
+              </div>
+
+              <!-- 03 — shipping -->
+              <div class="pr-pane" data-pane="2">
+                <div class="pr-ship">
+                  <div class="pr-ship__head">
+                    <b>Deploys</b>
+                    <span class="pr-ship__meta">staging &middot; 6 weeks</span>
+                  </div>
+                  <div class="pr-ship__grid" id="processShip"></div>
+                  <p class="pr-ship__foot">First deploy: day 4 &middot; then every few days</p>
+                </div>
+              </div>
+
+              <!-- 04 — handover -->
+              <div class="pr-pane" data-pane="3">
+                <div class="pr-out">
+                  <p class="pr-out__big">100%</p>
+                  <p class="pr-out__sub">yours, end to end</p>
+                  <span class="pr-out__row">
+                    <span class="pr-chip">Repo transferred</span>
+                    <span class="pr-chip">Docs written</span>
+                    <span class="pr-chip">Walkthrough recorded</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="contact__inner">
+
+        <!-- left: the pitch and the map -->
+        <div class="contact__lede js-contact-reveal">
+          <span class="contact__badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+              <path d="m3 6.5 9 6 9-6" />
+            </svg>
+          </span>
+
+          <h2 class="contact__title">Contact us</h2>
+          <p class="contact__copy">
+            Have a project, a role, or just an idea worth building? Send it over
+            and I&rsquo;ll get back to you.
+          </p>
+
+          <!-- REPLACE with your real details -->
+          <ul class="contact__details">
+            <li><a href="mailto:you@example.com">you@example.com</a></li>
+            <li aria-hidden="true">&bull;</li>
+            <li><a href="tel:+910000000000">+91 00000 00000</a></li>
+          </ul>
+
+          <figure class="map">
+            <img class="map__dots" src="/assets/world-dots.svg" alt="" width="1230" height="620" />
+            <span class="map__pin">
+              <span class="map__label">We are here</span>
+              <span class="map__beam"></span>
+              <span class="map__ring"></span>
+              <span class="map__ring map__ring--2"></span>
+              <span class="map__core"></span>
+            </span>
+          </figure>
+        </div>
+
+        <!-- right: the form -->
+        <div class="contact__panel js-contact-reveal">
+          <form class="cform" id="contactForm" novalidate>
+            <div class="cform__field">
+              <label for="cfName">Full name</label>
+              <input id="cfName" name="name" type="text" autocomplete="name"
+                     placeholder="Your name" required />
+              <p class="cform__error" data-for="cfName"></p>
+            </div>
+
+            <div class="cform__field">
+              <label for="cfEmail">Email address</label>
+              <input id="cfEmail" name="email" type="email" autocomplete="email"
+                     placeholder="you@company.com" required />
+              <p class="cform__error" data-for="cfEmail"></p>
+            </div>
+
+            <div class="cform__field">
+              <label for="cfCompany">Company <span class="cform__opt">optional</span></label>
+              <input id="cfCompany" name="company" type="text" autocomplete="organization"
+                     placeholder="Where you work" />
+            </div>
+
+            <div class="cform__field">
+              <label for="cfMessage">Message</label>
+              <textarea id="cfMessage" name="message" rows="5"
+                        placeholder="Type your message here" required></textarea>
+              <p class="cform__error" data-for="cfMessage"></p>
+            </div>
+
+            <button class="cform__submit" type="submit" id="cfSubmit">
+              <span class="cform__submit-text">Submit</span>
+            </button>
+
+            <p class="cform__status" id="cfStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="foot">
+    <div class="foot__inner">
+
+      <a class="foot__brand" href="#hero">
+        <span class="foot__mark" aria-hidden="true">G</span>
+        <span class="foot__name">Genesis Studios</span>
+      </a>
+
+      <nav class="foot__nav" aria-label="Footer">
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#practice">How I Work</a>
+        <a href="#vision">Vision</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <span class="foot__rule" aria-hidden="true"></span>
+
+      <div class="foot__base">
+        <p class="foot__copy">&copy; Genesis Studios 2026</p>
+        <ul class="foot__socials">
+          <li><a href="#" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="#" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Twitter</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <p class="foot__watermark" aria-hidden="true">Portfolio</p>
+  </footer>
+
+  <!-- the toggle lives outside .site so it paints above the menu overlay -->
+  <button type="button" class="nav__dive js-reveal" id="menuToggle" aria-expanded="false" aria-controls="menu">
+    <span class="nav__dive-label" id="menuToggleLabel">DIVE IN</span>
+    <span class="nav__dive-icon" aria-hidden="true">+</span>
+  </button>
+
+  <!-- ===================== MENU ===================== -->
+  <div class="menu" id="menu" aria-hidden="true">
+    <div class="menu__backdrop" data-menu-close></div>
+
+    <aside class="menu__panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <nav class="menu__nav">
+        <a href="#projects" class="menu__link">
+          <span class="menu__mask"><span class="menu__word">PROJECTS</span></span>
+          <span class="menu__index">01</span>
+        </a>
+        <a href="#experience" class="menu__link">
+          <span class="menu__mask"><span class="menu__word">EXPERIENCE</span></span>
+          <span class="menu__index">02</span>
+        </a>
+        <a href="#practice" class="menu__link">
+          <span class="menu__mask"><span class="menu__word">HOW I WORK</span></span>
+          <span class="menu__index">03</span>
+        </a>
+        <a href="#contact" class="menu__link">
+          <span class="menu__mask"><span class="menu__word">CONTACT</span></span>
+          <span class="menu__index">04</span>
+        </a>
+      </nav>
+
+      <div class="menu__socials">
+        <p class="menu__socials-label">SOCIALS</p>
+        <ul class="menu__socials-list">
+          <li><a href="#" target="_blank" rel="noopener">GITHUB</a></li>
+          <li><a href="#" target="_blank" rel="noopener">LINKEDIN</a></li>
+          <li><a href="#" target="_blank" rel="noopener">TWITTER</a></li>
+          <li><a href="#" target="_blank" rel="noopener">INSTAGRAM</a></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+</body>
+</html>

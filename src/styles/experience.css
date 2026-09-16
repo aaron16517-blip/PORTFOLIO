@@ -1,0 +1,305 @@
+/* ============================================================
+   EXPERIENCE — "Where I've Been"
+
+   A scrubbed runway: the heading rises, a thread draws itself
+   across the frame with a travelling dot, and three cards come
+   up in sequence and settle into a staggered row.
+   ============================================================ */
+.exp {
+  position: relative;
+  height: 300vh;              /* the runway the scrub reads from */
+  background: var(--bg);
+}
+
+/* Picks the warmth up where Projects lets it go and carries it down into the
+   black, so the join between the two sections has no edge to see. Sits at the
+   top of the runway and scrolls away behind the sticky frame. */
+.exp::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(320px, 48vh, 580px);
+  pointer-events: none;
+
+  /* A glow rising out of the black rather than a band laid on it. The radial
+     gives it a centre; the mask forces it to zero at BOTH ends — zero at the
+     top is the important one, because Projects also fades to zero at its
+     bottom edge, so the two sections meet at the same value and there is no
+     step to see. */
+  background: radial-gradient(
+    72% 82% at 50% 30%,
+    rgba(224, 92, 57, 0.16) 0%,
+    rgba(196, 58, 58, 0.07) 45%,
+    transparent 75%
+  );
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 32%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 32%, #000 62%, transparent 100%);
+}
+
+.exp__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  /* symmetric on purpose: this is a pinned 100svh panel whose content is
+     vertically centred, not a band with a top and a bottom */
+  padding: clamp(4rem, 9vh, 6rem) var(--gutter);
+}
+
+/* ---------- heading ---------- */
+.exp__head {
+  position: relative;
+  z-index: 2;
+  flex: none;
+}
+
+.exp__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin: 0 0 clamp(0.9rem, 2vh, 1.4rem);
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: var(--t-micro);
+  letter-spacing: 0.34em;
+  color: var(--ink-muted);
+}
+.exp__rule {
+  width: clamp(28px, 4vw, 52px);
+  height: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-soft);
+  transform-origin: left center;
+}
+
+.exp__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-wide);
+  line-height: 1.02;
+  letter-spacing: -0.024em;
+  color: var(--ink);
+  text-wrap: balance;
+  font-size: clamp(1.9rem, 5.6vw, 4rem);
+}
+
+.exp__lede {
+  margin: clamp(0.5rem, 1.4vh, 0.9rem) 0 0;
+  max-width: 34ch;
+  font-size: clamp(0.72rem, 1vw, 0.92rem);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: rgba(243, 244, 246, 0.6);
+}
+
+/* ---------- the thread ---------- */
+.exp__thread {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+#expPath {
+  stroke: rgba(243, 244, 246, 0.22);
+  stroke-width: 1.2;
+  fill: none;
+  stroke-linecap: round;
+}
+/* positioned in per-cent of the frame by walkThread, so it tracks the same
+   stretched coordinate space the thread is drawn in */
+.exp__dot {
+  position: absolute;
+  z-index: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 7px var(--accent), 0 0 18px var(--accent-soft);
+  pointer-events: none;
+}
+
+/* ---------- the cards ---------- */
+.exp__cards {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(0.7rem, 1.6vw, 1.4rem);
+}
+
+.exp-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(190px, 30vh, 300px);
+  padding: clamp(1rem, 1.8vw, 1.6rem);
+  border-radius: 20px;
+  /* the cut corner — border-radius still rounds the other three, because the
+     polygon only removes the bottom-right wedge */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%);
+
+  /* The white-alpha gradient is the whole look, but on its own it is a film:
+     the thread behind reads straight through the card and across the copy.
+     Laying the same colour the section is painted in underneath makes the
+     card opaque without changing what it looks like — the page behind it is
+     that colour anyway — so the thread passes behind it, as intended. */
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.055) 100%),
+    var(--bg);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  will-change: transform, opacity;
+}
+
+/* the middle card is the solid one, as in the reference */
+.exp-card--solid {
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.06) 0%, transparent 60%),
+    linear-gradient(170deg, #1b1013 0%, #120c10 100%);
+  border-color: rgba(224, 57, 63, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 40px -18px var(--accent);
+}
+
+/* the three dots, a window chrome nod from the reference */
+.exp-card__dots {
+  display: inline-flex;
+  gap: 5px;
+  margin-bottom: clamp(0.9rem, 2vh, 1.5rem);
+}
+.exp-card__dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(243, 244, 246, 0.3);
+}
+.exp-card--solid .exp-card__dots i:first-child { background: var(--accent); }
+
+.exp-card__role {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 1.35vw, 1.3rem);
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+.exp-card__meta {
+  margin: 0.5em 0 0;
+  font-size: clamp(0.55rem, 0.7vw, 0.66rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.exp-card__body {
+  margin: clamp(0.7rem, 1.6vh, 1.1rem) 0 0;
+  font-size: clamp(0.7rem, 0.92vw, 0.85rem);
+  line-height: 1.7;
+  color: rgba(243, 244, 246, 0.62);
+}
+
+/* the three proof points under the body copy */
+.exp-card__points {
+  margin: clamp(0.7rem, 1.5vh, 1rem) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(0.3rem, 0.8vh, 0.5rem);
+}
+
+.exp-card__points li {
+  position: relative;
+  padding-left: 1em;
+  font-size: clamp(0.64rem, 0.82vw, 0.76rem);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: rgba(243, 244, 246, 0.5);
+}
+
+/* the marker — a small dot rather than a disc, so it reads as a note
+   and not as a list the eye has to work through */
+.exp-card__points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(243, 244, 246, 0.3);
+}
+.exp-card--solid .exp-card__points li::before { background: var(--accent); }
+
+.exp-card__index {
+  margin-top: auto;
+  padding-top: 1.2rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.4vw, 2.9rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: rgba(243, 244, 246, 0.1);
+}
+.exp-card--solid .exp-card__index { color: rgba(224, 57, 63, 0.28); }
+
+/* ---------- narrower ---------- */
+@media (max-width: 860px) {
+  .exp { height: 340vh; }
+  .exp__sticky { gap: clamp(1rem, 2.4vh, 1.6rem); }
+  .exp__cards { grid-template-columns: 1fr; gap: 0.6rem; }
+  .exp-card {
+    min-height: 0;
+    padding: 0.85rem 0.95rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.8rem;
+  }
+  .exp-card__dots { display: none; }
+  .exp-card__body {
+    flex: 1 1 100%;
+    margin-top: 0.4rem;
+    line-height: 1.6;
+  }
+  /* one column has no room to spare — the points tighten up so the third
+     card still lands inside the sticky frame */
+  .exp-card__points {
+    flex: 1 1 100%;
+    margin-top: 0.45rem;
+    gap: 0.22rem;
+  }
+  .exp-card__points li { line-height: 1.45; }
+  .exp-card__index {
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 1.4rem;
+    order: -1;
+  }
+}
+
+/* Short phones (iPhone SE / mini class). The frame is pinned at one screen
+   tall, and at ~670px the three stacked cards ran a few pixels past it —
+   clipping the heading at the top and the last card at the bottom. The
+   lede and the third proof point on each card go; the rest keeps its size. */
+@media (max-width: 860px) and (max-height: 740px) {
+  .exp__sticky {
+    padding-top: 3.4rem;   /* still clears DIVE IN */
+    padding-bottom: 1rem;
+  }
+  .exp__lede { display: none; }
+  .exp-card__body { line-height: 1.5; }
+  .exp-card__points li:nth-child(n + 3) { display: none; }
+}

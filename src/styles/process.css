@@ -1,0 +1,506 @@
+/* ============================================================
+   PROCESS — "from first message to a repo that's yours"
+
+   A sticky index on the left, one panel on the right that swaps as each
+   step takes over. Two things keep it off the shelf:
+
+     1. No card chrome. The steps are an index hung off a single hairline,
+        with one red marker that grows down it. Boxing each step would be
+        chrome standing in for hierarchy.
+     2. No fake browser. The panel is a status strip over a dark well —
+        this is an inbox and a deploy log, not a Chrome window, and the
+        three traffic-light dots are the most reused illustration on the
+        web.
+
+   Type: Archivo on the width axis. Numerals sit narrow (wdth 80), titles
+   sit wide (wdth 115), so the index reads as two voices rather than one
+   size ramp. That is the same idea the hero runs on.
+   ============================================================ */
+
+.process {
+  position: relative;
+  padding: var(--sec-pad-l) var(--gutter);
+  background: var(--bg);
+  /* The glows below reach past the side edges on purpose. Unclipped, that
+     made the document wider than a phone, and mobile browsers answer that by
+     zooming the whole layout out — which pushed the fixed DIVE IN button off
+     screen. `clip` rather than `hidden`: it is not a scroll container, so
+     the sticky index inside still sticks. */
+  overflow-x: clip;
+}
+
+/* a soft well behind the panel so the section has a centre of gravity */
+.process::before {
+  content: '';
+  position: absolute;
+  inset: 12% -10% 18% 30%;
+  background: radial-gradient(60% 60% at 60% 45%, rgba(224, 57, 63, 0.09), transparent 70%);
+  pointer-events: none;
+}
+
+.process__inner {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+/* ---------- head ----------
+   Title left, lede parked on the right and sitting on the same baseline as
+   the title's last line. Stacked, this block ran four lines deep before the
+   content even started; split, it reads in one pass. */
+.process__head {
+  display: grid;
+  max-width: 34ch;
+  margin-bottom: clamp(3rem, 7vh, 5.5rem);
+}
+
+@media (min-width: 900px) {
+  .process__head {
+    max-width: none;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    column-gap: clamp(2rem, 5vw, 5rem);
+    align-items: end;
+  }
+  .process__eyebrow { grid-column: 1 / -1; }
+  .process__title   { grid-column: 1; max-width: 14ch; }
+  .process__lede    { grid-column: 2; margin: 0; padding-bottom: 0.45em; }
+}
+
+.process__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin: 0 0 clamp(1rem, 2vh, 1.6rem);
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: var(--t-micro);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.process__rule {
+  width: clamp(28px, 4vw, 54px);
+  height: 1px;
+  flex: none;
+  background: var(--accent);
+}
+
+.process__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-wide);
+  font-size: var(--t-h2);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.process__lede {
+  margin: clamp(1rem, 2.2vh, 1.5rem) 0 0;
+  max-width: var(--measure-sm);
+  font-size: var(--t-lede);
+  font-weight: 400;
+  line-height: 1.62;
+  letter-spacing: -0.008em;
+  color: var(--ink-muted);
+  text-wrap: pretty;
+}
+
+/* ---------- layout ---------- */
+.process__body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  align-items: start;
+}
+
+/* ---------- the index ---------- */
+.process__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: sticky;
+  top: clamp(4rem, 14vh, 8rem);
+  border-left: 1px solid var(--ink-faint);
+}
+
+.pr-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: clamp(0.9rem, 1.6vw, 1.4rem);
+  padding: clamp(1.1rem, 2.2vh, 1.7rem) 0 clamp(1.1rem, 2.2vh, 1.7rem) clamp(1.1rem, 2vw, 1.8rem);
+  cursor: pointer;
+}
+.pr-step + .pr-step { border-top: 1px solid rgba(243, 244, 246, 0.07); }
+
+/* the marker — one segment that grows down the rail on the active step */
+.pr-step::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), rgba(224, 57, 63, 0.25));
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 0.85s var(--ease-out);
+}
+.pr-step.is-on::before { transform: scaleY(1); }
+
+.pr-step__num {
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: var(--t-cap);
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1.9;
+  color: rgba(243, 244, 246, 0.28);
+  transition: color 0.55s var(--ease-out);
+}
+.pr-step.is-on .pr-step__num { color: var(--accent); }
+
+.pr-step__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-mid);
+  font-size: var(--t-h3);
+  line-height: 1.16;
+  letter-spacing: -0.017em;
+  color: rgba(243, 244, 246, 0.42);
+  transition: color 0.55s var(--ease-out);
+}
+.pr-step.is-on .pr-step__title { color: var(--ink); }
+
+.pr-step__copy {
+  margin: 0;
+  max-width: var(--measure-sm);
+  font-size: var(--t-body);
+  line-height: 1.68;
+  letter-spacing: -0.006em;
+  color: var(--ink-muted);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.75s var(--ease-out),
+    opacity 0.5s var(--ease-out),
+    margin 0.75s var(--ease-out);
+}
+.pr-step.is-on .pr-step__copy {
+  max-height: 14em;
+  opacity: 1;
+  margin-top: 0.7em;
+}
+
+/* ---------- the panel ----------
+   iOS-style glass: a thin translucent fill that blurs and saturates what
+   sits behind it, a bright specular rim on the top edge, and light that
+   falls off toward the bottom. Glass over flat black just reads as grey,
+   so the body carries two soft light sources for the panel to diffuse. */
+.process__body { position: relative; }
+.process__body::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 4%;
+  right: -2%;
+  width: 60%;
+  height: 92%;
+  /* soft stops instead of filter: blur() — a blurred layer directly behind a
+     backdrop-filtered panel is a large extra compositing surface the glass
+     re-samples, and a gradient that falls off this gently looks the same */
+  background:
+    radial-gradient(46% 50% at 28% 30%, rgba(224, 57, 63, 0.5), rgba(224, 57, 63, 0.16) 45%, transparent 78%),
+    radial-gradient(42% 48% at 78% 72%, rgba(240, 110, 70, 0.3), rgba(240, 110, 70, 0.1) 45%, transparent 78%),
+    radial-gradient(32% 36% at 70% 18%, rgba(255, 150, 120, 0.2), transparent 76%);
+  pointer-events: none;
+}
+.process__list { z-index: 1; }
+
+.process__screen {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 16 / 11;
+  border-radius: 26px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0.07)),
+    rgba(25, 25, 27, 0.38);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 40px 80px -30px rgba(0, 0, 0, 0.8);
+}
+/* specular sheen — a soft highlight sweeping the upper-left of the glass */
+.process__screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, 0.12), transparent 55%);
+  pointer-events: none;
+}
+
+.pr-screen__bar {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-inline: clamp(1rem, 1.8vw, 1.5rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.03);
+}
+.pr-screen__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-size: var(--t-cap);
+  color: rgba(243, 244, 246, 0.72);
+}
+.pr-screen__live i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  animation: prPulse 2.4s var(--ease-in-out) infinite;
+}
+@keyframes prPulse {
+  0%, 100% { transform: scale(1);    opacity: 1;   }
+  50%      { transform: scale(1.4);  opacity: 0.45; }
+}
+.pr-screen__meta {
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: var(--t-micro);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(243, 244, 246, 0.34);
+}
+
+.pr-screen__body { position: absolute; inset: 46px 0 0; }
+
+.pr-pane {
+  position: absolute;
+  inset: 0;
+  padding: clamp(1rem, 2.2vw, 1.9rem);
+  opacity: 0;
+  transform: translateY(14px) scale(0.99);
+  filter: blur(8px);
+  pointer-events: none;
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.85s var(--ease-out),
+    filter 0.7s var(--ease-out);
+}
+.pr-pane.is-on {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  pointer-events: auto;
+}
+
+/* --- pane 01: the brief --- */
+.pr-brief {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.85rem;
+  height: 100%;
+  text-align: center;
+}
+.pr-brief__mark {
+  width: clamp(58px, 7vw, 76px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  background: linear-gradient(150deg, #2b2b2f, #1b1b1e);
+  border: 1px solid rgba(243, 244, 246, 0.12);
+  box-shadow: 0 14px 34px -14px rgba(0, 0, 0, 0.9);
+}
+.pr-brief__from {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-mid);
+  font-size: var(--t-lede);
+  letter-spacing: -0.014em;
+  color: var(--ink);
+}
+.pr-brief__meta {
+  margin: 0;
+  font-size: var(--t-cap);
+  color: var(--ink-muted);
+}
+.pr-eq { display: flex; align-items: flex-end; gap: 3px; height: 24px; margin-top: 0.3rem; }
+.pr-eq i {
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--accent), rgba(224, 57, 63, 0.3));
+  animation: prBar 1.3s var(--ease-in-out) infinite;
+}
+@keyframes prBar {
+  0%, 100% { height: 5px;  opacity: 0.4; }
+  50%      { height: 22px; opacity: 1;   }
+}
+
+/* --- pane 02: scoping --- */
+/* four bubbles have to clear the panel at its shortest — the well is
+   16/11, so the spacing here is set to fit, not to look right in isolation */
+.pr-chat { display: grid; gap: 0.45rem; align-content: center; height: 100%; overflow: hidden; }
+.pr-bub {
+  margin: 0;
+  max-width: 82%;
+  padding: 0.5rem 0.8rem;
+  border-radius: 12px;
+  font-size: var(--t-cap);
+  line-height: 1.5;
+  animation: prBub 0.75s var(--ease-out) both;
+}
+.pr-bub small {
+  display: block;
+  margin-bottom: 0.25em;
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: var(--t-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.pr-bub--them {
+  justify-self: start;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px 18px 18px 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: rgba(243, 244, 246, 0.88);
+}
+.pr-bub--me {
+  justify-self: end;
+  background: linear-gradient(160deg, rgba(234, 72, 78, 0.5), rgba(224, 57, 63, 0.28));
+  border: 1px solid rgba(255, 140, 140, 0.28);
+  border-radius: 18px 18px 6px 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 200, 200, 0.25);
+  color: #fff1f1;
+}
+@keyframes prBub {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+.pr-pane.is-on .pr-bub:nth-child(1) { animation-delay: 0.15s; }
+.pr-pane.is-on .pr-bub:nth-child(2) { animation-delay: 0.45s; }
+.pr-pane.is-on .pr-bub:nth-child(3) { animation-delay: 0.8s;  }
+.pr-pane.is-on .pr-bub:nth-child(4) { animation-delay: 1.15s; }
+
+/* --- pane 03: deploys --- */
+.pr-ship { display: grid; grid-template-rows: auto 1fr auto; gap: 0.8rem; height: 100%; }
+.pr-ship__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.pr-ship__head b {
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-mid);
+  font-size: var(--t-body);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.pr-ship__meta,
+.pr-ship__foot {
+  margin: 0;
+  font-size: var(--t-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 244, 246, 0.34);
+}
+.pr-ship__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  align-content: start;
+}
+.pr-ship__grid i {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: rgba(243, 244, 246, 0.055);
+  border: 1px solid rgba(243, 244, 246, 0.06);
+  transition:
+    background 0.5s var(--ease-out),
+    border-color 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+.pr-ship__grid i.is-hit {
+  background: linear-gradient(155deg, var(--accent), rgba(224, 57, 63, 0.55));
+  border-color: rgba(224, 57, 63, 0.6);
+  box-shadow: 0 3px 10px -4px rgba(224, 57, 63, 0.8);
+}
+
+/* --- pane 04: handover --- */
+.pr-out {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.35rem;
+  height: 100%;
+  text-align: center;
+}
+.pr-out__big {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 118, 'wght' 680;
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.pr-out__sub { margin: 0; font-size: var(--t-cap); color: var(--ink-muted); }
+.pr-out__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.pr-chip {
+  padding: 0.4em 0.85em;
+  border-radius: 100px;
+  font-size: var(--t-cap);
+  color: rgba(243, 244, 246, 0.74);
+  border: 1px solid rgba(243, 244, 246, 0.12);
+  background: rgba(243, 244, 246, 0.04);
+}
+
+/* ---------- narrow ---------- */
+@media (max-width: 900px) {
+  .process__body { grid-template-columns: 1fr; gap: clamp(2rem, 6vh, 3rem); }
+  /* one column: the light sits behind the panel, which is now full width */
+  .process__body::before { top: auto; bottom: -4%; right: 0; width: 100%; height: 70%; }
+  /* Only smooth gradients sit behind the panel, and blurring a smooth
+     gradient returns the same gradient — so on a phone the frost is pure
+     cost. The glass reads from the translucent fill, the rim and the sheen. */
+  .process__screen {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0.08)),
+      rgba(25, 25, 27, 0.45);
+  }
+  /* panes swap with a fade and a lift; the per-pane blur inside a
+     backdrop-filtered box is the part a phone drops frames on */
+  .pr-pane,
+  .pr-pane.is-on { filter: none; }
+  .process__list { position: static; }
+  .process::before { inset: 20% -20% 30% 0; }
+}

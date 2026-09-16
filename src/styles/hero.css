@@ -1,0 +1,248 @@
+/* ============================================================
+   HERO — red smoke + the pressure-sensitive name
+   ============================================================ */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(1.1rem, 2.6vw, 2rem) var(--gutter);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* the WebGL smoke */
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  display: block;
+}
+
+/* fallback ground + legibility veil over the smoke */
+.hero__veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 75% at 50% 8%, rgba(255, 90, 40, 0.07) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(6, 6, 7, 0.55) 0%, transparent 28%, transparent 52%,
+      rgba(9, 9, 10, 0.35) 70%, rgba(9, 9, 10, 0.8) 88%, var(--bg) 100%);
+}
+/* the vignetted smoke bottoms out darker than the page ground, so the veil
+   lands on exactly var(--bg) — the next section then starts with no seam */
+/* sits behind the canvas so a WebGL-less browser still looks intentional */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background:
+    radial-gradient(90% 60% at 50% 12%, rgba(190, 45, 25, 0.35) 0%, transparent 62%),
+    linear-gradient(180deg, #0c0a0c 0%, var(--bg) 100%);
+}
+
+/* ---------- top row ---------- */
+.nav {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav__tag {
+  margin: 0;
+  font-size: clamp(0.58rem, 0.72vw, 0.7rem);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  color: rgba(243, 244, 246, 0.9);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.nav__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* ---------- the name ---------- */
+.hero__centre {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(1rem, 4vh, 3rem);
+}
+
+.pressure {
+  position: relative;
+  width: 100%;
+  height: clamp(110px, 30vh, 320px);
+}
+
+/* the h1 built by createTextPressure() */
+.text-pressure-title {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 100;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  transform-origin: center top;
+  /* the glow that makes it sit inside the smoke rather than on top of it */
+  text-shadow: 0 0 80px rgba(255, 120, 70, 0.25);
+}
+.text-pressure-title.is-flex {
+  display: flex;
+  justify-content: space-between;
+}
+.text-pressure-title span {
+  display: inline-block;
+  will-change: font-variation-settings;
+}
+.text-pressure-title.is-stroke span {
+  position: relative;
+}
+.text-pressure-title.is-stroke span::after {
+  content: attr(data-char);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: transparent;
+  z-index: -1;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: var(--tp-stroke-color, var(--accent));
+}
+
+/* the red line of copy laid across the name */
+.hero__caption {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(0.55rem, 0.95vw, 0.82rem);
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  text-indent: 0.38em;
+  color: var(--accent);
+  text-shadow: 0 0 14px rgba(0, 0, 0, 0.85), 0 0 26px rgba(224, 57, 63, 0.5);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ---------- bottom row ---------- */
+.hero__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 5vw, 4rem);
+}
+
+.hero__bio {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(0.66rem, 0.85vw, 0.8rem);
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.1em;
+  color: rgba(243, 244, 246, 0.72);
+}
+
+.hero__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.7rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.85em 1.6em;
+  border-radius: 999px;
+  font-size: clamp(0.62rem, 0.78vw, 0.74rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.btn:hover { transform: translateY(-2px); }
+
+.btn--solid {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 10px 40px -12px rgba(224, 57, 63, 0.9);
+}
+.btn--solid:hover { background: #f04a50; }
+
+.btn--ghost {
+  border: 1px solid rgba(243, 244, 246, 0.28);
+  color: rgba(243, 244, 246, 0.9);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.btn--ghost:hover { border-color: rgba(243, 244, 246, 0.6); }
+
+.btn__arrow { font-size: 1.1em; line-height: 0; }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 860px) {
+  .hero__foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.6rem;
+  }
+  .hero__cta {
+    flex-direction: row;
+    align-items: center;
+    align-self: stretch;
+  }
+  .btn { flex: 1; justify-content: center; }
+  /* the smoke behind it redraws every frame, so a backdrop blur here is
+     re-sampled every frame too — a dark tint reads the same at this size */
+  .btn--ghost {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(9, 9, 10, 0.4);
+  }
+  .hero__caption { letter-spacing: 0.22em; text-indent: 0.22em; }
+}
+
+@media (max-width: 520px) {
+  /* on a phone the caption sits under the name instead of across it */
+  .hero__caption {
+    position: static;
+    transform: none;
+    margin-top: 1.1rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+    white-space: normal;
+  }
+  .pressure { height: clamp(90px, 20vh, 160px); }
+}
+
+/* a tap leaves :hover stuck on until the next tap elsewhere */
+@media (hover: none) {
+  .btn:hover { transform: none; }
+  .btn--solid:hover { background: var(--accent); }
+}

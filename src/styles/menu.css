@@ -1,0 +1,153 @@
+/* ============================================================
+   MENU — slides in from the left when DIVE IN is tapped
+   ============================================================ */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  visibility: hidden;
+  pointer-events: none;
+}
+.menu.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.menu__backdrop {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: rgba(5, 5, 6, 0.62);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.menu__panel {
+  position: relative;
+  height: 100%;
+  width: clamp(280px, 34vw, 460px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(4.5rem, 9vh, 7rem) clamp(1.5rem, 3vw, 3rem) clamp(2rem, 5vh, 3.5rem);
+  background: rgba(11, 11, 12, 0.82);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  border-right: 1px solid rgba(243, 244, 246, 0.08);
+  transform: translateX(-100%);
+  overflow-y: auto;
+}
+
+/* ---------- the three links ---------- */
+.menu__nav {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.1rem, 0.6vh, 0.5rem);
+}
+
+.menu__link {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.5em;
+  align-self: flex-start;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* each word rides up out of its own mask.
+   GSAP owns the transform on .menu__word — the hover shift lives on the
+   mask so a CSS transition never fights the tween for the same property. */
+.menu__mask {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.06em;
+  margin-block: -0.06em;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.menu__word {
+  display: block;
+  will-change: transform;
+}
+.menu__link:hover .menu__mask { transform: translateX(0.12em); }
+
+.menu__index {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  transform: translateY(0.35em);
+}
+
+/* ---------- socials ---------- */
+.menu__socials-label {
+  margin: 0 0 0.9rem;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+}
+
+.menu__socials-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu__socials-list a {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: rgba(243, 244, 246, 0.72);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.menu__socials-list a:hover { color: var(--ink); }
+
+/* ---------- the toggle: fixed, above everything, on every section ---------- */
+.nav__dive {
+  position: fixed;
+  top: clamp(1.1rem, 2.6vw, 2rem);
+  right: var(--gutter);
+  z-index: 80;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+
+  background: none;
+  border: 0;
+  padding: 0.4em 0;
+  cursor: pointer;
+
+  font-family: var(--font-body);
+  font-size: clamp(0.58rem, 0.72vw, 0.7rem);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(243, 244, 246, 0.9);
+
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.nav__dive:hover { opacity: 0.62; }
+/* on touch the hover state sticks after the tap and leaves CLOSE dimmed */
+@media (hover: none) { .nav__dive:hover { opacity: 1; } }
+.nav__dive-icon {
+  display: inline-block;
+  font-size: 1.15em;
+  line-height: 0;
+  transition: transform var(--dur-base) var(--ease-in-out);
+}
+/* the plus turns into a cross */
+.nav__dive[aria-expanded='true'] .nav__dive-icon { transform: rotate(45deg); }
+
+@media (max-width: 520px) {
+  .menu__panel { width: min(88vw, 360px); }
+}

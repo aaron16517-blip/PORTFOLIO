@@ -1,0 +1,1046 @@
+/* ============================================================
+   OBSIDIAN — premium monochrome fashion
+   Step 1: foundation, header, hero
+   ============================================================ */
+
+/* ---------- tokens ---------- */
+:root{
+  /* the wall */
+  --wall-base:#8f8d88;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)' opacity='0.62'/%3E%3C/svg%3E");
+  --speckle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.045' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23s)' opacity='0.20'/%3E%3C/svg%3E");
+  --blotch:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1600'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0022' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='1600' height='1600' filter='url(%23b)' opacity='0.38'/%3E%3C/svg%3E");
+
+  /* ink */
+  --ink:#0e0e0e;
+  --ink-70:rgba(14,14,14,.70);
+  --ink-50:rgba(14,14,14,.50);
+  --ink-32:rgba(14,14,14,.32);
+  --bone:#EDE9E1;
+  --accent:var(--bone);
+  --rule:rgba(14,14,14,.17);
+
+  /* metrics */
+  --container:1620px;
+  --pad:clamp(20px,3.4vw,60px);
+  --gut:clamp(10px,1.4vw,26px);
+
+  /* type */
+  --sans:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+  /* hero display face only — everything else stays on --sans */
+  --display:"Syne","Inter Tight","Helvetica Neue",Helvetica,sans-serif;
+  /* hero display size, shared so the model can be positioned off it */
+  /* sized so "— WITHOUT" always ends clear of the centred figure's hood:
+     measured limits are 6.70vw (binding at 815px) and 113px (at 1905px) */
+  --ds:clamp(34px,6.4vw,108px);
+  --micro:11px;
+  --micro-ls:.14em;
+}
+
+/* ---------- reset ---------- */
+*,*::before,*::after{box-sizing:border-box}
+/* no scroll-behavior:smooth — Lenis owns the page scroll (see motion.js) */
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--wall-base);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,p,figure{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--ink);color:var(--bone)}
+/* keyboard focus was falling back to the UA default, which is invisible on
+   the ink-filled pills. offset puts the ring on the wall, so it reads on
+   every surface the site uses. */
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* ---------- the wall ---------- */
+.wallpaper{
+  background-color:var(--wall-base);
+  background-image:
+    radial-gradient(112% 74% at 50% -10%, rgba(255,255,255,.24), rgba(255,255,255,0) 56%),
+    radial-gradient(135% 98% at 50% 116%, rgba(0,0,0,.46),       rgba(0,0,0,0) 62%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0) 0 372px, rgba(0,0,0,.05) 372px 374px),
+    var(--grain),
+    var(--speckle),
+    var(--blotch);
+  background-size:100% 100%,100% 100%,100% 100%,200px 200px,600px 600px,1600px 1600px;
+  background-position:center,center,center,center,center,center;
+  background-blend-mode:normal,normal,normal,overlay,soft-light,soft-light;
+  background-attachment:fixed,fixed,fixed,fixed,fixed,fixed;
+}
+.wall{
+  position:fixed;inset:0;z-index:-2;pointer-events:none;
+  /* this element is already position:fixed, so attachment:fixed buys nothing
+     visually but forces a full-viewport repaint of six blended layers on
+     every scroll frame — measured 48.7ms worst frame vs 6.3ms with scroll.
+     .badge__patch still needs `fixed`; it is small and must register here. */
+  background-attachment:scroll,scroll,scroll,scroll,scroll,scroll;
+}
+
+/* once wall.js has flattened the six layers into one bitmap, the wall and
+   the badge cut-out both read that single texture — no blend modes, no
+   per-frame recompositing. they share it so they stay in register. */
+.wall-baked .wall{
+  background-image:var(--wall-baked);
+  background-size:cover;background-position:center;
+  background-blend-mode:normal;
+}
+.wall-baked .badge__patch{
+  background-image:var(--wall-baked);
+  background-size:cover;background-position:center;
+  background-blend-mode:normal;
+  background-attachment:fixed;
+}
+
+/* ---------- plate cut-outs ----------
+   One sits under each hero plate, filled with wall colour and masked to that
+   plate's own silhouette by plates.js. It is what lets the seam pass BEHIND
+   the figure and the rocks: multiply cannot occlude anything, so something
+   opaque and rock-shaped has to do it for it. See plates.js.
+
+   Doubled selector so these beat .rock/.model, which are declared later and
+   would otherwise win on source order at equal specificity. */
+.occ.occ{
+  /* negative, like the seam, so it stays clear of the headline: a positioned
+     element at z-index 0 would paint over static in-flow text. This lands
+     above the seam (both negative, later in the document) and below the
+     plates, which is the whole sandwich. */
+  z-index:-1;
+  /* Flat wall colour, deliberately, not the baked wall bitmap. These are
+     only ever seen THROUGH the plate that multiplies on top of them, where
+     the rock's own texture swamps the wall's — an A/B of the two was
+     indistinguishable. The bitmap version needed background-attachment:fixed
+     to stay in register, and a fixed background on an element the dolly
+     transforms every frame is the exact pattern that cost the wall 48.7ms a
+     frame. Not worth paying twice for something nobody can see. */
+  background-color:var(--wall-base);
+  background-image:none;
+  /* the plate's own treatment belongs to the plate, not to its shadow */
+  filter:none;
+  mix-blend-mode:normal;
+  mask-repeat:no-repeat;
+  -webkit-mask-repeat:no-repeat;
+  pointer-events:none;
+  /* hidden until it has a silhouette — an unmasked cut-out is a rectangle,
+     and a rectangle would slice the seam clean through */
+  visibility:hidden;
+}
+.occ.occ.is-ready{visibility:visible}
+
+/* dashed column rules, like the reference */
+.rules{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  max-width:var(--container);margin-inline:auto;padding-inline:var(--pad);
+  display:grid;grid-template-columns:repeat(4,1fr);
+}
+.rules i{
+  border-left:1px dashed rgba(14,14,14,.10);
+  transform:translateX(-.5px);
+}
+.rules i:first-child{border-left-color:rgba(14,14,14,.07)}
+
+/* ---------- the seam ----------
+   One line threaded down the entire page, behind everything, drawn by scroll.
+   Two strokes share one `d`: a wide soft band that reads as a fold catching
+   the light off the wall, and a hairline on its centre that reads as the
+   stitch. Both are flat fills — no gradient, no filter, no blend mode — so
+   the per-frame repaint is a single path raster over the visible tiles only.
+   Geometry (viewBox, width, height, d) is written by seam.js. */
+.seam{
+  position:absolute;top:0;left:0;
+  z-index:-1;
+  pointer-events:none;
+  /* clipped, not visible: an overflowing stroke on an absolutely positioned
+     element extends the document, which would grow the page every time the
+     seam is rebuilt from the page height */
+  overflow:hidden;
+}
+.seam path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.seam__band{
+  stroke:rgba(237,233,225,.16);
+  stroke-width:var(--seam-band,86px);
+}
+.seam__line{
+  stroke:rgba(14,14,14,.26);
+  stroke-width:1.25px;
+}
+/* The leading tip: a pin on the pattern, in the same technical register as
+   the bracket labels and the dashed column rules. It gives the eye one moving
+   object to track, which is what makes the line read as being DRAWN rather
+   than simply appearing. */
+.seam__pin{opacity:0}
+.seam__ring{fill:none;stroke:var(--ink-32);stroke-width:1}
+.seam__dot{fill:var(--ink)}
+/* the tick. one ring pushed out from the pin each time the thread stitches a
+   piece of content into place, so the cause of the reveal is visible rather
+   than just felt. driven by the Web Animations API from seam.js: restarting a
+   CSS animation needs a forced reflow, and 45 forced reflows down a scroll is
+   exactly the kind of thing this page has been fighting all along. */
+.seam__ripple{fill:none;stroke:var(--ink-32);stroke-width:1;opacity:0}
+
+/* ---------- layout ---------- */
+.container{
+  max-width:var(--container);
+  margin-inline:auto;
+  padding-inline:var(--pad);
+}
+
+/* ---------- micro type ---------- */
+.micro{
+  font-size:var(--micro);
+  letter-spacing:var(--micro-ls);
+  text-transform:uppercase;
+  font-weight:500;
+  color:var(--ink-70);
+  line-height:1.4;
+}
+.micro--dim{color:var(--ink-50)}
+
+/* ---------- header ---------- */
+.header{
+  position:relative;z-index:20;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:start;
+  gap:24px;
+  padding-top:clamp(22px,3vh,34px);
+  padding-bottom:clamp(18px,2.4vh,28px);
+}
+.header__l{display:flex;flex-direction:column;gap:5px}
+.header__l a{transition:color .3s}
+.header__l a:hover{color:var(--ink)}
+
+.wordmark{
+  font-size:clamp(15px,1.15vw,18px);
+  font-weight:600;
+  letter-spacing:.30em;
+  text-transform:uppercase;
+  text-indent:.30em;
+  white-space:nowrap;
+}
+
+.header__r{display:flex;align-items:center;justify-content:flex-end;gap:clamp(16px,1.8vw,30px)}
+.nav{display:flex;gap:clamp(16px,1.8vw,30px)}
+.nav a{position:relative;padding-bottom:3px}
+.nav a::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--ink);transform:scaleX(0);transform-origin:right;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.nav a:hover::after{transform:scaleX(1);transform-origin:left}
+
+.bag{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--rule);border-radius:999px;
+  padding:7px 14px;
+  transition:border-color .35s,background .35s;
+}
+.bag:hover{border-color:var(--ink);background:rgba(237,233,225,.16)}
+.bag span{font-size:var(--micro);letter-spacing:var(--micro-ls);text-transform:uppercase}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding-bottom:clamp(26px,5vh,64px)}
+.hero__grid{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  column-gap:var(--gut);
+  /* 1 label row · 2 headline · 3 headline · 4 breathing room · 5 meta */
+  grid-template-rows:auto auto auto 1fr auto;
+  min-height:calc(100svh - 150px);
+}
+
+/* display type — the hero only. Syne, set in caps: uncommon on the web, and
+   its flat-sided curves and wide caps read fashion rather than corporate.
+   caps are wider and taller than lowercase, so the size comes down and the
+   tracking loosens off the -.048em that suited the grotesque lowercase. */
+.display{
+  font-family:var(--display);
+  text-transform:uppercase;
+  font-weight:700;
+  font-size:var(--ds);
+  line-height:.92;
+  letter-spacing:-.012em;
+  white-space:nowrap;
+  /* keep a nowrap line from stretching its 1fr track */
+  min-width:0;
+}
+/* the right-hand lines get a wide track: a nowrap line that outgrows its box
+   overflows to the RIGHT even when right-aligned, so give it room to sit in */
+.d1{grid-column:1/7;grid-row:2;z-index:4;position:relative}
+.d2{grid-column:5/13;grid-row:2;text-align:right;z-index:1;position:relative}
+.d3{grid-column:5/13;grid-row:3;text-align:right;z-index:1;position:relative;margin-top:.04em}
+
+/* an em-dash at display size is enormous and crowds the figure. scale it
+   down, then lift it onto the optical centre of the CAPS — vertical-align
+   on an inline-block resolves against its OWN font-size, hence the large em */
+.dash{
+  display:inline-block;
+  font-size:.42em;
+  vertical-align:.55em;
+  margin-right:.5em;
+}
+
+/* model — a figure suspended on the wall; does not drive the grid height */
+.model{
+  position:absolute;
+  left:50%;
+  top:50%;
+  /* centring lives on the standalone `translate` property, NOT on transform.
+     translate/rotate/scale compose before transform in the transform chain,
+     so this is identical to translate(-50%,-45%) but cannot be clobbered by
+     anything animating transform. three separate bugs came from those two
+     jobs sharing one property: the .rv reveal wiping it, .rv's transition
+     smearing the scrub, and GSAP folding it in and doubling the -45%. */
+  translate:-50% -45%;
+  z-index:3;
+  overflow:hidden;
+  height:min(86svh,820px);
+  /* cropped to the figure's own bounding box plus a 46px margin —
+     source 246,168 442x902 of the 927x1152 plate. that window keeps the
+     figure and the ten whole rocks around it, and leaves out the corner
+     boulders, which run off the plate's frame and cannot be completed. */
+  aspect-ratio:442/902;
+  /* the plate has a white ground, not transparency. multiplying it against
+     the wall dissolves that ground away and leaves only the figure and the
+     rocks — blend must sit HERE, not on the img: the transform above makes
+     this element a stacking context, which would isolate a blend inside it. */
+  mix-blend-mode:multiply;
+}
+/* the reveal is now a plain transform — no centring to preserve */
+.model.rv{transform:translateY(22px)}
+.model.rv.in{transform:none}
+/* lift the near-white ground until it clips to pure white — multiplied, pure
+   white leaves the wall untouched, so no plate edge shows. no drop-shadow:
+   the plate is opaque, so a shadow would trace a rectangle around it. */
+/* object-fit can only crop one axis, so the plate is laid out by hand.
+   all four numbers are ratios of the 442x902 window, so it stays responsive:
+   width 927/442, left -246/442, top -168/902. */
+.model img{
+  position:absolute;z-index:1;
+  width:209.73%;height:auto;max-width:none;
+  left:-55.66%;top:-18.63%;
+  filter:brightness(1.45) contrast(1.02);
+}
+
+/* the four clipped fragments, blanked to white */
+.mpatch{position:absolute;z-index:2;background:#fff}
+.mpatch--1{left:0;top:1.6%;width:9.95%;height:7.1%}
+.mpatch--2{left:0;top:47.6%;width:2.49%;height:38.4%}
+/* no vertical padding here: the figure's bounding box overlaps this column,
+   though its pixels do not reach into the rect itself */
+.mpatch--3{right:0;top:50.11%;width:11.54%;height:9.2%}
+.mpatch--4{right:0;top:70.3%;width:7.01%;height:30%}
+
+/* ---------- rocks ----------
+   the rocks are baked into the same raster as the figure, so they can't be
+   scaled on their own. instead: crop WHOLE rocks out of the plate — bounding
+   boxes measured off the pixels, plus a margin of the plate's white ground —
+   blow each one up, and scatter them across the hero.
+
+   the margin is why none of these needs a mask: white multiplied against the
+   wall is invisible, so the crop box vanishes and the rock reads complete.
+   the plate's own corner boulders run off its frame and CANNOT be completed,
+   which is why the plate is cropped past them and these stand in.
+
+   --iw is the width the whole plate would be at this rock's scale; every
+   offset is a ratio of it, so one number drives crop and size together.
+   --k reads off whichever axis is tighter: the hero is height-driven, so a
+   width-only value lets these outgrow the section on a wide, short screen.
+
+   no wrapper element: a positioned wrapper with a z-index would form a
+   stacking context and isolate these blends away from the wall. */
+.rock{
+  --k:min(100vw,120svh);
+  position:absolute;
+  z-index:2;
+  pointer-events:none;
+  background-image:url("assets/models/model-01.png");
+  background-repeat:no-repeat;
+  background-size:var(--iw) auto;
+  filter:brightness(1.45) contrast(1.02);
+  mix-blend-mode:multiply;
+}
+
+/* a — the tall one, source 696,146 */
+.rock--a{
+  --iw:calc(var(--k)*2.30);
+  width:calc(var(--iw)*.12082);height:calc(var(--iw)*.16181);
+  background-position:calc(var(--iw)*-.75081) calc(var(--iw)*-.15750);
+  left:-5%;top:38%;
+}
+/* b — the broad one, source 84,352 */
+.rock--b{
+  --iw:calc(var(--k)*2.20);
+  width:calc(var(--iw)*.12513);height:calc(var(--iw)*.13160);
+  background-position:calc(var(--iw)*-.09062) calc(var(--iw)*-.37972);
+  right:-4%;top:44%;
+}
+/* c — medium, source 206,176 */
+.rock--c{
+  --iw:calc(var(--k)*1.90);
+  width:calc(var(--iw)*.10140);height:calc(var(--iw)*.08414);
+  background-position:calc(var(--iw)*-.22222) calc(var(--iw)*-.18986);
+  left:28%;top:6%;
+}
+/* d — medium, source 171,543 */
+.rock--d{
+  --iw:calc(var(--k)*1.70);
+  width:calc(var(--iw)*.09062);height:calc(var(--iw)*.07335);
+  background-position:calc(var(--iw)*-.18446) calc(var(--iw)*-.58576);
+  right:16%;top:64%;
+}
+/* e — small, source 605,19 */
+.rock--e{
+  --iw:calc(var(--k)*1.32);
+  width:calc(var(--iw)*.07551);height:calc(var(--iw)*.08198);
+  background-position:calc(var(--iw)*-.65264) calc(var(--iw)*-.02050);
+  left:30%;top:70%;
+}
+/* f — small, source 251,715 */
+.rock--f{
+  --iw:calc(var(--k)*1.12);
+  width:calc(var(--iw)*.07551);height:calc(var(--iw)*.07120);
+  background-position:calc(var(--iw)*-.27077) calc(var(--iw)*-.77131);
+  /* anchored to the open row, not a fixed % of the hero. the headline caps at
+     190px while the hero keeps growing, so a percentage top drifts up into the
+     type on a tall screen. an abspos grid child takes its grid area as the
+     containing block, so this always lands below the headline rows. */
+  grid-column:9/12;grid-row:4;
+  left:0;top:0;
+}
+
+
+/* the arrow badge, floating on the wall to the right of the figure */
+.badge{
+  position:absolute;right:0;top:44%;
+  z-index:5;
+  width:106px;height:106px;
+  display:grid;place-items:center;
+  padding:11px;
+}
+.badge.rv{transform:translateY(22px)}
+.badge.rv.in{transform:none}
+.badge__patch{position:absolute;inset:0;border-radius:26px}
+.badge__btn{
+  position:relative;
+  width:100%;height:100%;
+  display:grid;place-items:center;
+  background:var(--bone);
+  border-radius:16px;
+  transition:transform .5s cubic-bezier(.22,1,.36,1);
+}
+.badge__btn svg{width:26px;height:26px;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.badge:hover .badge__btn{transform:scale(1.05)}
+.badge:hover .badge__btn svg{transform:translate(3px,-3px)}
+.badge__cap{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:-14px;
+  white-space:nowrap;
+}
+
+/* left meta block */
+.swatches{
+  grid-column:2/5;grid-row:3;align-self:start;z-index:4;
+  display:flex;align-items:center;padding-top:clamp(12px,2.4vh,30px);
+}
+.swatch{
+  width:46px;height:46px;border-radius:999px;
+  border:2px solid rgba(237,233,225,.85);
+  margin-left:-13px;background-size:cover;background-position:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.14);
+}
+.swatch:first-child{margin-left:0}
+.swatch--1{background-image:linear-gradient(140deg,#2a2a30,#0c0c0f)}
+.swatch--2{background-image:linear-gradient(140deg,#55534f,#232220)}
+.swatch--3{background-image:linear-gradient(140deg,#e4e0d7,#a9a49a)}
+.swatch--more{
+  background:var(--ink);color:var(--bone);
+  display:grid;place-items:center;font-size:15px;
+}
+
+.hero__note{grid-column:2/6;grid-row:5;align-self:end;max-width:34ch}
+.hero__note p{
+  font-size:clamp(13px,.92vw,14.5px);
+  line-height:1.62;
+  color:var(--ink-70);
+}
+/* sits at the top of the open row, just under the swatches */
+.hero__est{grid-column:1/2;grid-row:4;align-self:start;z-index:4}
+
+/* right meta */
+.hero__scroll{grid-column:10/13;grid-row:1;justify-self:end;z-index:4}
+.hero__stat{grid-column:10/13;grid-row:5;align-self:end;justify-self:end;text-align:right;z-index:4}
+.hero__stat .n{
+  display:block;
+  font-size:clamp(28px,2.7vw,44px);
+  font-weight:500;letter-spacing:-.03em;line-height:1;
+  margin-bottom:8px;
+}
+
+/* house mark - a six-point asterisk, drawn not typed */
+.mark{display:block;width:17px;height:17px;margin-left:auto}
+.hero__stat .mark{margin-bottom:14px}
+.strip__set .mark{width:9px;height:9px;opacity:.42;margin:0}
+
+/* ---------- marquee strip ---------- */
+.strip{
+  position:relative;
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  overflow:hidden;
+  padding:clamp(14px,1.7vh,20px) 0;
+}
+.strip__track{display:flex;width:max-content;animation:slide 46s linear infinite}
+.strip:hover .strip__track{animation-play-state:paused}
+.strip__set{display:flex;align-items:center;flex:none}
+.strip__set span{
+  padding:0 clamp(22px,3vw,48px);
+  font-size:clamp(12px,.95vw,14px);
+  letter-spacing:.20em;text-transform:uppercase;color:var(--ink-70);
+  white-space:nowrap;
+}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* ============================================================
+   SHARED CARD LANGUAGE
+   rounded on three corners, one 45 degree chamfer bottom-right.
+   every card on the site uses this shape.
+   ============================================================ */
+.chamfer{
+  --ch:clamp(34px,4.4vw,68px);
+  border-radius:clamp(14px,1.5vw,24px);
+  overflow:hidden;
+  clip-path:polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--ch)),
+    calc(100% - var(--ch)) 100%,
+    0 100%
+  );
+}
+
+/* an image slot: shows a sized placeholder until the real file lands */
+.media{position:relative;background:rgba(255,255,255,.06)}
+/* The seam runs behind these. .media img is object-fit:cover, so a real
+   photograph fills the card and occludes the line on its own — but while a
+   slot is empty the card is only a 6%-white pane and the seam reads straight
+   through it, which is not "behind the card", it is "behind the wall". This
+   puts the wall back underneath the pane, in the same register as the fixed
+   wall behind, so an empty slot occludes exactly the way the photo will.
+
+   Scoped to .is-empty so it costs nothing the moment the file exists, and to
+   .wall-baked so the card never flashes a flat patch against a textured wall
+   while wall.js is still baking. */
+.wall-baked .media.is-empty::before{
+  content:'';
+  position:absolute;inset:0;
+  /* the card's own 6% white, restated over the wall, so the surface reads
+     exactly as it did before this rule existed */
+  background-image:
+    linear-gradient(rgba(255,255,255,.06),rgba(255,255,255,.06)),
+    var(--wall-baked);
+  background-size:auto,cover;
+  background-position:center,center;
+  background-attachment:scroll,fixed;
+}
+.media img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 1.2s cubic-bezier(.22,1,.36,1);
+}
+.ph{
+  display:none;
+  position:absolute;inset:0;
+  align-items:center;justify-content:center;text-align:center;
+  border:1px dashed rgba(14,14,14,.28);
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.10));
+}
+[data-slot].is-empty .ph{display:flex}
+[data-slot].is-empty img{display:none}
+.ph p,.ph > span{max-width:260px;padding:14px}
+.ph b{display:block;font-size:13px;letter-spacing:.16em;margin-bottom:10px}
+/* the hero plate has no frame, so its placeholder wears the card shape */
+.model .ph{
+  border-radius:26px;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 74px),calc(100% - 74px) 100%,0 100%);
+}
+
+.cap{display:flex;gap:clamp(14px,2vw,30px);margin-top:16px}
+
+/* ---------- section rhythm ---------- */
+.section{padding-block:clamp(84px,13vh,166px)}
+.section__head{margin-bottom:clamp(38px,6vh,72px)}
+.display--md{
+  font-weight:500;
+  font-size:clamp(40px,6.6vw,116px);
+  line-height:.88;
+  letter-spacing:-.042em;
+  margin-top:clamp(14px,2.2vh,28px);
+}
+.display--md .c{color:var(--ink-50)}
+
+/* ---------- 02 - statement ---------- */
+.statement__body{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  column-gap:var(--gut);
+  align-items:start;
+}
+.statement__aside{
+  grid-column:1/4;
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:clamp(24px,4vh,44px);
+  padding-top:clamp(8px,1.8vh,24px);
+}
+.dots{display:flex;gap:7px}
+.dots i{width:6px;height:6px;border-radius:999px;background:var(--ink-32)}
+.dots i.on{background:var(--ink)}
+
+.statement__stat{margin:0}
+.bigstat{
+  display:block;
+  font-size:clamp(30px,3.6vw,58px);
+  font-weight:500;letter-spacing:-.03em;line-height:1;
+  margin-bottom:9px;
+}
+.statement__stat .micro{display:block}
+.statement__aside .mark{margin:0;color:var(--ink-70)}
+
+.pill{
+  display:inline-flex;align-items:center;gap:12px;
+  border:1px solid var(--rule);border-radius:999px;
+  padding:12px 20px;
+  font-size:var(--micro);letter-spacing:var(--micro-ls);
+  text-transform:uppercase;font-weight:500;
+  transition:background .45s,color .45s,border-color .45s;
+}
+.pill svg{width:15px;height:15px;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.pill:hover{background:var(--ink);color:var(--bone);border-color:var(--ink)}
+.pill:hover svg{transform:translateX(4px)}
+
+.feature{position:relative;grid-column:4/10}
+.feature .media{aspect-ratio:16/11}
+.feature:hover .media img{transform:scale(1.035)}
+
+/* bleeds off the right edge, like the reference */
+.feature--peek{grid-column:10/13;width:calc(100% + 9vw)}
+.feature--peek .media{aspect-ratio:3/4}
+
+/* badge notched into a card corner - the patch is the real wall showing
+   through, so it reads as cut out of the image, not stuck on top */
+.badge--inset{top:0;right:0}
+
+/* ---------- 03 - index ---------- */
+.index__body{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  column-gap:var(--gut);
+  align-items:start;
+}
+.index__list{
+  grid-column:1/8;
+  position:relative;
+  list-style:none;margin:0;padding:0;
+}
+/* the list's top edge is the first line to draw, so it is a wipeable
+   element rather than a border like the rest of the page uses */
+.index__list::before{
+  content:'';
+  position:absolute;left:0;right:0;top:0;height:1px;
+  background:var(--rule);
+  transform:scaleX(var(--rule-t,1));
+  transform-origin:left;
+}
+/* the rule is a scaleX-able element rather than a border, so it can wipe in
+   from the left under each name. --rule-t is driven per row by motion.js. */
+.row{position:relative}
+.row::after{
+  content:'';
+  position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--rule);
+  transform:scaleX(var(--rule-t,1));
+  transform-origin:left;
+}
+/* the name rises out from behind its own rule. clipped with clip-path rather
+   than overflow:hidden — overflow would turn this into a block formatting
+   context, and a BFC's baseline is its bottom margin edge, which drops the
+   whole row out of alignment with the [01] and (05) labels beside it.
+   clip-path clips at paint time and leaves layout exactly as it was. */
+.row__mask{
+  display:block;
+  /* the clip reaches down to the rule itself, so the name looks like it is
+     rising out from behind the line rather than out of thin air above it */
+  clip-path:inset(-60% 0 calc(-1 * var(--row-pad)) 0);
+}
+.row a{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  align-items:baseline;
+  gap:clamp(14px,2vw,30px);
+  --row-pad:clamp(16px,2.5vh,32px);
+  padding-block:var(--row-pad);
+  transition:padding-left .55s cubic-bezier(.22,1,.36,1);
+}
+.row a:hover,.row a:focus-visible{padding-left:clamp(10px,1.4vw,24px)}
+.row__n{transform:translateY(-.55em)}
+.row__name{
+  display:block;
+  will-change:transform;
+  font-size:clamp(28px,4.4vw,74px);
+  font-weight:400;
+  letter-spacing:-.038em;
+  line-height:1;
+  color:var(--ink-50);
+  transition:color .5s;
+}
+.row a:hover .row__name,.row a:focus-visible .row__name{color:var(--ink)}
+.row__c{transform:translateY(-.55em)}
+.row__arrow{
+  width:19px;height:19px;
+  align-self:center;
+  opacity:0;transform:translate(-6px,6px);
+  transition:opacity .45s,transform .55s cubic-bezier(.22,1,.36,1);
+}
+.row a:hover .row__arrow,.row a:focus-visible .row__arrow{opacity:1;transform:none}
+
+/* the stage swaps to whichever row is under the cursor */
+.index__stage{
+  grid-column:9/13;
+  position:relative;
+  aspect-ratio:3/4;
+  margin-top:clamp(0px,1vh,14px);
+}
+.stage__item{
+  position:absolute;inset:0;
+  opacity:0;transform:scale(1.03);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1);
+}
+.stage__item.is-on{opacity:1;transform:none}
+
+/* ---------- 04 - collection ---------- */
+.cards__row{
+  list-style:none;margin:0;padding:0 0 4px;
+  display:flex;
+  gap:var(--gut);
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.cards__row::-webkit-scrollbar{display:none}
+
+.card{
+  flex:0 0 calc((100% - 3*var(--gut))/4);
+  scroll-snap-align:start;
+}
+.card__media{display:block;aspect-ratio:4/5}
+.card:hover .card__media img{transform:scale(1.04)}
+.card .cap span:first-child{transition:color .35s}
+.card:hover .cap span:first-child{color:var(--ink)}
+.card .cap{color:var(--ink-70)}
+
+.cards__foot{
+  display:flex;align-items:center;
+  gap:clamp(20px,4vw,56px);
+  margin-top:clamp(26px,4vh,46px);
+}
+.cards__bar{position:relative;flex:1;height:1px;background:var(--rule)}
+.cards__bar i{
+  position:absolute;top:-1px;left:0;height:3px;width:25%;
+  background:var(--ink);
+  transition:left .35s cubic-bezier(.22,1,.36,1),width .35s;
+}
+.cards__next{
+  display:inline-flex;align-items:center;gap:12px;
+  border:1px solid var(--rule);border-radius:999px;
+  padding:11px 20px;
+  letter-spacing:var(--micro-ls);text-transform:uppercase;font-weight:500;
+  color:var(--ink-70);
+  transition:background .45s,color .45s,border-color .45s;
+}
+.cards__next svg{width:15px;height:15px;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.cards__next:hover{background:var(--ink);color:var(--bone);border-color:var(--ink)}
+.cards__next:hover svg{transform:translateX(4px)}
+.cards__next.is-wrap svg{transform:scaleX(-1)}
+.cards__next.is-wrap:hover svg{transform:scaleX(-1) translateX(4px)}
+
+/* ---------- 05 - construction ----------
+   pinned by motion.js, so it has to fill the viewport on its own */
+.construct{
+  position:relative;
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+  padding-block:clamp(32px,4.5vh,72px);
+  overflow:hidden;
+}
+.construct__inner{width:100%;will-change:transform,opacity}
+.construct__head{margin-bottom:clamp(20px,3.5vh,50px)}
+/* SplitText wraps each word; keep them on one line and animatable */
+.construct__head .word{display:inline-block;will-change:opacity}
+
+.construct__body{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:clamp(22px,3.4vh,42px);
+}
+
+.cstack{
+  width:100%;
+  /* the group pull-back is folded into each card transform (see motion.js);
+     this origin is the point that maths is measured from */
+  transform-origin:50% 42%;
+  /* capped so three cards never stretch to absurd widths, but left-aligned
+     with the section header rather than centred under it */
+  max-width:1120px;
+  list-style:none;margin:0;padding:0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--gut);
+}
+
+.ccard{
+  /* a tighter chamfer than the media cards: the corner would otherwise
+     eat into the padding where the text sits */
+  --ch:clamp(20px,2.2vw,38px);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  height:min(58svh,500px);
+  padding:clamp(16px,1.5vw,26px);
+  background:rgba(237,233,225,.72);
+  box-shadow:inset 0 0 0 1px rgba(14,14,14,.06);
+  /* transform+opacity only — no filter is animated any more */
+  will-change:transform,opacity;
+}
+/* the inverted one, like the middle card in the reference */
+.ccard--dark{
+  background:var(--ink);
+  color:var(--bone);
+  box-shadow:none;
+}
+.ccard--dark .dots i{background:rgba(237,233,225,.34)}
+.ccard--dark .dots i.on{background:var(--bone)}
+.ccard--dark .ccard__d{color:rgba(237,233,225,.72)}
+
+/* staggered heights, as in the reference */
+.ccard:nth-child(2){margin-top:clamp(22px,4vh,54px)}
+.ccard:nth-child(3){margin-top:clamp(8px,1.6vh,22px)}
+
+.ccard__t{
+  font-size:clamp(19px,1.7vw,29px);
+  font-weight:500;letter-spacing:-.03em;line-height:1.05;
+  margin:clamp(14px,2vh,22px) 0 clamp(9px,1.2vh,14px);
+}
+.ccard__d{
+  font-size:clamp(12px,.85vw,14px);
+  line-height:1.55;
+  color:var(--ink-70);
+}
+/* the card is much taller than its copy, so the index becomes a large
+   ghosted numeral anchored to the floor — it fills the void deliberately
+   instead of leaving it empty. decorative, hence aria-hidden in the markup. */
+.ccard__n{
+  margin-top:auto;
+  font-size:clamp(46px,4.6vw,84px);
+  font-weight:500;
+  line-height:.82;
+  letter-spacing:-.045em;
+  color:rgba(14,14,14,.13);
+  user-select:none;
+}
+.ccard--dark .ccard__n{color:rgba(237,233,225,.17)}
+
+/* the action belongs to the section, not to the third card */
+.construct__cta{
+  align-self:flex-start;
+  white-space:nowrap;
+  background:var(--ink);color:var(--bone);border-color:var(--ink);
+}
+.construct__cta:hover{background:transparent;color:var(--ink);border-color:var(--rule)}
+
+/* ---------- 06 - manifesto ---------- */
+.manifesto{text-align:center}
+.manifesto__line{
+  max-width:19ch;
+  margin:clamp(26px,4vh,44px) auto clamp(34px,5vh,58px);
+  font-size:clamp(26px,4.1vw,68px);
+  font-weight:400;
+  line-height:1.16;
+  letter-spacing:-.032em;
+  text-wrap:balance;
+}
+/* small images set inline in the sentence, like the reference */
+.chip{
+  display:inline-block;
+  width:1.42em;height:.86em;
+  vertical-align:-.06em;
+  margin:0 .1em;
+  border-radius:.26em;
+  overflow:hidden;
+  background:rgba(255,255,255,.14);
+  box-shadow:inset 0 0 0 1px rgba(14,14,14,.14);
+}
+.nb{white-space:nowrap}
+.chip img{width:100%;height:100%;object-fit:cover}
+.chip .ph{border:0;background:none}
+
+.manifesto__foot{
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(20px,3vh,32px);
+}
+.manifesto__stockists{max-width:44ch}
+
+/* ---------- name marquee ---------- */
+.strip--name{border-bottom:0}
+.strip--name .strip__set span{
+  font-size:clamp(15px,1.5vw,22px);
+  letter-spacing:.30em;
+  font-weight:500;
+  color:var(--ink-70);
+}
+
+/* ---------- footer ---------- */
+.footer{padding-top:clamp(56px,8vh,96px);padding-bottom:clamp(24px,4vh,40px)}
+.footer__grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  column-gap:var(--gut);
+  row-gap:clamp(40px,6vh,64px);
+  align-items:start;
+}
+.footer__sign{grid-column:1/6}
+.footer__lead{
+  font-size:clamp(26px,2.9vw,46px);
+  font-weight:500;letter-spacing:-.036em;line-height:1.06;
+  margin-bottom:clamp(22px,3.4vh,34px);
+}
+
+.signup label{display:block;margin-bottom:12px}
+.signup__field{
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--rule);
+  padding-bottom:10px;
+  transition:border-color .4s;
+  max-width:360px;
+}
+.signup__field:focus-within{border-color:var(--ink)}
+.signup input{
+  flex:1;min-width:0;
+  border:0;background:none;
+  font:inherit;font-size:15px;color:var(--ink);
+  padding:2px 0;
+}
+.signup input::placeholder{color:var(--ink-32)}
+.signup input:focus{outline:none}
+.signup button{display:grid;place-items:center;padding:4px}
+.signup button svg{width:18px;height:18px;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.signup button:hover svg{transform:translateX(4px)}
+.signup__msg{margin-top:12px;min-height:1.2em;color:var(--ink-70)}
+
+.footer__nav{
+  grid-column:7/13;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gut);
+}
+.footer__col{display:flex;flex-direction:column;gap:11px}
+.footer__col span{margin-bottom:5px}
+.footer__col a{
+  font-size:14px;color:var(--ink-70);
+  transition:color .3s,transform .45s cubic-bezier(.22,1,.36,1);
+}
+.footer__col a:hover{color:var(--ink);transform:translateX(3px)}
+
+/* the closing wordmark, sized to fill the measure */
+.footer__mark{
+  margin:clamp(52px,9vh,110px) 0 clamp(18px,2.6vh,30px);
+  width:max-content;
+  font-size:min(20vw,324px); /* pre-JS fallback; script.js fits it exactly */
+  font-weight:500;
+  letter-spacing:.02em;
+  margin-right:-.02em;
+  text-transform:uppercase;
+  line-height:.86;
+  color:var(--ink);
+  white-space:nowrap;
+  user-select:none;
+}
+
+.footer__legal{
+  display:flex;flex-wrap:wrap;gap:10px clamp(18px,3vw,44px);
+  justify-content:space-between;
+  border-top:1px solid var(--rule);
+  padding-top:clamp(16px,2.4vh,24px);
+}
+.footer__legal-links{display:flex;gap:clamp(14px,2vw,26px)}
+.footer__legal a{transition:color .3s}
+.footer__legal a:hover{color:var(--ink)}
+
+/* ---------- reveal ---------- */
+/* --rv-x is the sideways offset the thread deals each element from: seam.js
+   sets it, signed away from the line, so content is pushed off the seam and
+   settles back onto it. Unset it is 0 and this is the plain rise it always
+   was — which is what the plates, and every fallback path, still get. */
+.rv{opacity:0;transform:translate(var(--rv-x,0px),22px);transition:opacity 1s cubic-bezier(.22,1,.36,1),transform 1s cubic-bezier(.22,1,.36,1)}
+.rv.in{opacity:1;transform:none}
+.rv-1{transition-delay:.06s}.rv-2{transition-delay:.14s}.rv-3{transition-delay:.22s}
+.rv-4{transition-delay:.30s}.rv-5{transition-delay:.38s}.rv-6{transition-delay:.46s}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .card{flex-basis:calc((100% - 2*var(--gut))/3)}
+  .model{height:min(76svh,660px)}
+  .badge{width:88px;height:88px}
+}
+@media (max-width:820px){
+  .construct{min-height:auto;padding-block:clamp(58px,10vh,92px)}
+  .construct__body{display:block}
+  .cstack{grid-template-columns:1fr;gap:14px;margin-bottom:30px}
+  .ccard{height:auto;min-height:190px}
+  .ccard:nth-child(2),.ccard:nth-child(3){margin-top:0}
+  .footer__sign,.footer__nav{grid-column:1/13}
+  .footer__nav{grid-template-columns:repeat(2,1fr);row-gap:30px}
+  .manifesto__line{max-width:none}
+  .footer__mark{font-size:16.4vw}
+  .index__body{display:block}
+  .card{flex-basis:calc((100% - .35*var(--gut))/1.35)}
+  .cards__foot{gap:20px}
+  .index__stage{width:100%;max-width:420px;margin:0 0 34px;aspect-ratio:4/5}
+  .row__name{font-size:clamp(28px,9vw,44px)}
+  .statement__body{display:block}
+  .statement__aside{flex-direction:row;flex-wrap:wrap;align-items:center;gap:24px 28px;margin-bottom:32px;padding-top:0}
+  .feature,.feature--peek{width:100%}
+  .feature--peek{margin-top:36px}
+  .rules{grid-template-columns:repeat(2,1fr)}
+  .header{grid-template-columns:1fr auto;row-gap:16px}
+  .header__l{display:none}
+  .nav{display:none}
+  .hero__grid{display:block;min-height:auto;padding-top:6px}
+  .display{white-space:normal;font-size:clamp(34px,13vw,88px);line-height:.95}
+  .d2,.d3{text-align:left}
+  .model,.model.rv,.model.rv.in{position:relative;left:auto;top:auto;transform:none;translate:none;height:62svh;width:auto;max-width:none;margin:26px auto 34px;aspect-ratio:442/902}
+  .badge{position:static;margin:0 auto 30px;transform:none}
+  .badge--inset{position:absolute;top:0;right:0;margin:0}
+  /* the hero grid is display:block here, so rock--f's grid placement no
+     longer applies — give it explicit coordinates again */
+  .rock--c{top:17%}
+  .rock--f{left:auto;right:6%;top:26%}
+  .swatches{padding-top:20px}
+  .hero__scroll{display:none}
+  .hero__note{max-width:none;margin-top:22px}
+  .hero__stat{text-align:left;margin-top:26px}
+  .hero__est{margin-top:18px}
+}
+@media (hover:none){
+  .wallpaper{background-attachment:scroll,scroll,scroll,scroll,scroll,scroll}
+  /* the cut-out patch only lines up while the wall is fixed */
+  .badge__patch{display:none}
+}
+/* hosted build: the reduced-motion block is removed so motion always plays */

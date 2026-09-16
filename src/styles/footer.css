@@ -1,0 +1,151 @@
+/* ============================================================
+   FOOTER — Genesis Studios
+
+   Deliberately the short version: a mark, one row of links, a
+   rule, and the base line. The only flourish is the oversized
+   wordmark sunk into the background.
+   ============================================================ */
+.foot {
+  position: relative;
+  padding: clamp(3rem, 8vh, 5rem) var(--gutter) 0;
+  background: var(--bg);
+  border-top: 1px solid rgba(243, 244, 246, 0.07);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.foot__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.1rem, 3vh, 1.8rem);
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* ---------- the mark ---------- */
+.foot__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+}
+
+.foot__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  color: #0d0d0f;
+  background: var(--ink);
+}
+
+.foot__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+/* ---------- one row of links ---------- */
+.foot__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem clamp(1rem, 2.4vw, 2rem);
+}
+.foot__nav a {
+  font-size: clamp(0.74rem, 0.95vw, 0.88rem);
+  letter-spacing: 0.01em;
+  color: rgba(243, 244, 246, 0.62);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.foot__nav a:hover { color: var(--ink); }
+
+/* a dotted rule, as in the reference */
+.foot__rule {
+  width: 100%;
+  height: 1px;
+  margin-top: clamp(0.4rem, 1.4vh, 0.9rem);
+  background-image: linear-gradient(90deg, rgba(243, 244, 246, 0.24) 50%, transparent 0);
+  background-size: 6px 1px;
+  background-repeat: repeat-x;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* ---------- base line ---------- */
+.foot__base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.5rem;
+  width: 100%;
+  padding-bottom: clamp(1.5rem, 4vh, 2.4rem);
+}
+
+.foot__copy {
+  margin: 0;
+  font-size: clamp(0.68rem, 0.86vw, 0.78rem);
+  letter-spacing: 0.02em;
+  color: rgba(243, 244, 246, 0.42);
+}
+
+.foot__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem clamp(0.9rem, 1.8vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.foot__socials a {
+  font-size: clamp(0.66rem, 0.84vw, 0.76rem);
+  letter-spacing: 0.06em;
+  color: rgba(243, 244, 246, 0.5);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.foot__socials a:hover { color: var(--accent); }
+
+/* ---------- the sunk wordmark ----------
+   Sized off the viewport so it always spans the full width, and pulled down
+   past the bottom edge so it is cropped rather than floating. Sits behind
+   everything and takes no space in the flow. */
+.foot__watermark {
+  position: relative;
+  z-index: 0;
+  margin: clamp(-1rem, -2vh, 0rem) 0 0;
+  /* the descender is cropped by the section's own overflow */
+  margin-bottom: clamp(-3.5rem, -7vw, -1.5rem);
+
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 23vw;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+
+  /* opaque equivalent of rgba(243,244,246,.045) over the footer bg (#09090a) —
+     translucent fill double-paints where the tight-tracked glyphs overlap */
+  color: rgb(20, 20, 21);
+}
+
+@media (max-width: 620px) {
+  .foot__base {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  /* as large as fits inside the gutters — 26vw ran past the right edge */
+  .foot__watermark { font-size: 24vw; }
+}

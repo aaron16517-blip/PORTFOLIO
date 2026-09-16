@@ -1,0 +1,153 @@
+/* ============================================================
+   VISION — scroll-scrubbed: the image grows to fill the frame,
+   the big title hands off to a small label, the statement fades up
+   ============================================================ */
+.vision {
+  position: relative;
+  height: 280vh;           /* the scroll runway the scrub reads from */
+  background: var(--bg);
+}
+
+.vision__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 0 var(--gutter);
+}
+
+/* The frame clips at 100svh, so the marble — which is scaled up to fill it —
+   was being sliced flat along the bottom edge and read as a hard rule against
+   the section below. The elliptical mask on .vision__media only softens the
+   corners; it cannot help here, because at full scale the image covers the
+   whole frame. This carries the image the rest of the way down to the ground
+   colour so it dissolves instead of ending.
+
+   It sits above the media (z 0, later in paint order) and below the type
+   (z 1), and only covers the bottom third, so the centred statement is
+   untouched. */
+.vision__sticky::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 9, 10, 0) 0%,
+    rgba(9, 9, 10, 0.55) 46%,
+    rgba(9, 9, 10, 0.9) 78%,
+    var(--bg) 100%
+  );
+}
+
+/* ---------- the image ---------- */
+.vision__media {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  z-index: 0;
+  will-change: transform;
+  /* soft elliptical falloff so the corners melt into the black */
+  -webkit-mask-image: radial-gradient(ellipse 82% 86% at 50% 50%, #000 42%, rgba(0, 0, 0, 0.72) 72%, transparent 100%);
+  mask-image: radial-gradient(ellipse 82% 86% at 50% 50%, #000 42%, rgba(0, 0, 0, 0.72) 72%, transparent 100%);
+}
+.vision__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  filter: grayscale(0.5) contrast(1.12) brightness(0.46);
+  /* JS appends a blur() to this and tweens it to 0 as the card opens */
+  will-change: filter;
+}
+/* keeps the type readable wherever the marble is brightest */
+.vision__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(72% 58% at 50% 50%, rgba(6, 6, 7, 0.6) 0%, transparent 80%),
+    linear-gradient(180deg, rgba(6, 6, 7, 0.6) 0%, transparent 22%, transparent 68%, rgba(6, 6, 7, 0.75) 100%);
+}
+
+/* ---------- type ---------- */
+.vision__block,
+.vision__title {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  text-align: center;
+}
+
+/* the header and the statement sit together, centred in the frame */
+.vision__block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.1rem, 3.4vh, 2.4rem);
+  width: 100%;
+}
+
+.vision__label,
+.vision__copy {
+  margin: 0;
+  text-align: center;
+}
+
+.vision__label {
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: clamp(1.5rem, 3.6vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: 0.2em;
+  /* matches the trailing letter-space so the tracking stays optically centred */
+  text-indent: 0.2em;
+  color: rgba(243, 244, 246, 0.9);
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+}
+
+.vision__title {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 120, 'wght' 700;
+  font-size: clamp(2.4rem, 8vw, 7rem);
+  line-height: 1;
+  letter-spacing: -0.028em;
+  color: var(--ink);
+  text-shadow: 0 0 70px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.vision__copy {
+  max-width: 46ch;
+  font-size: clamp(0.82rem, 1.35vw, 1.22rem);
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.012em;
+  color: rgba(243, 244, 246, 0.94);
+  text-shadow: 0 2px 26px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@media (max-width: 860px) {
+  /* phones don't tween the blur (vision.js), so there is nothing to promote */
+  .vision__media img { will-change: auto; }
+}
+
+@media (max-width: 640px) {
+  .vision { height: 250vh; }
+  .vision__copy {
+    line-height: 1.8;
+    letter-spacing: 0.04em;
+  }
+}

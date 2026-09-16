@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OBSIDIAN — Form Without Noise</title>
+<meta name="description" content="OBSIDIAN. Garments cut, washed and finished in one palette. No prints, no seasons, no logos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- the concrete wall, fixed behind everything -->
+<div class="wall wallpaper" aria-hidden="true"></div>
+<div class="rules" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<!-- the seam. one continuous line threaded down the whole page behind the
+     content, drawn by scroll. the `d` is generated in seam.js from the real
+     page geometry, so it re-routes on resize rather than being hard-coded. -->
+<svg class="seam" aria-hidden="true" focusable="false">
+  <path class="seam__band"></path>
+  <path class="seam__line"></path>
+  <g class="seam__pin">
+    <circle class="seam__ring" r="9"></circle>
+    <circle class="seam__ripple" r="9"></circle>
+    <circle class="seam__dot" r="3.2"></circle>
+  </g>
+</svg>
+
+<header class="header container">
+  <div class="header__l micro">
+    <a href="mailto:atelier@obsidian.studio">atelier@obsidian.studio</a>
+    <a href="tel:+912240041190">(+91) 22 4004 1190</a>
+  </div>
+
+  <a class="wordmark" href="#">Obsidian</a>
+
+  <div class="header__r micro">
+    <nav class="nav">
+      <a href="#collection">Collection</a>
+      <a href="#atelier">Atelier</a>
+      <a href="#archive">Archive</a>
+    </nav>
+    <a class="bag" href="#"><span>Bag</span><span>(0)</span></a>
+  </div>
+</header>
+
+<main>
+  <section class="hero container">
+    <div class="hero__grid">
+
+      <h1 class="display d1 rv rv-1">form</h1>
+      <p class="display d2 rv rv-2"><span class="dash">&mdash;</span>without</p>
+      <p class="display d3 rv rv-3">noise</p>
+
+      <!-- whole rocks cropped out of the same plate, enlarged, thrown wide -->
+      <i class="rock rock--a rv rv-3" aria-hidden="true"></i>
+      <i class="rock rock--b rv rv-3" aria-hidden="true"></i>
+      <i class="rock rock--c rv rv-4" aria-hidden="true"></i>
+      <i class="rock rock--d rv rv-4" aria-hidden="true"></i>
+      <i class="rock rock--e rv rv-5" aria-hidden="true"></i>
+      <i class="rock rock--f rv rv-5" aria-hidden="true"></i>
+
+      <figure class="model rv rv-2" data-slot>
+        <img src="assets/models/model-01.png" alt="OBSIDIAN look 01">
+        <!-- blanks the four rock fragments the crop edge clips; pure white is
+             invisible once the plate is multiplied against the wall -->
+        <i class="mpatch mpatch--1" aria-hidden="true"></i>
+        <i class="mpatch mpatch--2" aria-hidden="true"></i>
+        <i class="mpatch mpatch--3" aria-hidden="true"></i>
+        <i class="mpatch mpatch--4" aria-hidden="true"></i>
+        <div class="ph micro">
+          <p><b>MODEL 01</b>drop your image at<br>assets/models/model-01.png<br><span class="micro--dim">927 &times; 1152</span></p>
+        </div>
+      </figure>
+
+      <a class="badge rv rv-4" href="#collection" aria-label="View the collection">
+        <span class="badge__patch wallpaper" aria-hidden="true"></span>
+        <span class="badge__btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square">
+            <path d="M7 17 17 7M8.5 7H17v8.5"/>
+          </svg>
+        </span>
+        <span class="badge__cap micro">[view]</span>
+      </a>
+
+      <div class="swatches rv rv-4">
+        <span class="swatch swatch--1"></span>
+        <span class="swatch swatch--2"></span>
+        <span class="swatch swatch--3"></span>
+        <span class="swatch swatch--more">+</span>
+      </div>
+
+      <div class="hero__est micro micro--dim rv rv-4">[est. 2015]</div>
+
+      <div class="hero__scroll micro micro--dim rv rv-3">[scroll]</div>
+
+      <div class="hero__note rv rv-5">
+        <p>Every piece is cut, washed and finished in a single tone. No prints, no
+        seasons, no logos — only construction, weight, and the way a garment
+        falls when it is left alone.</p>
+      </div>
+
+      <div class="hero__stat rv rv-5">
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">
+          <rect x="10.6" y="0" width="2.8" height="24" rx="1.4"/>
+          <rect x="10.6" y="0" width="2.8" height="24" rx="1.4" transform="rotate(60 12 12)"/>
+          <rect x="10.6" y="0" width="2.8" height="24" rx="1.4" transform="rotate(120 12 12)"/>
+        </g></svg>
+        <span class="micro micro--dim" style="display:block;margin-bottom:10px">// aw26</span>
+        <span class="n">12</span>
+        <span class="micro">pieces, one palette</span>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="strip" aria-hidden="true">
+    <div class="strip__track" id="strip-track">
+      <div class="strip__set">
+        <span>Japanese selvedge</span>
+        <span>Garment dyed</span>
+        <span>Made in small runs</span>
+        <span>Raw hem</span>
+        <span>Cotton &amp; wool only</span>
+        <span>Numbered</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section statement container" id="atelier">
+    <header class="section__head">
+      <span class="micro micro--dim rv rv-1">[02] &mdash; atelier</span>
+      <h2 class="display--md rv rv-2">quiet &mdash; by<br>construction <span class="c">&copy;26</span></h2>
+    </header>
+
+    <div class="statement__body">
+      <aside class="statement__aside">
+        <div class="dots rv rv-1" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+
+        <a class="pill rv rv-2" href="#collection">Learn more
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true">
+            <path d="M4 12h15M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+
+        <p class="statement__stat rv rv-3">
+          <span class="bigstat">(96%)</span>
+          <span class="micro micro--dim">natural fibre</span>
+        </p>
+
+        <svg class="mark rv rv-4" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor">
+          <rect x="10.6" y="0" width="2.8" height="24" rx="1.4"/>
+          <rect x="10.6" y="0" width="2.8" height="24" rx="1.4" transform="rotate(60 12 12)"/>
+          <rect x="10.6" y="0" width="2.8" height="24" rx="1.4" transform="rotate(120 12 12)"/>
+        </g></svg>
+      </aside>
+
+      <figure class="feature rv rv-3">
+        <div class="media chamfer" data-slot>
+          <img src="assets/looks/look-01.jpg" alt="Hooded shell, washed">
+          <div class="ph micro">
+            <p><b>LOOK 01</b>assets/looks/look-01.jpg<br><span class="micro--dim">landscape, 16:11</span></p>
+          </div>
+        </div>
+        <a class="badge badge--inset" href="#collection" aria-label="Open look 01">
+          <span class="badge__patch wallpaper" aria-hidden="true"></span>
+          <span class="badge__btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true">
+              <path d="M7 17 17 7M8.5 7H17v8.5"/>
+            </svg>
+          </span>
+        </a>
+        <figcaption class="cap micro">
+          <span>&copy;001 &mdash; hooded shell</span>
+          <span class="micro--dim">2026</span>
+        </figcaption>
+      </figure>
+
+      <figure class="feature feature--peek rv rv-4">
+        <div class="media chamfer" data-slot>
+          <img src="assets/looks/look-02.jpg" alt="Washed wide-leg denim">
+          <div class="ph micro">
+            <p><b>LOOK 02</b>assets/looks/look-02.jpg<br><span class="micro--dim">portrait, 3:4</span></p>
+          </div>
+        </div>
+        <figcaption class="cap micro">
+          <span>&copy;002 &mdash; washed denim</span>
+          <span class="micro--dim">2026</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section index container" id="index">
+    <header class="section__head">
+      <span class="micro micro--dim rv rv-1">[03] &mdash; index</span>
+      <h2 class="display--md rv rv-2">what we<br>keep &mdash; making</h2>
+    </header>
+
+    <div class="index__body">
+      <ol class="index__list" id="index-list">
+        <li class="row rv rv-1"><a href="#" data-i="0">
+          <span class="row__n micro micro--dim">[01]</span>
+          <span class="row__mask"><span class="row__name">Outerwear</span></span>
+          <span class="row__c micro micro--dim">(05)</span>
+          <svg class="row__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg>
+        </a></li>
+        <li class="row rv rv-2"><a href="#" data-i="1">
+          <span class="row__n micro micro--dim">[02]</span>
+          <span class="row__mask"><span class="row__name">Knitwear</span></span>
+          <span class="row__c micro micro--dim">(03)</span>
+          <svg class="row__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg>
+        </a></li>
+        <li class="row rv rv-3"><a href="#" data-i="2">
+          <span class="row__n micro micro--dim">[03]</span>
+          <span class="row__mask"><span class="row__name">Denim</span></span>
+          <span class="row__c micro micro--dim">(04)</span>
+          <svg class="row__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg>
+        </a></li>
+      </ol>
+
+      <div class="index__stage rv rv-3" id="index-stage" aria-hidden="true">
+        <div class="stage__item media chamfer is-on" data-slot>
+          <img src="assets/looks/outerwear.jpg" alt="">
+          <div class="ph micro"><p><b>OUTERWEAR</b>assets/looks/outerwear.jpg<br><span class="micro--dim">portrait, 3:4</span></p></div>
+        </div>
+        <div class="stage__item media chamfer" data-slot>
+          <img src="assets/looks/knitwear.jpg" alt="">
+          <div class="ph micro"><p><b>KNITWEAR</b>assets/looks/knitwear.jpg<br><span class="micro--dim">portrait, 3:4</span></p></div>
+        </div>
+        <div class="stage__item media chamfer" data-slot>
+          <img src="assets/looks/denim.jpg" alt="">
+          <div class="ph micro"><p><b>DENIM</b>assets/looks/denim.jpg<br><span class="micro--dim">portrait, 3:4</span></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cards container" id="collection">
+    <header class="section__head">
+      <span class="micro micro--dim rv rv-1">[04] &mdash; collection</span>
+      <h2 class="display--md rv rv-2">twelve &mdash; pieces,<br>no seasons <span class="c">&copy;26</span></h2>
+    </header>
+
+    <ul class="cards__row" id="cards-row" data-lenis-prevent>
+      <li class="card rv rv-1">
+        <a class="card__media media chamfer" href="#" data-slot aria-label="Hooded shell">
+          <img src="assets/products/piece-01.jpg" alt="">
+          <span class="ph micro"><span><b>PIECE 01</b>assets/products/piece-01.jpg<br><span class="micro--dim">portrait, 4:5</span></span></span>
+        </a>
+        <div class="cap micro"><span>&copy;001 &mdash; hooded shell</span><span class="micro--dim">2026</span></div>
+      </li>
+      <li class="card rv rv-2">
+        <a class="card__media media chamfer" href="#" data-slot aria-label="Washed wide-leg denim">
+          <img src="assets/products/piece-02.jpg" alt="">
+          <span class="ph micro"><span><b>PIECE 02</b>assets/products/piece-02.jpg<br><span class="micro--dim">portrait, 4:5</span></span></span>
+        </a>
+        <div class="cap micro"><span>&copy;002 &mdash; washed denim</span><span class="micro--dim">2026</span></div>
+      </li>
+      <li class="card rv rv-3">
+        <a class="card__media media chamfer" href="#" data-slot aria-label="Felted wool poncho">
+          <img src="assets/products/piece-03.jpg" alt="">
+          <span class="ph micro"><span><b>PIECE 03</b>assets/products/piece-03.jpg<br><span class="micro--dim">portrait, 4:5</span></span></span>
+        </a>
+        <div class="cap micro"><span>&copy;003 &mdash; felted poncho</span><span class="micro--dim">2026</span></div>
+      </li>
+      <li class="card rv rv-4">
+        <a class="card__media media chamfer" href="#" data-slot aria-label="Raw-hem trouser">
+          <img src="assets/products/piece-04.jpg" alt="">
+          <span class="ph micro"><span><b>PIECE 04</b>assets/products/piece-04.jpg<br><span class="micro--dim">portrait, 4:5</span></span></span>
+        </a>
+        <div class="cap micro"><span>&copy;004 &mdash; raw-hem trouser</span><span class="micro--dim">2026</span></div>
+      </li>
+      <li class="card rv rv-5">
+        <a class="card__media media chamfer" href="#" data-slot aria-label="Boiled wool coat">
+          <img src="assets/products/piece-05.jpg" alt="">
+          <span class="ph micro"><span><b>PIECE 05</b>assets/products/piece-05.jpg<br><span class="micro--dim">portrait, 4:5</span></span></span>
+        </a>
+        <div class="cap micro"><span>&copy;005 &mdash; boiled wool coat</span><span class="micro--dim">2026</span></div>
+      </li>
+      <li class="card rv rv-6">
+        <a class="card__media media chamfer" href="#" data-slot aria-label="Canvas overshirt">
+          <img src="assets/products/piece-06.jpg" alt="">
+          <span class="ph micro"><span><b>PIECE 06</b>assets/products/piece-06.jpg<br><span class="micro--dim">portrait, 4:5</span></span></span>
+        </a>
+        <div class="cap micro"><span>&copy;006 &mdash; canvas overshirt</span><span class="micro--dim">2026</span></div>
+      </li>
+    </ul>
+
+    <div class="cards__foot">
+      <div class="cards__bar" aria-hidden="true"><i id="cards-fill"></i></div>
+      <button class="cards__next micro" id="cards-next" type="button">
+        <span>Next</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true">
+          <path d="M4 12h15M13 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- [05] construction — pinned; motion.js drives every value off scroll -->
+  <section class="construct" id="construction">
+    <div class="construct__inner container">
+      <header class="construct__head">
+        <span class="micro micro--dim">[05] &mdash; construction</span>
+        <h2 class="display--md" id="construct-head">cut heavy,<br>washed back <span class="c">&copy;26</span></h2>
+      </header>
+
+      <div class="construct__body">
+        <ul class="cstack">
+          <li class="ccard chamfer">
+            <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+            <h3 class="ccard__t">Cut</h3>
+            <p class="ccard__d">Patterns are cut a full size over, then washed back
+            until the cloth settles into its own shape.</p>
+            <span class="ccard__n" aria-hidden="true">01</span>
+          </li>
+
+          <li class="ccard ccard--dark chamfer">
+            <div class="dots" aria-hidden="true"><i></i><i class="on"></i><i></i></div>
+            <h3 class="ccard__t">Weight</h3>
+            <p class="ccard__d">Nothing under 380gsm. A garment should hold its own
+            line without being asked to.</p>
+            <span class="ccard__n" aria-hidden="true">02</span>
+          </li>
+
+          <li class="ccard chamfer">
+            <div class="dots" aria-hidden="true"><i></i><i></i><i class="on"></i></div>
+            <h3 class="ccard__t">Finish</h3>
+            <p class="ccard__d">Raw hems, bar-tacked at every stress point, and not
+            one visible logo anywhere on the piece.</p>
+            <span class="ccard__n" aria-hidden="true">03</span>
+          </li>
+        </ul>
+
+        <a class="pill construct__cta" href="#collection">See the pieces
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true">
+            <path d="M4 12h15M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section manifesto container" id="archive">
+    <span class="micro micro--dim rv rv-1">[06] &mdash; manifesto</span>
+
+    <p class="manifesto__line rv rv-2">
+      We <span class="nb">make <span class="chip media" data-slot><img src="assets/looks/chip-01.jpg" alt=""><span class="ph"></span></span></span> twelve pieces a year and <span class="nb">finish <span class="chip media" data-slot><img src="assets/looks/chip-02.jpg" alt=""><span class="ph"></span></span></span> every one by hand. Nothing here is designed to be replaced.
+    </p>
+
+    <div class="manifesto__foot">
+      <a class="pill rv rv-3" href="#collection">Get started
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true">
+          <path d="M4 12h15M13 6l6 6-6 6"/>
+        </svg>
+      </a>
+
+      <p class="manifesto__stockists micro micro--dim rv rv-4">
+        Shipped worldwide
+      </p>
+    </div>
+  </section>
+</main>
+
+<section class="strip strip--name" aria-hidden="true">
+  <div class="strip__track" id="name-track">
+    <div class="strip__set">
+      <span>Obsidian</span><span>Obsidian</span><span>Obsidian</span>
+      <span>Obsidian</span><span>Obsidian</span><span>Obsidian</span>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+
+      <div class="footer__sign">
+        <h2 class="footer__lead rv rv-1">Twelve pieces,<br>once a year.</h2>
+        <form class="signup rv rv-2" id="signup" novalidate>
+          <label class="micro micro--dim" for="signup-email">Join the list</label>
+          <div class="signup__field">
+            <input id="signup-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required>
+            <button type="submit" aria-label="Subscribe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true">
+                <path d="M4 12h15M13 6l6 6-6 6"/>
+              </svg>
+            </button>
+          </div>
+          <p class="signup__msg micro" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <nav class="footer__nav rv rv-3" aria-label="Footer">
+        <div class="footer__col">
+          <span class="micro micro--dim">Shop</span>
+          <a href="#collection">Outerwear</a>
+          <a href="#collection">Knitwear</a>
+          <a href="#collection">Denim</a>
+          <a href="#collection">All pieces</a>
+        </div>
+        <div class="footer__col">
+          <span class="micro micro--dim">Studio</span>
+          <a href="#atelier">About</a>
+          <a href="#atelier">Materials</a>
+          <a href="#atelier">Care</a>
+          <a href="#archive">Stockists</a>
+        </div>
+        <div class="footer__col">
+          <span class="micro micro--dim">Help</span>
+          <a href="#">Shipping</a>
+          <a href="#">Returns</a>
+          <a href="#">Size guide</a>
+          <a href="mailto:atelier@obsidian.studio">Contact</a>
+        </div>
+        <div class="footer__col">
+          <span class="micro micro--dim">Elsewhere</span>
+          <a href="#">Instagram</a>
+          <a href="#">Journal</a>
+          <a href="#">Careers</a>
+        </div>
+      </nav>
+
+    </div>
+
+    <div class="footer__mark" aria-hidden="true">Obsidian</div>
+
+    <div class="footer__legal micro micro--dim">
+      <span>&copy; <span id="year">2026</span> Obsidian Atelier</span>
+      <span>Mumbai &middot; Tokyo</span>
+      <span class="footer__legal-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- no bundler on this machine, so the same libraries your project imports are
+     loaded from a CDN at the versions pinned in your package.json -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.25/dist/lenis.min.js"></script>
+<script src="wall.js"></script>
+<script src="plates.js"></script>
+<script src="script.js"></script>
+<!-- seam.js AFTER motion.js on purpose: motion.js hands Lenis the GSAP
+     ticker, and the ticker runs its listeners in registration order. Loaded
+     first, the seam reads the scroll position before Lenis has moved the
+     page and renders a frame stale. See the ticker comment in seam.js. -->
+<script src="motion.js"></script>
+<script src="seam.js"></script>
+</body>
+</html>

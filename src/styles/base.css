@@ -1,0 +1,105 @@
+/* ============================================================
+   TOKENS + RESET
+   ============================================================ */
+:root {
+  /* colour */
+  --bg:            #09090a;
+  --bg-lift:       #161618;
+  --ink:           #f3f4f6;
+  --ink-muted:     rgba(243, 244, 246, 0.55);
+  --ink-faint:     rgba(243, 244, 246, 0.14);
+  --accent:        #e0393f;
+  --accent-soft:   rgba(224, 57, 63, 0.35);
+
+  /* type
+     Was Montserrat + Inter. That pairing is the default of every generated
+     landing page on the web, and on a site whose whole hero is a variable
+     font flexing its width axis it also wasted the one idea the page has.
+     Archivo carries a real wdth axis (62-125), so headings can be set
+     expanded or condensed on purpose and echo the name in the hero.
+     Roboto Flex stays — TextPressure needs it. */
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body:    'Instrument Sans', system-ui, sans-serif;
+
+  /* Display axis presets. Setting wdth explicitly is the point of the face —
+     a headline that is 112 wide next to an eyebrow that is 78 reads as
+     designed, where one tracked-out weight reads as a default. */
+  --ax-wide:  'wdth' 115, 'wght' 620;
+  --ax-mid:   'wdth' 100, 'wght' 560;
+  --ax-narrow:'wdth' 80,  'wght' 520;
+
+  /* One scale for everything below the hero. Each section used to invent its
+     own clamp() values, which is why nothing lined up between them. */
+  --t-micro: clamp(0.58rem, 0.74vw, 0.7rem);
+  --t-cap:   clamp(0.72rem, 0.92vw, 0.86rem);
+  --t-body:  clamp(0.88rem, 1.06vw, 1.02rem);
+  --t-lede:  clamp(1rem,    1.32vw, 1.24rem);
+  --t-h3:    clamp(1.15rem, 2vw,    1.72rem);
+  --t-h2:    clamp(1.9rem,  5.2vw,  3.8rem);
+
+  /* Section rhythm. Three steps, so the page can breathe wide in one place
+     and pull tight in the next instead of marching at one interval. */
+  --sec-pad:   clamp(5rem,   13vh, 8.5rem);
+  --sec-pad-l: clamp(7rem,   18vh, 12rem);
+  --sec-pad-s: clamp(3.5rem,  9vh, 6rem);
+
+  --measure:    64ch;
+  --measure-sm: 46ch;
+
+  /* motion — one place to retune the whole site's feel */
+  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:   cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-fast:      0.4s;
+  --dur-base:      0.8s;
+  --dur-slow:      1.2s;
+
+  /* the preloader curtain: one image, split across five panels */
+  --curtain:
+    radial-gradient(120% 80% at 50% 18%, rgba(200, 200, 204, 0.18) 0%, rgba(27, 27, 29, 0.06) 42%, transparent 70%),
+    linear-gradient(168deg, rgba(228, 228, 232, 0.08) 0%, transparent 38%),
+    radial-gradient(100% 100% at 50% 100%, rgba(0, 0, 0, 0.55) 0%, transparent 60%);
+
+  /* layout */
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto; /* Lenis owns scrolling */
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* lock the page while the preloader is counting */
+body.is-loading {
+  overflow: hidden;
+  height: 100%;
+}
+
+a { color: inherit; text-decoration: none; }
+
+img, video { display: block; max-width: 100%; }
+
+::selection { background: var(--accent); color: #fff; }
+
+/* the site sits under the preloader and is revealed by it */
+.site {
+  position: relative;
+  z-index: 1;
+}
+body.is-loading .site { pointer-events: none; }

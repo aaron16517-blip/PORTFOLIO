@@ -1,0 +1,58 @@
+/* ============================================================
+   GHOST CURSOR — the smear that follows the pointer across the hero
+
+   Sits between the smoke (z -2) and the hero's content, so the trail
+   passes over the red clouds but the name and the copy stay on top of
+   it and unreadably crisp. The canvas blends with `screen`, so it only
+   ever adds light — it can brighten the smoke, never dim it.
+   ============================================================ */
+.ghost-cursor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* the hero clips at its bottom edge; fade the trail out before it gets
+     there so it dissolves into the next section instead of being cut flat */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+}
+
+.ghost-cursor > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+/* ------------------------------------------------------------
+   Type the smoke passes behind turns black. heroInk.js sets --ink
+   (0 = normal colour, 1 = black) on each letter, or on the whole
+   element for DIVE IN.
+   ------------------------------------------------------------ */
+
+/* a letter mixes toward black from whatever colour its element already
+   has — inside the color property, currentColor is the inherited value,
+   so hero.css stays the single source of the base colour */
+[data-ink='split'] .ink-c {
+  color: color-mix(in srgb, #000 calc(var(--ink, 0) * 100%), currentColor);
+}
+
+/* DIVE IN is inked whole. The base repeats the one in menu.css;
+   [data-ink] is there for specificity, so this wins over menu.css
+   (which loads after this file) without editing it. */
+.nav__dive[data-ink='whole'] {
+  color: color-mix(in srgb, #000 calc(var(--ink, 0) * 100%), rgba(243, 244, 246, 0.9));
+}
+
+/* the readable copy of a split sentence, for screen readers only */
+.ink-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

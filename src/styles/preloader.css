@@ -1,0 +1,151 @@
+/* ============================================================
+   PRELOADER — counts 0 → 100, then lifts to reveal the site
+   ============================================================ */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* --- the five columns that slide away at the end ---
+       Each panel carries the SAME background image, offset by its own
+       width, so at rest they read as one seamless screen — and when they
+       lift in sequence the image tears apart into columns. --- */
+.preloader__panels {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.preloader__panels .panel {
+  flex: 1 1 20%;
+  background-color: var(--bg);
+  background-image: var(--curtain);
+  /* 500% wide = exactly five panels; percentage positioning then slots each
+     panel onto its own fifth of the image, immune to viewport-unit quirks */
+  background-size: 500% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Everything that makes a panel look like its own box is held back until the
+   wipe actually starts. `is-done` lands on the root the instant the panels
+   begin lifting; before that the five must read as one seamless screen.
+     - box-shadow  — the column hairline. At 3.5% white it is NOT invisible
+       at rest, whatever the old comment claimed; it drew five vertical rules.
+     - will-change — promotes each panel to its own composited layer, so each
+       rasterises and snaps to device pixels independently. Panel edges land
+       on fractional device pixels (flex 20% of an odd viewport, ×1.5 DPR),
+       and the ones whose fraction crosses .5 tore a hairline seam. */
+.preloader.is-done .preloader__panels .panel {
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.035);
+  will-change: transform;
+}
+.preloader__panels .panel:nth-child(1) { background-position: 0% 0; }
+.preloader__panels .panel:nth-child(2) { background-position: 25% 0; }
+.preloader__panels .panel:nth-child(3) { background-position: 50% 0; }
+.preloader__panels .panel:nth-child(4) { background-position: 75% 0; }
+.preloader__panels .panel:nth-child(5) { background-position: 100% 0; }
+
+/* --- film grain --- */
+.preloader__grain {
+  position: absolute;
+  inset: -50%;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.6s steps(2) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(-2%, 1.5%); }
+  100% { transform: translate(1.5%, -1%); }
+}
+
+/* --- centred content stack --- */
+.preloader__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.5rem, 1.4vw, 0.9rem);
+  padding: 0 var(--gutter);
+}
+
+/* --- the counter --- */
+.counter { position: relative; }
+
+/* The glow used to be a 60px text-shadow on the digits. The mask below
+   clips with overflow:hidden (the digits rise out of it), so it cut the
+   glow off square and drew a visible box around the number. The glow
+   lives here now, outside the mask, as a soft falloff with no edge. */
+.counter::before {
+  content: '';
+  position: absolute;
+  inset: -45% -35%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(243, 244, 246, 0.1), transparent);
+}
+
+.counter__mask,
+.brand__mask {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.12em;
+  margin-block: -0.12em;
+}
+
+/* Archivo cut condensed and light — a tall, narrow numeral rather than the
+   usual heavy geometric one, on the same width axis the hero name flexes. */
+.counter__value {
+  display: block;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 64, 'wght' 280;
+  font-size: clamp(3rem, 9vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink);
+  will-change: transform, filter;
+}
+
+/* --- the name --- */
+.brand__text {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(0.62rem, 1.15vw, 0.8rem);
+  text-transform: uppercase;
+  letter-spacing: 0.46em;
+  /* pull back the trailing letter-space so it stays optically centred */
+  margin-right: -0.46em;
+  color: rgba(243, 244, 246, 0.82);
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* --- the red progress rule --- */
+.bar {
+  position: relative;
+  width: clamp(150px, 22vw, 240px);
+  height: 1px;
+  margin-top: clamp(0.75rem, 2vw, 1.4rem);
+  background: var(--ink-faint);
+  overflow: hidden;
+}
+.bar__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-soft);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* --- once revealed, the layer must not block clicks --- */
+.preloader.is-done { pointer-events: none; }

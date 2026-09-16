@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>ARCO — Cucina Italiana</title>
+<meta name="description" content="Desktop-only arch-hero editorial template, animated to the source site's exact Webflow IX2 timings.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Forum&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ NAV : rule — badge — rule ============ -->
+<header class="nav">
+  <div class="nav__grid">
+    <div class="nav__block"><span class="nav__line"></span></div>
+    <a class="nav__badge" href="#top" aria-label="Arco, home"><span>A</span></a>
+    <div class="nav__block nav__block--r">
+      <span class="nav__line nav__line--r"></span>
+      <button class="nav__menu" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </div>
+  <nav class="nav__panel" hidden>
+    <a href="#storia">Storia</a><a href="#cucina">Cucina</a><a href="#sala">La Sala</a><a href="#visit">Visit</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero__grid">
+    <div class="line" data-reveal="1"><span class="line__v"></span><i class="dot"></i></div>
+
+    <div class="hero__block">
+      <h1 class="heading-hero" data-reveal="2">Original Italian</h1>
+      <p class="paragraph-hero" data-reveal="3">Come to Arco.</p>
+      <div class="button-row" data-reveal="4">
+        <a class="button button--primary" href="#visit">Request a table</a>
+        <a class="button button--outline" href="#cucina">See the menu</a>
+      </div>
+    </div>
+
+    <div class="line" data-reveal="5"><i class="dot"></i><span class="line__v"></span></div>
+  </div>
+
+  <!-- scroll-scrubbed: width 50% -> 100%, opacity 0 -> 1, between 5% and 50% -->
+  <div class="shape" data-shape>
+    <div class="image-shape ph ph--1"></div>
+  </div>
+
+  <!-- page-scroll driven: visible until 12%, gone by 13% -->
+  <div class="scroll-hint" data-page-fade><span></span></div>
+</section>
+
+<!-- ============ STORIA ============ -->
+<section class="section" id="storia">
+  <div class="content">
+    <div class="grid">
+      <div class="block">
+        <div class="subtitle" data-reveal="1">One family, one vision</div>
+        <h2 class="heading" data-reveal="2">Storia</h2>
+        <p class="paragraph" data-reveal="3">Our aim was simple: bring the experience of real Italian cooking to this corner of the city. Every plate leaves the pass the way it would leave a kitchen at home — unhurried, generous, and made for the table it is going to.</p>
+        <p class="paragraph" data-reveal="4">What you taste is the meeting point of a traditional kitchen and years of modern hospitality. The recipes did not change. The room around them did.</p>
+        <a class="button button--primary" href="#cucina" data-reveal="5">See the menu</a>
+      </div>
+      <div class="image-block">
+        <div class="image-absolute" data-parallax>
+          <div class="image ph ph--2" data-reveal="3"></div>
+        </div>
+        <div class="image-absolute image-absolute--2" data-parallax>
+          <div class="image image--shadow ph ph--3" data-reveal="4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AMORE ============ -->
+<section class="section">
+  <div class="content">
+    <div class="grid grid--flip">
+      <div class="image-block">
+        <div class="image-absolute" data-parallax>
+          <div class="image ph ph--4" data-reveal="3"></div>
+        </div>
+        <div class="image-absolute image-absolute--2" data-parallax>
+          <div class="image image--shadow ph ph--5" data-reveal="4"></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="subtitle" data-reveal="1">Amore e appetito</div>
+        <h2 class="heading" data-reveal="2">We know: love goes through the stomach.</h2>
+        <p class="paragraph" data-reveal="3">We do not think of what we serve as simply food. Because every dish is built with patience and real attention, it carries a way of living with it — the feeling of sitting with a glass of wine and letting the evening take its time.</p>
+        <p class="paragraph" data-reveal="4">That is the whole idea. Arco is the place for it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES + DIVIDER + MODULAR ============ -->
+<section class="section" id="cucina">
+  <div class="content">
+
+    <div class="grid-features">
+      <article class="feature">
+        <div class="number-wrapper" data-reveal="1"><div class="number">1</div></div>
+        <h4 class="heading-small" data-reveal="2">Arco's Cucina</h4>
+        <p class="paragraph paragraph--small" data-reveal="3">Our Sunday kitchen, cooked the way a family cooks, opened up to everyone.</p>
+      </article>
+      <article class="feature">
+        <div class="number-wrapper" data-reveal="2"><div class="number">2</div></div>
+        <h4 class="heading-small" data-reveal="3">Italian Atmosphere</h4>
+        <p class="paragraph paragraph--small" data-reveal="4">Warm light, low noise, long tables. Italian air, without the flight.</p>
+      </article>
+      <article class="feature">
+        <div class="number-wrapper" data-reveal="3"><div class="number">3</div></div>
+        <h4 class="heading-small" data-reveal="4">Arco's Famiglia</h4>
+        <p class="paragraph paragraph--small" data-reveal="5">You are met loudly and warmly, every time, by people who mean it.</p>
+      </article>
+    </div>
+
+    <div class="line-space" data-reveal="1"><span class="line-space__rule"></span><i class="dot"></i><span class="line-space__rule"></span></div>
+
+    <div class="grid-modular">
+      <div class="block-modular">
+        <div class="subtitle" data-reveal="1">Gusto e tradizione</div>
+        <h2 class="heading" data-reveal="2">Gusto italiano. Taste Italy, properly.</h2>
+      </div>
+      <div class="block-modular block-modular--body">
+        <p class="paragraph" data-reveal="3">Arco is the right room if you want to try something you have not had before. Our plates are built on ingredients worth noticing — but the shape underneath them is always traditional.</p>
+        <a class="button button--primary" href="#sala" data-reveal="4">See the menu</a>
+      </div>
+      <div class="image-block-modular" data-parallax>
+        <div class="image ph ph--6" data-reveal="3"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ CENTRED BLOCK + AUTOPLAY SLIDER ============ -->
+<section class="section section--slider" id="sala">
+  <div class="content">
+    <div class="block-center">
+      <div class="subtitle" data-reveal="1">Sapori di casa</div>
+      <h2 class="heading" data-reveal="2">Feel the Italian summer</h2>
+      <p class="paragraph" data-reveal="3">Drawn from real evenings back home, a room that mixes the modern and the traditional brings a piece of that country here to you.</p>
+      <a class="button button--primary" href="#visit" data-reveal="4">Reserve a table</a>
+    </div>
+  </div>
+
+  <!-- autoplay 2500ms, slide 700ms ease-in-out-quart, active scale 1 / rest 0.85 -->
+  <div class="slider" data-slider data-autoplay="2500" data-duration="700">
+    <div class="slider__mask">
+      <div class="slider__track">
+        <div class="slide ph ph--1"></div><div class="slide ph ph--3"></div>
+        <div class="slide ph ph--5"></div><div class="slide ph ph--2"></div>
+        <div class="slide ph ph--6"></div><div class="slide ph ph--4"></div>
+        <div class="slide ph ph--2"></div><div class="slide ph ph--1"></div>
+        <div class="slide ph ph--3"></div><div class="slide ph ph--6"></div>
+      </div>
+    </div>
+    <button class="slider__arrow slider__arrow--left" data-slider-prev aria-label="Previous slide"></button>
+    <button class="slider__arrow slider__arrow--right" data-slider-next aria-label="Next slide"></button>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section section--none" id="visit">
+  <div class="content">
+    <div class="call-to-action">
+      <div class="subtitle" data-reveal="1">Come to Arco</div>
+      <h3 class="heading-cta" data-reveal="2">Hungry for the feeling of home?</h3>
+      <a class="button button--primary" href="#cucina" data-reveal="3">See the menu</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="section-footer">
+  <div class="content">
+    <div class="footer-text" data-reveal="1">Come to Arco</div>
+
+    <div class="grid-footer">
+      <div class="footer-col">
+        <div class="subtitle" data-reveal="1">Follow us</div>
+        <a href="#" data-reveal="2">Instagram</a>
+        <a href="#" data-reveal="3">Facebook</a>
+      </div>
+      <div class="footer-col">
+        <div class="subtitle" data-reveal="2">Opening hours</div>
+        <p class="paragraph paragraph--small" data-reveal="3">Monday — closed</p>
+        <p class="paragraph paragraph--small" data-reveal="3">Tuesday – Thursday 12:00 – 22:00</p>
+        <p class="paragraph paragraph--small" data-reveal="4">Friday – Saturday 12:00 – 23:00</p>
+        <p class="paragraph paragraph--small" data-reveal="4">Sunday 12:00 – 22:00</p>
+      </div>
+      <div class="footer-col">
+        <div class="subtitle" data-reveal="3">Legal</div>
+        <a href="#" data-reveal="4">Imprint</a>
+        <a href="#" data-reveal="5">Privacy</a>
+      </div>
+    </div>
+
+    <div class="sub-footer">
+      <span>© 2026 Arco — all rights reserved.</span>
+      <span>A demonstration template. Not a real business.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

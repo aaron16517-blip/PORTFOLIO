@@ -1,0 +1,372 @@
+/* ============================================================
+   PROJECTS — a glassy bento grid.
+
+   iOS-flavoured glass: large radii, a frosted panel, a specular
+   highlight along the top edge, and a sheen that tracks the cursor.
+   ============================================================ */
+.projects {
+  position: relative;
+  padding: var(--sec-pad-l) var(--gutter);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* the colour the glass sits in. Deliberately smooth gradients — see the
+   note on .card__inner for why nothing here is blurred */
+.projects__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 52% at 14% 26%, rgba(224, 57, 63, 0.50) 0%, rgba(224, 57, 63, 0.12) 46%, transparent 78%),
+    radial-gradient(54% 46% at 86% 38%, rgba(190, 38, 64, 0.40) 0%, rgba(190, 38, 64, 0.10) 46%, transparent 78%),
+    radial-gradient(62% 52% at 52% 82%, rgba(224, 92, 57, 0.30) 0%, rgba(224, 92, 57, 0.08) 46%, transparent 80%),
+    radial-gradient(44% 40% at 76% 70%, rgba(240, 130, 80, 0.22) 0%, transparent 78%);
+
+  /* The section clips at its own edge, so a bloom still bright at an edge
+     gets sliced flat and reads as a seam against the neighbouring section's
+     ground. Fade the whole layer out before it ever reaches either one.
+
+     The bottom was already handled; the top was not, so the red and blue
+     arrived at full strength against the black the Vision section ends on —
+     a hard line exactly where the two sections meet. Same treatment, shorter
+     ramp, because the top-left bloom is doing real work behind the heading
+     and should not be washed out to buy the blend. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 9%, #000 22%, #000 58%, rgba(0, 0, 0, 0.45) 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 9%, #000 22%, #000 58%, rgba(0, 0, 0, 0.45) 82%, transparent 100%);
+}
+
+/* ---------- heading ---------- */
+.projects__head {
+  position: relative;
+  z-index: 1;
+  margin-bottom: clamp(2.2rem, 5vh, 3.6rem);
+}
+
+.projects__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin: 0 0 clamp(0.9rem, 2vh, 1.4rem);
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-narrow);
+  font-size: var(--t-micro);
+  letter-spacing: 0.34em;
+  color: var(--ink-muted);
+}
+.projects__rule {
+  width: clamp(28px, 4vw, 52px);
+  height: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-soft);
+  transform-origin: left center;
+}
+
+.projects__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-wide);
+  line-height: 1.02;
+  letter-spacing: -0.024em;
+  color: var(--ink);
+  text-wrap: balance;
+  font-size: clamp(2.1rem, 6.4vw, 4.6rem);
+}
+
+/* ---------- the bento ---------- */
+.projects__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: clamp(150px, 18vw, 230px);
+  gap: clamp(0.6rem, 1vw, 1rem);
+}
+
+/* ---------- a card ---------- */
+.card {
+  grid-column: span 2;
+  position: relative;
+  display: block;
+  border-radius: var(--card-radius, clamp(18px, 1.7vw, 28px));
+  /* GSAP owns this element's transform for the reveal — the hover lift
+     lives on .card__inner so a transition never fights the tween */
+  will-change: transform, opacity;
+}
+.card--feature {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+/* a full-width row — closes the grid off when the card count would
+   otherwise leave a hole */
+.card--wide { grid-column: span 6; }
+
+.card__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: clamp(0.5rem, 0.7vw, 0.72rem);
+  border-radius: inherit;
+  overflow: hidden;
+
+  /* The glass — translucency, a white edge, a specular top highlight and a
+     deep shadow. Note there is NO backdrop-filter: everything behind these
+     cards is a smooth gradient, and blurring a smooth gradient just returns
+     the same gradient. It bought nothing visually, while making Chrome
+     re-sample the backdrop for all 0.8s of the hover transition (which moves
+     and reshadows this box) and tear repaint seams across the card. */
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.045) 52%, rgba(255, 255, 255, 0.08) 100%),
+    linear-gradient(0deg, rgba(15, 15, 16, 0.34), rgba(15, 15, 16, 0.34));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),   /* specular top edge */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 22px 50px -24px rgba(0, 0, 0, 0.9);
+
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.card:hover .card__inner {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 34px 60px -26px rgba(0, 0, 0, 0.95);
+}
+.card:focus-visible .card__inner {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* The sheen that follows the cursor — JS writes --mx / --my.
+   It lives on its own child, NOT on .card__inner: writing a property on a
+   backdrop-filtered box makes Chrome re-sample its backdrop a dirty-rect at
+   a time, which tears a visible seam across the card as the pointer moves. */
+.card__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    22rem 22rem at var(--mx, 50%) var(--my, 0%),
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.05) 32%,
+    transparent 62%
+  );
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.card:hover .card__sheen { opacity: 1; }
+
+/* ---------- the shot ---------- */
+.card__thumb {
+  position: relative;
+  display: block;
+  flex: 1;
+  min-height: 0;
+  /* concentric with the outer radius: outer minus the padding */
+  border-radius: calc(var(--card-radius, clamp(18px, 1.7vw, 28px)) - clamp(0.5rem, 0.7vw, 0.72rem));
+  overflow: hidden;
+  /* Translucent on purpose — the frosted glass behind shows through.
+     No backdrop-filter of its own: nesting one inside .card__inner's makes
+     Chrome leave repaint seams across the card. An <img> covers it fully. */
+  background:
+    radial-gradient(120% 96% at 26% 12%, rgba(255, 255, 255, 0.12) 0%, transparent 58%),
+    linear-gradient(152deg, var(--thumb-a, rgba(224, 57, 63, 0.18)) 0%, var(--thumb-b, rgba(12, 12, 13, 0.55)) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.card__thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.001);
+  transition: transform 1s var(--ease-out);
+}
+.card:hover .card__thumb img { transform: scale(1.045); }
+
+/* ---------- label row ---------- */
+.card__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75em;
+  padding: clamp(0.7rem, 1.1vw, 1rem) clamp(0.35rem, 0.6vw, 0.6rem) clamp(0.15rem, 0.4vw, 0.3rem);
+}
+
+.card__index {
+  flex: none;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.card__text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.card__title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--ax-mid);
+  font-size: clamp(0.88rem, 1.15vw, 1.12rem);
+  letter-spacing: -0.014em;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card--feature .card__title { font-size: clamp(1.05rem, 1.7vw, 1.6rem); }
+
+.card__tag {
+  font-size: clamp(0.55rem, 0.68vw, 0.64rem);
+  font-weight: 400;
+  letter-spacing: 0.17em;
+  color: rgba(243, 244, 246, 0.5);
+}
+
+/* ---------- the arrow pill ---------- */
+.card__arrow {
+  position: absolute;
+  top: clamp(0.9rem, 1.4vw, 1.3rem);
+  right: clamp(0.9rem, 1.4vw, 1.3rem);
+  display: grid;
+  place-items: center;
+  width: clamp(30px, 2.6vw, 38px);
+  height: clamp(30px, 2.6vw, 38px);
+  border-radius: 50%;
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
+  line-height: 1;
+  color: var(--ink);
+
+  /* no backdrop-filter here either — it transforms on hover */
+  background: rgba(17, 17, 18, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+.card:hover .card__arrow {
+  transform: translate(2px, -2px);
+  background: var(--accent);
+}
+
+/* ---------- narrower ---------- */
+@media (max-width: 900px) {
+  .projects__grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: clamp(160px, 26vw, 210px);
+  }
+  .card { grid-column: span 2; }
+  .card--feature { grid-column: span 4; grid-row: span 1; }
+  .card--wide { grid-column: span 4; }
+}
+
+@media (max-width: 560px) {
+  .projects__grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: clamp(180px, 46vw, 230px);
+  }
+  .card,
+  .card--feature,
+  .card--wide { grid-column: span 1; }
+}
+
+/* ---------- brand plates ----------
+   A stand-in for a card with no screenshot. Deliberately a title plate rather
+   than a mock screenshot: each uses that project's own palette and type, so it
+   reads as identity, not as a fake capture of a page. Layout is shared; the
+   palette and motif come from a per-project modifier. */
+.card__thumb--plate { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09); }
+
+.plate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  padding: 1rem;
+  text-align: center;
+}
+
+.plate__mark {
+  position: relative;
+  font-size: clamp(1.15rem, 2.5vw, 1.95rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--plate-ink);
+}
+.card--feature .plate__mark { font-size: clamp(1.6rem, 3.4vw, 2.8rem); }
+
+.plate__line {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-size: clamp(0.48rem, 0.64vw, 0.58rem);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--plate-sub);
+}
+
+.plate__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--plate-dot);
+}
+
+/* --- clinicOS: paper ground, sage hairline rings echoing its hero --- */
+.card__thumb--clinicos {
+  --plate-ink: #16241a;
+  --plate-sub: #62775f;
+  --plate-dot: #b0543a;
+  /* its own serif stack, which falls back to Georgia exactly as the site does */
+  font-family: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  background:
+    radial-gradient(circle at 50% 54%, transparent 0 31%,   rgba(147, 166, 144, 0.34) 31% 31.5%,   transparent 31.5%),
+    radial-gradient(circle at 50% 54%, transparent 0 43%,   rgba(147, 166, 144, 0.24) 43% 43.4%,   transparent 43.4%),
+    radial-gradient(circle at 50% 54%, transparent 0 55.5%, rgba(147, 166, 144, 0.16) 55.5% 55.9%, transparent 55.9%),
+    linear-gradient(166deg, #fcfcfa 0%, #eff5eb 100%);
+  box-shadow: inset 0 0 0 1px rgba(22, 36, 26, 0.10);
+}
+
+/* --- ARCO: its near-black ground, warm tint, and the arch it is named for --- */
+.card__thumb--arco {
+  --plate-ink: #ffe2c0;
+  --plate-sub: rgba(255, 226, 192, 0.55);
+  --plate-dot: #b02517;
+  font-family: 'Forum', 'Times New Roman', serif;
+  background:
+    radial-gradient(120% 90% at 50% 108%, rgba(176, 37, 23, 0.26) 0%, transparent 62%),
+    linear-gradient(168deg, #1d1d1d 0%, #141414 100%);
+}
+/* the arch-hero motif, drawn rather than pictured */
+.card__thumb--arco .plate::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 0;
+  width: min(46%, 120px);
+  height: 74%;
+  border: 1px solid rgba(255, 226, 192, 0.22);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 62% 62% 0 0;
+}
+/* the arch has to grow with the card, or it reads lost on a full-width row */
+.card--wide .plate::before { width: min(32%, 300px); }
