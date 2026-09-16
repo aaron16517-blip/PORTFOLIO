@@ -222,6 +222,32 @@ reads as decoration rather than data.
 
 ---
 
+## Phones
+
+Same sections, same motion — only the per-frame cost changes.
+`src/js/device.js` reads the device once at boot (`isTouch`, `isLowPower`)
+and the effects budget from it:
+
+- **three.js never loads on touch.** `ghostCursor.js` and `heroInk.js` are
+  dynamic imports behind `!isTouch`; they are most of the JS by weight.
+- **Smoke** renders at ~0.5 CSS px, 4 fBm octaves, 30fps on phones, and stops
+  drawing on every device once the hero is off screen.
+- **TextPressure** holds its centred pose on touch instead of following the
+  finger — no per-frame rect reads, no stale pose after a scroll.
+- **No scrubbed or reveal `filter: blur()`** on phones (Vision, project cards,
+  hero letters, process panes), and no backdrop blur where only smooth
+  gradients sit behind (process panel, hero ghost button).
+- `ScrollTrigger.config({ ignoreMobileResize: true })` — the address bar is
+  not a resize worth remeasuring every trigger for.
+
+**Keep every decorative layer inside the viewport's width.** One glow in
+Process sat at `inset: … -20% …` with no clip; mobile browsers answered the
+wider document by zooming the whole layout out, which pushed the fixed
+DIVE IN toggle off screen. Sections with overhanging glows use
+`overflow-x: clip` (not `hidden` — that would break the sticky index).
+
+---
+
 ## Type
 
 **Archivo (display) + Instrument Sans (text).** This was Montserrat + Inter,
