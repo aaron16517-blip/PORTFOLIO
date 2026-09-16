@@ -34,12 +34,15 @@ export function initProcess() {
     ship.innerHTML = Array.from({ length: 48 }, () => '<i></i>').join('');
   }
   const cells = ship ? [...ship.children] : [];
+  let shipCalls = [];
 
   function runShip() {
+    /* a replay cancels the last run, or its late calls light cells early */
+    shipCalls.forEach((c) => c.kill());
     cells.forEach((c) => c.classList.remove('is-hit'));
-    HITS.forEach((n, i) => {
-      gsap.delayedCall(0.25 + i * 0.07, () => cells[n] && cells[n].classList.add('is-hit'));
-    });
+    shipCalls = HITS.map((n, i) =>
+      gsap.delayedCall(0.25 + i * 0.07, () => cells[n] && cells[n].classList.add('is-hit'))
+    );
   }
 
   /* ---------- the stepper ---------- */

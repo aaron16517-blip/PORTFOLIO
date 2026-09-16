@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { track as vaTrack } from '@vercel/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,14 +14,21 @@ gsap.registerPlugin(ScrollTrigger);
 /* ------------------------------------------------------------------
    WHERE SUBMISSIONS GO.
 
-   Paste the endpoint from whichever form service you use — Formspree
-   (https://formspree.io/f/xxxxxxx), Web3Forms, Getform, Basin. They all
-   accept a JSON POST and email you the result, which is what this sends.
+   Web3Forms emails every submission to the inbox the key was created
+   for and keeps a copy in its dashboard. Get a key at
+   https://web3forms.com (enter info@genesisproductions.design) and
+   paste it below. The key is public by design — it can only send
+   to that inbox.
 
-   Leave it empty and the form says so plainly rather than pretending to
-   have sent anything.
+   Without a key the form still works: it opens the visitor's mail app
+   with the message filled in, addressed to CONTACT_EMAIL.
    ------------------------------------------------------------------ */
-const FORM_ENDPOINT = '';
+const WEB3FORMS_KEY = '';
+const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
+const CONTACT_EMAIL = 'info@genesisproductions.design';
+
+/* Vercel Web Analytics custom event (shown on Pro plans); harmless otherwise */
+const track = (name, data) => { try { vaTrack(name, data); } catch {} };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -92,17 +100,29 @@ export function initContact() {
     if (firstBad) {
       setStatus('Please fix the highlighted fields.', 'fail');
       firstBad.focus();
+      track('contact_invalid', { field: firstBad.name });
       return;
     }
 
-    const payload = Object.fromEntries(new FormData(form).entries());
+    const data = Object.fromEntries(new FormData(form).entries());
 
-    if (!FORM_ENDPOINT) {
-      setStatus(
-        'The form has no endpoint yet — set FORM_ENDPOINT in src/js/contact.js. ' +
-        'Nothing was sent.',
-        'fail'
-      );
+    /* the hidden honeypot is only ever filled in by bots */
+    if (data.botcheck) return;
+    delete data.botcheck;
+
+    const service = data.service || 'Not specified';
+
+    if (!WEB3FORMS_KEY) {
+      const body =
+        `Name: ${data.name}\nEmail: ${data.email}\n` +
+        (data.company ? `Company: ${data.company}\n` : '') +
+        `Looking for: ${service}\n\n${data.message}`;
+      window.location.href =
+        `mailto:${CONTACT_EMAIL}` +
+        `?subject=${encodeURIComponent(`New enquiry from ${data.name}`)}` +
+        `&body=${encodeURIComponent(body)}`;
+      setStatus(`Your email app should open with the message ready — just press send. Or write to ${CONTACT_EMAIL}.`, 'ok');
+      track('contact_mailto', { service });
       return;
     }
 
@@ -114,21 +134,34 @@ export function initContact() {
       const res = await fetch(FORM_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `New enquiry from ${data.name} — ${service}`,
+          from_name: 'Portfolio contact form',
+          replyto: data.email,
+          ...data,
+          service,
+          page: window.location.href
+        })
       });
+      const json = await res.json().catch(() => ({}));
 
-      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      if (!res.ok || json.success === false) {
+        throw new Error(json.message || `Request failed (${res.status})`);
+      }
 
       form.reset();
       fields.forEach((f) => f.setAttribute('aria-invalid', 'false'));
-      setStatus('Thanks — your message is on its way. I’ll reply soon.', 'ok');
+      setStatus('Thanks — your message is on its way. I’ll reply within one working day.', 'ok');
       label.textContent = 'Sent';
+      track('contact_sent', { service });
     } catch (err) {
       setStatus(
-        `That didn’t send (${err.message}). Email me directly and I’ll pick it up.`,
+        `That didn’t send (${err.message}). Email ${CONTACT_EMAIL} and I’ll pick it up.`,
         'fail'
       );
       label.textContent = 'Submit';
+      track('contact_failed');
     } finally {
       submit.disabled = false;
       /* put the button back once the confirmation has been read */

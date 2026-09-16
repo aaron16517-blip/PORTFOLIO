@@ -70,7 +70,9 @@ export function revealHero() {
       opacity: 1,
       y: 0,
       duration: 1,
-      stagger: 0.07
+      stagger: 0.07,
+      /* a leftover inline transform outranks the buttons' :hover lift */
+      clearProps: 'transform'
     }, 0.35);
 
   return tl;

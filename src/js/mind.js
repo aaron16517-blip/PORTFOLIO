@@ -19,7 +19,7 @@ export function initMind(canvas) {
   const c = canvas.getContext('2d');
   if (!c) return;
 
-  let W = 0, H = 0, DPR = 1, live = true, lastDraw = 0;
+  let W = 0, H = 0, DPR = 1, live = true, lastDraw = 0, raf = 0;
 
   /* ---------- a fibonacci sphere, so the nodes sit evenly ---------- */
   const N = 200;
@@ -64,11 +64,15 @@ export function initMind(canvas) {
      window resize also fires for a phone's address bar */
   if (window.ResizeObserver) new ResizeObserver(size).observe(canvas);
   else window.addEventListener('resize', size);
-  new IntersectionObserver((e) => { live = e[0].isIntersecting; }, { threshold: 0 }).observe(canvas);
+  /* off screen the loop is not just idle but unscheduled */
+  new IntersectionObserver((e) => {
+    live = e[e.length - 1].isIntersecting;
+    if (live && !raf) raf = requestAnimationFrame(frame);
+  }, { threshold: 0 }).observe(canvas);
 
   function frame(now) {
-    requestAnimationFrame(frame);
-    if (!live) return;
+    if (!live) { raf = 0; return; }
+    raf = requestAnimationFrame(frame);
     if (!W || !H) { size(); return; }
     /* it turns at a fifth of a radian a second — 30fps is indistinguishable
        and halves the work while the phone is also scrolling */
@@ -162,5 +166,5 @@ export function initMind(canvas) {
     }
   }
 
-  requestAnimationFrame(frame);
+  raf = requestAnimationFrame(frame);
 }

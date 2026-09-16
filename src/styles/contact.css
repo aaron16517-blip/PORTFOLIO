@@ -306,6 +306,73 @@
 .cform__status[data-state="ok"] { color: #7ee2a8; }
 .cform__status[data-state="fail"] { color: #ff7a7f; }
 
+/* ---------- what do you need ---------- */
+.cform__choices {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.cform__choices legend {
+  padding: 0;
+  margin-bottom: 0.5em;
+  font-size: clamp(0.68rem, 0.86vw, 0.8rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(243, 244, 246, 0.86);
+}
+.cform__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  position: relative;
+  cursor: pointer;
+}
+/* the radio stays in the page for keyboards and screen readers; the pill
+   is what shows. Scoped under .cform to beat the text-input styles. */
+.cform .chip input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.chip span {
+  display: inline-block;
+  padding: 0.55em 1.05em;
+  border-radius: 999px;
+  font-size: clamp(0.7rem, 0.84vw, 0.78rem);
+  letter-spacing: 0.02em;
+  color: rgba(243, 244, 246, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.chip:hover span { border-color: rgba(255, 255, 255, 0.24); color: var(--ink); }
+.chip input:checked + span {
+  color: #fff;
+  background: rgba(224, 57, 63, 0.18);
+  border-color: rgba(224, 57, 63, 0.7);
+}
+.chip input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* spam trap — out of sight and out of the tab order */
+.cform .cform__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
 /* ---------- narrower ---------- */
 @media (max-width: 940px) {
   .contact__inner {
@@ -313,4 +380,50 @@
     gap: clamp(2rem, 6vh, 3rem);
   }
   .contact__panel { order: 2; }
+}
+
+/* ---------- phones ----------
+   Thumb-sized targets, and 16px text in the fields: anything smaller and
+   iOS zooms the page in on focus and leaves it zoomed. */
+@media (max-width: 600px) {
+  .contact__details {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+  }
+  .contact__details li[aria-hidden] { display: none; }
+  .contact__details a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 1.1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-wrap: anywhere;
+  }
+
+  .cform__field label,
+  .cform__choices legend { font-size: 0.9rem; }
+  .cform input,
+  .cform textarea {
+    font-size: 16px;
+    padding: 0.8em 0.95em;
+  }
+  .chip span {
+    padding: 0.7em 1.1em;
+    font-size: 0.88rem;
+  }
+  .cform__error,
+  .cform__status { font-size: 0.85rem; }
+  .cform__submit {
+    align-self: stretch;
+    min-height: 52px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (hover: none) {
+  .cform__submit:hover { transform: none; background: var(--accent); }
 }

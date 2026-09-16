@@ -462,6 +462,12 @@ export function createGhostCursor(host, options = {}) {
   const gl = renderer.getContext();
   const buffers = new Map();
 
+  /* The buffer is read before CSS masks it: ghostCursor.css fades the
+     canvas out over its bottom --ghost-fade px. Coverage there is scaled
+     by the same ramp so type in that strip is not inked for smoke that
+     is not visible. */
+  const fadePx = parseFloat(getComputedStyle(host).getPropertyValue('--ghost-fade')) || 0;
+
   function sample(l, t, r, b) {
     const hostRect = host.getBoundingClientRect();
     const W = renderer.domElement.width;
@@ -498,8 +504,10 @@ export function createGhostCursor(host, options = {}) {
       let count = 0;
       for (let y = cy0; y < cy1; y++) {
         const row = (h - 1 - (y - y0)) * w;
+        const fromBottom = (H - y - 0.5) / sy;
+        const fade = fadePx ? Math.min(1, fromBottom / fadePx) : 1;
         for (let x = cx0; x < cx1; x++) {
-          const a = buf[(row + (x - x0)) * 4 + 3];
+          const a = buf[(row + (x - x0)) * 4 + 3] * fade;
           sum += a;
           if (a > peak) peak = a;
           count++;

@@ -15,6 +15,7 @@ import 'lenis/dist/lenis.css';
 import gsap from 'gsap';
 import Lenis from 'lenis';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { inject } from '@vercel/analytics';
 
 import { initPreloader } from './preloader.js';
 import { prepareHero, revealHero } from './hero.js';
@@ -26,6 +27,14 @@ import { initExperience } from './experience.js';
 import { initPractice } from './practice.js';
 import { initProcess } from './process.js';
 import { initContact } from './contact.js';
+
+/* ---------- analytics ----------
+   Vercel Web Analytics: page views, referrers, countries, devices — no
+   cookies. The script is served by Vercel itself once Analytics is enabled
+   on the project, so it is only injected on the deployed site. */
+if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+  inject({ mode: 'production' });
+}
 
 /* ---------- smooth scroll, driven by GSAP's ticker ---------- */
 const lenis = new Lenis({
@@ -45,7 +54,10 @@ lenis.on('scroll', ScrollTrigger.update);
    one of those remeasures every trigger mid-scroll, which is the stutter. */
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-/* no scrolling while the counter runs */
+/* no scrolling while the counter runs. The intro always starts at the top:
+   without 'manual' a refresh restores the old position after this scrollTo,
+   and the hero plays out of sight. */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 lenis.stop();
 window.scrollTo(0, 0);
 
@@ -86,7 +98,7 @@ async function initGhostCursor() {
     /* the small light type the smoke drifts behind goes black under it */
     onFrame: createHeroInk({
       split: [document.querySelector('.nav__tag'), document.querySelector('.hero__bio')],
-      whole: [document.getElementById('menuToggle')]
+      whole: [document.getElementById('menuToggle'), document.querySelector('.hero .btn--ghost')]
     })
   });
 }
@@ -125,7 +137,9 @@ document.addEventListener('click', (e) => {
      target="_blank" open a duplicate tab */
   if (hash.length < 2) return e.preventDefault();
 
-  const target = document.querySelector(hash);
+  /* by id, not querySelector — an id starting with a digit is not a valid
+     selector and would throw */
+  const target = document.getElementById(decodeURIComponent(hash.slice(1)));
   if (!target) return;
 
   e.preventDefault();

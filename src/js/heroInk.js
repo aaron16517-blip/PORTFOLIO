@@ -26,19 +26,18 @@
    around mid-grey on purpose: below it, the light type still out-contrasts
    the ground and black would vanish into the haze; above it, black wins.
    A low threshold was tried first and blacked out letters sitting on faint
-   grey, which read as gaps in the words. */
-const INK_START = 0.34;
-const INK_FULL  = 0.48;
+   grey, which read as gaps in the words.
+
+   A letter is either light or black, never between: a blend through the
+   switch left mid-grey letters on mid-grey smoke, which vanished. The two
+   thresholds are hysteresis, so a letter on the edge does not flicker. */
+const INK_ON  = 0.46;
+const INK_OFF = 0.36;
 
 /* letter boxes are re-measured at most this often. They only move on
    resize, font load and the intro reveal, and ~150 rect reads a frame is
    waste; scroll is corrected for without a re-measure. */
 const REMEASURE_MS = 300;
-
-const smoothstep = (a, b, x) => {
-  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
-  return t * t * (3 - 2 * t);
-};
 
 /* Replace each text node with one span per visible character. The letters
    are aria-hidden and the original sentence is kept once, visually hidden,
@@ -153,7 +152,7 @@ export function createHeroInk({ split = [], whole = [] } = {}) {
 
       for (const u of g.units) {
         const c = coverage(u.box[0], u.box[1] - dy, u.box[2], u.box[3] - dy);
-        write(u, Math.round(smoothstep(INK_START, INK_FULL, c) * 100) / 100);
+        write(u, c > (u.value ? INK_OFF : INK_ON) ? 1 : 0);
       }
     }
   };

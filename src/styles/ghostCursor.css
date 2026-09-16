@@ -11,10 +11,13 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* the hero clips at its bottom edge; fade the trail out before it gets
-     there so it dissolves into the next section instead of being cut flat */
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  /* the hero clips at its bottom edge; fade the trail out in a thin strip
+     there so it is not cut flat. Kept below the bio: a fade over the bottom
+     28% dimmed the smoke to grey behind it, unlike the full white smoke
+     everywhere else. --ghost-fade is read by ghostCursor.js. */
+  --ghost-fade: 22px;
+  -webkit-mask-image: linear-gradient(to top, transparent 0, #000 var(--ghost-fade));
+  mask-image: linear-gradient(to top, transparent 0, #000 var(--ghost-fade));
 }
 
 .ghost-cursor > canvas {
@@ -42,6 +45,20 @@
    (which loads after this file) without editing it. */
 .nav__dive[data-ink='whole'] {
   color: color-mix(in srgb, #000 calc(var(--ink, 0) * 100%), rgba(243, 244, 246, 0.9));
+}
+
+/* LET'S TALK is see-through, so the smoke washes out its label and
+   outline alike. Inked whole, border included; the base colours repeat
+   hero.css, and :hover is listed so its lighter border does not win. */
+.btn--ghost[data-ink='whole'],
+.btn--ghost[data-ink='whole']:hover {
+  color: color-mix(in srgb, #000 calc(var(--ink, 0) * 100%), rgba(243, 244, 246, 0.9));
+}
+.btn--ghost[data-ink='whole'] {
+  border-color: color-mix(in srgb, #000 calc(var(--ink, 0) * 100%), rgba(243, 244, 246, 0.28));
+}
+.btn--ghost[data-ink='whole']:hover {
+  border-color: color-mix(in srgb, #000 calc(var(--ink, 0) * 100%), rgba(243, 244, 246, 0.6));
 }
 
 /* the readable copy of a split sentence, for screen readers only */

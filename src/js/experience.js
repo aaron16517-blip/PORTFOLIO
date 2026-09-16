@@ -114,6 +114,10 @@ export function initExperience() {
   /* the curve is sized to the frame, so it is rebuilt whenever ScrollTrigger
      remeasures everything else */
   ScrollTrigger.addEventListener('refresh', measure);
+  /* ...and whenever the frame itself changes size. A refresh is skipped for
+     resizes ScrollTrigger treats as a phone's address bar, which left the
+     curve drawn for the old width — off to one side, the thread "gone". */
+  if (window.ResizeObserver) new ResizeObserver(measure).observe(svg);
 
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
@@ -140,11 +144,11 @@ export function initExperience() {
     .to(draw, { p: 1, duration: 0.20, ease: 'power1.in', onUpdate: walkThread }, 0.80);
 
   /* ---------- 3. the cards, one after another ---------- */
-  const REST_OFFSET = restOffsets();
+  /* read per refresh, so crossing the breakpoint re-picks row or column */
   cards.forEach((card, i) => {
     tl.to(card, {
       opacity: 1,
-      y: REST_OFFSET[i] ?? 0,
+      y: () => restOffsets()[i] ?? 0,
       scale: 1,
       duration: 0.22,
       ease: 'power2.out'

@@ -514,11 +514,10 @@
             and I&rsquo;ll get back to you.
           </p>
 
-          <!-- REPLACE with your real details -->
           <ul class="contact__details">
-            <li><a href="mailto:you@example.com">you@example.com</a></li>
+            <li><a href="mailto:info@genesisproductions.design">info@genesisproductions.design</a></li>
             <li aria-hidden="true">&bull;</li>
-            <li><a href="tel:+910000000000">+91 00000 00000</a></li>
+            <li><a href="tel:+918837016814">+91 88370 16814</a></li>
           </ul>
 
           <figure class="map">
@@ -556,12 +555,25 @@
                      placeholder="Where you work" />
             </div>
 
+            <fieldset class="cform__field cform__choices">
+              <legend>What do you need? <span class="cform__opt">optional</span></legend>
+              <div class="cform__chips">
+                <label class="chip"><input type="radio" name="service" value="Website" /><span>Website</span></label>
+                <label class="chip"><input type="radio" name="service" value="Web app" /><span>Web app</span></label>
+                <label class="chip"><input type="radio" name="service" value="Landing page" /><span>Landing page</span></label>
+                <label class="chip"><input type="radio" name="service" value="Something else" /><span>Something else</span></label>
+              </div>
+            </fieldset>
+
             <div class="cform__field">
               <label for="cfMessage">Message</label>
               <textarea id="cfMessage" name="message" rows="5"
                         placeholder="Type your message here" required></textarea>
               <p class="cform__error" data-for="cfMessage"></p>
             </div>
+
+            <!-- spam trap: hidden from people, filled in by bots -->
+            <input class="cform__trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
             <button class="cform__submit" type="submit" id="cfSubmit">
               <span class="cform__submit-text">Submit</span>
