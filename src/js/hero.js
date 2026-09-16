@@ -39,8 +39,12 @@ export function prepareHero() {
     touchArea: document.querySelector('.hero__centre')
   });
 
-  /* hide everything so nothing shows through the curtain */
-  gsap.set(pressure.chars, { opacity: 0, y: 60, filter: `blur(${LETTER_BLUR}px)` });
+  /* hide everything so nothing shows through the curtain. Phones skip the
+     filter entirely — even blur(0px) keeps a filter layer on every letter
+     for the whole reveal */
+  gsap.set(pressure.chars, LETTER_BLUR
+    ? { opacity: 0, y: 60, filter: `blur(${LETTER_BLUR}px)` }
+    : { opacity: 0, y: 60 });
   gsap.set('.js-reveal',   { opacity: 0, y: 22 });
 }
 
@@ -53,17 +57,19 @@ export function revealHero() {
   tl.to(pressure.chars, {
       opacity: 1,
       y: 0,
-      filter: 'blur(0px)',
+      ...(LETTER_BLUR ? { filter: 'blur(0px)' } : {}),
       duration: 1.4,
       ease: 'expo.out',
       stagger: 0.07,
-      clearProps: 'filter',
+      ...(LETTER_BLUR ? { clearProps: 'filter' } : {}),
       onComplete: () => {
         /* now the cursor takes over the letters' opacity */
         pressure.setAlphaActive(true);
         /* on touch, one swell rolls across the name so people find out
-           it answers a finger (no-op with a mouse) */
-        pressure.hint();
+           it answers a finger (no-op with a mouse). It waits for the smoke
+           to finish fading up, so the two heaviest moments of the load
+           don't land on the same frames. */
+        gsap.delayedCall(isLowPower ? 0.9 : 0, () => pressure.hint());
       }
     }, 0)
     .to('.js-reveal', {

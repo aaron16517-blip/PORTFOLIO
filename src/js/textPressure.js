@@ -146,8 +146,10 @@ export function createTextPressure(container, {
   /* anything that moves the letters wakes the loop */
   let awake = true;
   const wake = () => { awake = true; };
+  /* the touch loop caches letter positions; this tells it they moved */
+  let layoutChanged = () => {};
 
-  const debouncedSetSize = debounce(() => { setSize(); wake(); }, 100);
+  const debouncedSetSize = debounce(() => { setSize(); layoutChanged(); wake(); }, 100);
   setSize();
   let lastW = window.innerWidth;
   const onResize = () => {
@@ -159,7 +161,7 @@ export function createTextPressure(container, {
   window.addEventListener('resize', onResize);
 
   /* the font arrives after first paint — remeasure once it does */
-  if (document.fonts?.ready) document.fonts.ready.then(() => { setSize(); wake(); });
+  if (document.fonts?.ready) document.fonts.ready.then(() => { setSize(); layoutChanged(); wake(); });
 
   /* off screen, nothing to update */
   let onScreen = true;
@@ -185,10 +187,32 @@ export function createTextPressure(container, {
     let engage = 0;         // 0 = resting, 1 = the swell is fully raised
     let engageTarget = 0;
     let hintTween = null;
+    let swollen = false;    // true while any letter is off its rest pose
+    const written = spans.map(() => restSettings);
     awake = false;          // at rest there is nothing to do
 
     const area = touchArea || container;
     const setFinger = (t) => { finger.x = t.clientX; finger.y = t.clientY; };
+
+    /* The layout is read only while the name is at rest, then reused.
+       Reading it every frame forced a full-page layout per frame, because
+       the scroll animations write styles earlier in the same tick — and on
+       a phone that was most of the lag. Positions are stored against the
+       page, so scrolling needs no re-read. The swell is placed from the
+       rest positions, which also keeps it from chasing its own growth. */
+    let needMeasure = true;
+    let restW = 0;
+    let restMidY = 0;   // page-space centre line of the word
+    const measureRest = () => {
+      const r = title.getBoundingClientRect();
+      if (!r.width) return;
+      restW = r.width;
+      restMidY = r.y + r.height / 2 + window.scrollY;
+      measure();
+      needMeasure = false;
+    };
+    const remeasure = () => { needMeasure = true; };
+    layoutChanged = remeasure;
 
     /* passive, and nothing is prevented: a touch on the name still scrolls
        the page. The swell simply rides along with it. */
@@ -225,14 +249,14 @@ export function createTextPressure(container, {
       const f = Math.min(3, (deltaMs || 16.7) / 16.7);
       const ease = (k) => 1 - Math.pow(1 - k, f);
 
+      /* read — only while every letter still sits in its rest pose */
+      if (needMeasure && engage < 0.001 && !swollen) measureRest();
+      const reach = restW * REACH;
+      if (!reach) return;
+
       engage += (engageTarget - engage) * ease(engageTarget > engage ? ENGAGE_IN : ENGAGE_OUT);
 
-      /* read */
-      const titleRect = title.getBoundingClientRect();
-      const reach = titleRect.width * REACH;
-      if (!reach) return;
-      measure();
-      const midY = titleRect.y + titleRect.height / 2;
+      const midY = restMidY - window.scrollY;
       /* a finger a little above or below the word still counts; vertical
          distance is weighted down so the swell tracks the finger's x */
       const dy = (finger.y - midY) * 0.45;
@@ -254,9 +278,19 @@ export function createTextPressure(container, {
         c.wdth += (td - c.wdth) * follow;
         if (Math.abs(tw - c.wght) > 0.5 || Math.abs(td - c.wdth) > 0.3) moving = true;
 
-        const settings = `'wght' ${Math.round(c.wght)}, 'wdth' ${Math.round(c.wdth)}, 'ital' 0`;
-        if (spans[i].style.fontVariationSettings !== settings) {
+        /* coarse steps: each new value re-shapes and re-rasterises a
+           100px glyph and its outline, and single-unit steps at the tail of
+           an ease are invisible */
+        const wg = Math.round(c.wght / 8) * 8;
+        const wd = Math.round(c.wdth / 2) * 2;
+        /* compared with what was last written: the browser hands the style
+           back re-quoted, so comparing with it matched nothing and every
+           letter was rewritten every frame */
+        const settings = `'wght' ${wg}, 'wdth' ${wd}, 'ital' 0`;
+        if (written[i] !== settings) {
+          written[i] = settings;
           spans[i].style.fontVariationSettings = settings;
+          if (settings !== restSettings) swollen = true;
         }
       }
 
@@ -264,11 +298,15 @@ export function createTextPressure(container, {
       if (!moving && engageTarget === 0) {
         engage = 0;
         awake = false;
+        swollen = false;
         /* land exactly on the rest pose, not a unit off it */
         for (let i = 0; i < spans.length; i++) {
           cur[i].wght = REST.wght;
           cur[i].wdth = REST.wdth;
-          spans[i].style.fontVariationSettings = restSettings;
+          if (written[i] !== restSettings) {
+            written[i] = restSettings;
+            spans[i].style.fontVariationSettings = restSettings;
+          }
         }
       }
     };
@@ -276,6 +314,8 @@ export function createTextPressure(container, {
     /* one sweep across the name after the intro: the affordance */
     const hint = () => {
       if (hintTween || engageTarget === 1) return;
+      /* the reveal has just put every letter in place — read that layout */
+      remeasure();
       const r = title.getBoundingClientRect();
       if (!r.width) return;
       const proxy = { x: r.left - r.width * 0.15 };
@@ -288,10 +328,9 @@ export function createTextPressure(container, {
         duration: 1.8,
         ease: 'power1.inOut',
         onUpdate: () => {
-          /* re-read y each frame in case the page moved under it */
-          const rr = title.getBoundingClientRect();
+          /* follow the word if the page scrolls, from the cached line */
           finger.x = proxy.x;
-          finger.y = rr.y + rr.height / 2;
+          finger.y = restMidY ? restMidY - window.scrollY : finger.y;
           wake();
         },
         onComplete: () => {
@@ -306,7 +345,7 @@ export function createTextPressure(container, {
 
     return {
       chars: spans,
-      refresh() { setSize(); wake(); },
+      refresh() { setSize(); remeasure(); wake(); },
       setAlphaActive() {},
       hint,
       destroy() {
@@ -332,6 +371,8 @@ export function createTextPressure(container, {
     mouse.x = cursor.x = left + w / 2;
     mouse.y = cursor.y = top + h / 2;
   }
+
+  const lastSettings = spans.map(() => '');
 
   const onMouseMove = (e) => { cursor.x = e.clientX; cursor.y = e.clientY; wake(); };
   /* the letters' distances are in viewport space, so a scroll moves them */
@@ -365,8 +406,12 @@ export function createTextPressure(container, {
       const italVal = italic ? getAttr(d, maxDist, 0, 1).toFixed(2)      : 0;
       const alphaV  = alpha  ? getAttr(d, maxDist, 0, 1).toFixed(2)      : 1;
 
+      /* compared with what was last written — the style reads back
+         re-quoted, which made every frame look changed and kept this loop
+         from ever sleeping */
       const settings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
-      if (span.style.fontVariationSettings !== settings) {
+      if (lastSettings[i] !== settings) {
+        lastSettings[i] = settings;
         span.style.fontVariationSettings = settings;
         changed = true;
       }
