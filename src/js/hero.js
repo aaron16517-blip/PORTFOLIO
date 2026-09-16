@@ -32,7 +32,11 @@ export function prepareHero() {
     /* red-on-red smoke is invisible; the reference's outlines read light */
     strokeColor: '#ffffff',
     minFontSize: 36,
-    maxFontSize: 300
+    maxFontSize: 300,
+
+    /* touch: the whole middle band of the hero answers a finger, not just
+       the letters' own box — the name is tall and thin, a hard target */
+    touchArea: document.querySelector('.hero__centre')
   });
 
   /* hide everything so nothing shows through the curtain */
@@ -54,8 +58,13 @@ export function revealHero() {
       ease: 'expo.out',
       stagger: 0.07,
       clearProps: 'filter',
-      /* now the cursor takes over the letters' opacity */
-      onComplete: () => pressure.setAlphaActive(true)
+      onComplete: () => {
+        /* now the cursor takes over the letters' opacity */
+        pressure.setAlphaActive(true);
+        /* on touch, one swell rolls across the name so people find out
+           it answers a finger (no-op with a mouse) */
+        pressure.hint();
+      }
     }, 0)
     .to('.js-reveal', {
       opacity: 1,

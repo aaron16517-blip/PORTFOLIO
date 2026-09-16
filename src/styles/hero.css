@@ -82,6 +82,9 @@
   flex-direction: column;
   justify-content: center;
   padding-block: clamp(1rem, 4vh, 3rem);
+  /* the name answers touch — no grey tap flash, no long-press callout */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 .pressure {
