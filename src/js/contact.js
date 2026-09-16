@@ -23,7 +23,7 @@ gsap.registerPlugin(ScrollTrigger);
    Without a key the form still works: it opens the visitor's mail app
    with the message filled in, addressed to CONTACT_EMAIL.
    ------------------------------------------------------------------ */
-const WEB3FORMS_KEY = '';
+const WEB3FORMS_KEY = '0b5876ae-6b41-4684-968e-ec4c96ee5961';
 const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 const CONTACT_EMAIL = 'info@genesisproductions.design';
 
