@@ -70,6 +70,12 @@ a section.
   blur, no arc glow filter, no backdrop blur on the SCROLL pill; resize
   ignores height-only changes (address bar); style writes go through the
   `put`/`putVar` cache; the tick ring rotates as its own layer.
+  Phones also get half-size scene images (`sky-m.jpg`, `meadow-m.webp` via
+  <picture>), sentence-level (not per-word) text motion, no hold zoom, a
+  smaller dive scale, no blend modes or ray layer, and `.eden-world.is-gone`
+  once the dive's light covers it. Running out of GPU memory makes a phone
+  silently skip layers (blank sky, missing hero name) — keep it lean.
+  The sky/meadow colour grade is baked into the files (no CSS filters).
 - The hero cursor trail blends `multiply` with a `tint` (main.js);
   `heroInk.js` is no longer wired in.
 - No `backdrop-filter` over smooth gradients or on moving elements, no

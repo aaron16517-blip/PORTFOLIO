@@ -147,7 +147,6 @@
 }
 .text-pressure-title span {
   display: inline-block;
-  will-change: font-variation-settings;
 }
 .text-pressure-title.is-stroke span {
   position: relative;

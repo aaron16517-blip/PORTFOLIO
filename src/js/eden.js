@@ -282,11 +282,11 @@ function petalField(canvas, opts, SPR) {
   };
 
   function resize(w, h) {
-    dpr = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.5 : 2);
+    dpr = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.25 : 2);
     W = w; H = h;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
-    const n = Math.round(opts.count * (w < 700 ? 0.55 : 1));
+    const n = Math.round(opts.count * (isLowPower ? 0.4 : w < 700 ? 0.55 : 1));
     list.length = 0;
     for (let i = 0; i < n; i++) list.push(spawn({}, true));
   }
@@ -440,9 +440,11 @@ export function initEden({ lenis } = {}) {
   const front = petalField($('#edenPetalsFront'),
     { count: 12, z: [1.3, 2.3], size: [38, 90], green: 0.25, blur: (z) => (z > 1.8 ? 2 : 1), alpha: () => 0.9 }, SPR);
 
-  const w1 = splitWords($('#edenS1'));
-  const w2 = splitWords($('#edenS2'));
-  const w3 = splitWords($('#edenS3'));
+  /* phones move each sentence as one piece: per-word motion was ~45 layers */
+  const s1 = $('#edenS1'), s2 = $('#edenS2'), s3 = $('#edenS3');
+  const w1 = isLowPower ? null : splitWords(s1);
+  const w2 = isLowPower ? null : splitWords(s2);
+  const w3 = isLowPower ? null : splitWords(s3);
   const P = makePoses();
 
   /* ---------- layout ---------- */
@@ -503,7 +505,16 @@ export function initEden({ lenis } = {}) {
     el.style.transform = `translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0) rotate(${r.toFixed(3)}deg) scale(${sc.toFixed(4)})`;
   }
 
-  function words(list, p, a, b, c, d) {
+  function line(el, p, a, b, c, d) {
+    const inn = E.out(seg(p, a, b + (b - a) * 0.6));
+    const out = E.in(seg(p, c, d));
+    const o = inn * (1 - out);
+    put(el, 'opacity', o.toFixed(3));
+    if (o > 0.001) put(el, 'transform', `translate3d(-50%,${((1 - inn) * 26 - out * 24).toFixed(1)}px,0)`);
+  }
+
+  function words(list, p, a, b, c, d, el) {
+    if (!list) { line(el, p, a, b, c, d); return; }
     const n = list.length;
     list.forEach((el, i) => {
       const off = i / Math.max(1, n) * (b - a) * 0.9;
@@ -566,14 +577,19 @@ export function initEden({ lenis } = {}) {
     const dive = E.in(seg(p, 0.84, 1));
     /* holding pushes the camera in a touch, as if leaning towards it */
     holdE = lerp(holdE, connected ? 0 : holdV, 1 - Math.exp(-dt * 8));
-    const zoom = introZoom * (1 + 0.035 * E.out(holdE));
-    world.style.transform = Math.abs(zoom - 1) > 0.0001 ? `scale(${zoom.toFixed(4)})` : '';
+    /* phones skip the lean: rescaling the whole world every frame is a
+       full re-raster there */
+    const zoom = introZoom * (isLowPower ? 1 : 1 + 0.035 * E.out(holdE));
+    put(world, 'transform', Math.abs(zoom - 1) > 0.0001 ? `scale(${zoom.toFixed(4)})` : '');
+    /* under the dive's full light nothing of the world shows — free it */
+    world.classList.toggle('is-gone', p > 0.965);
+    const DV = isLowPower ? 0.35 : 1;
     /* the scene leans after the cursor, a little: the far sky least, the
        meadow more, the hands and copy most — depth, not a slide */
     mX = lerp(mX, tmX, 1 - Math.exp(-dt * 3.5));
     mY = lerp(mY, tmY, 1 - Math.exp(-dt * 3.5));
-    sky.style.transform = `translate3d(${(-mX * 10).toFixed(2)}px,${(H * 0.025 * k + H * 0.05 * dive - mY * 6).toFixed(2)}px,0) scale(${(1 + 0.07 * k + 0.5 * dive).toFixed(4)})`;
-    meadow.style.transform = `translate3d(${(-mX * 8).toFixed(2)}px,${(-H * 0.06 * k - mY * 5).toFixed(2)}px,0) scale(${(1.01 + 0.2 * k + 1.3 * dive).toFixed(4)})`;
+    sky.style.transform = `translate3d(${(-mX * 10).toFixed(2)}px,${(H * 0.025 * k + H * 0.05 * dive - mY * 6).toFixed(2)}px,0) scale(${(1 + 0.07 * k + 0.5 * dive * DV).toFixed(4)})`;
+    meadow.style.transform = `translate3d(${(-mX * 8).toFixed(2)}px,${(-H * 0.06 * k - mY * 5).toFixed(2)}px,0) scale(${(1.01 + 0.2 * k + 1.3 * dive * DV).toFixed(4)})`;
     copyEls.forEach((el, i) => {
       el.style.transform = `translate3d(${(mX * (6 + i * 4)).toFixed(2)}px,${(mY * (4 + i * 2)).toFixed(2)}px,0)`;
     });
@@ -647,15 +663,17 @@ export function initEden({ lenis } = {}) {
     const jobOut = seg(p, 0.08, 0.2);
     put(job, 'opacity', (1 - E.smooth(jobOut)).toFixed(3));
     if (BLUR) put(job, 'filter', jobOut > 0.001 && jobOut < 0.999 ? `blur(${(jobOut * 14).toFixed(1)}px)` : '');
-    if (jobOut < 1) {
+    if (isLowPower) {
+      if (jobOut < 1) put(job, 'transform', `translate3d(0,${(-jobOut * 40).toFixed(1)}px,0) scale(${(1 + jobOut * 0.2).toFixed(3)})`);
+    } else if (jobOut < 1) {
       jobLetters.forEach((l, i) => {
         const off = i - (jobLetters.length - 1) / 2;
         put(l, 'transform', `translate3d(${(off * jobOut * 60).toFixed(1)}px,${(-jobOut * 40 - Math.abs(off) * jobOut * 10).toFixed(1)}px,0) scale(${(1 + jobOut * 0.25).toFixed(3)})`);
       });
     }
-    words(w1, p, 0.2, 0.28, 0.37, 0.42);
-    words(w2, p, 0.42, 0.5, 0.56, 0.6);
-    words(w3, p, 0.6, 0.68, 0.8, 0.85);
+    words(w1, p, 0.2, 0.28, 0.37, 0.42, s1);
+    words(w2, p, 0.42, 0.5, 0.56, 0.6, s2);
+    words(w3, p, 0.6, 0.68, 0.8, 0.85, s3);
     /* the light: a white bloom first, then it settles to the hero's flat
        frost ground, which is what the hero's smoke rises out of */
     put(flash, 'opacity', E.smooth(seg(p, 0.86, 0.96)).toFixed(3));

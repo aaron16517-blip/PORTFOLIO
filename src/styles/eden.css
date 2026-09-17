@@ -73,8 +73,9 @@ html.eden-gated .foot { display: none; }
 .eden-world { position: absolute; inset: 0; transform-origin: 50% 50%; }
 .eden-layer { position: absolute; left: 0; top: 0; pointer-events: none; }
 .eden-layer img { width: 100%; height: 100%; display: block; }
-#edenSky img    { filter: saturate(0.82) brightness(1.04); }
-#edenMeadow img { filter: saturate(0.9) brightness(1.02); }
+/* the grade (saturate / brightness) is baked into the images — a CSS filter
+   on a layer this size is re-rendered every time it rescales */
+.eden-layer picture { display: contents; }
 
 .eden-sunwash {
   position: absolute;
@@ -225,8 +226,9 @@ html.eden-gated .foot { display: none; }
   display: inline-block;
   margin: 0 0.1em;
   opacity: 0;
-  will-change: transform, opacity, filter;
 }
+/* phones animate each sentence as one piece (eden.js) */
+.is-lowpower .eden-statement { opacity: 0; }
 
 /* ---------- press & hold ----------
    A lens of dark glass between the fingertips, so it reads on the bright
@@ -434,6 +436,20 @@ html.eden-gated .foot { display: none; }
    re-rendered as the arc fills, and the SCROLL pill's backdrop blur sits
    over the ice, which moves every frame — both are pure cost there */
 .is-lowpower .eden-hold__arc { filter: none; stroke-width: 3.5; }
+/* Phones: every layer here costs GPU memory, and when a phone runs out it
+   silently stops drawing layers — the blank sky and the missing hero name.
+   The layers that rescale get their own stable raster (no re-raster per
+   frame), and the blend-mode passes and the ray layer go. */
+.is-lowpower .eden-world,
+.is-lowpower .eden-layer,
+.is-lowpower .eden-hand { will-change: transform; }
+.is-lowpower .eden-rays { display: none; }
+.is-lowpower .eden-sunwash { mix-blend-mode: normal; opacity: 0.55; animation: none; }
+.is-lowpower .eden-spark { mix-blend-mode: normal; will-change: auto; }
+.is-lowpower .eden-job,
+.is-lowpower .eden-job span { will-change: auto; }
+/* once the dive's light covers it, the scene is dropped entirely */
+.eden-world.is-gone { visibility: hidden; }
 .is-lowpower .eden-hint {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;

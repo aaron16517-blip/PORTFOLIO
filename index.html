@@ -14,8 +14,11 @@
   <!-- the Eden opening scene's own faces -->
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="/eden/ice.webp" />
-  <link rel="preload" as="image" href="/eden/sky.jpg" />
-  <link rel="preload" as="image" href="/eden/meadow-wide.webp" />
+  <!-- phones get half-size scene images: a 4000px meadow is ~26MB decoded -->
+  <link rel="preload" as="image" href="/eden/sky.jpg" media="(min-width: 861px)" />
+  <link rel="preload" as="image" href="/eden/meadow-wide.webp" media="(min-width: 861px)" />
+  <link rel="preload" as="image" href="/eden/sky-m.jpg" media="(max-width: 860px)" />
+  <link rel="preload" as="image" href="/eden/meadow-m.webp" media="(max-width: 860px)" />
 
   <script type="module" src="/src/js/main.js"></script>
 </head>
@@ -61,10 +64,10 @@
     <section class="eden" id="eden" aria-label="Opening">
       <div class="eden-stage" id="edenStage">
         <div class="eden-world" id="edenWorld">
-          <div class="eden-layer" id="edenSky"><img src="/eden/sky.jpg" alt="" decoding="async" /></div>
+          <div class="eden-layer" id="edenSky"><picture><source media="(max-width: 860px)" srcset="/eden/sky-m.jpg" /><img src="/eden/sky.jpg" alt="" decoding="async" /></picture></div>
           <div class="eden-sunwash"></div>
           <div class="eden-rays"></div>
-          <div class="eden-layer" id="edenMeadow"><img src="/eden/meadow-wide.webp" alt="" decoding="async" /></div>
+          <div class="eden-layer" id="edenMeadow"><picture><source media="(max-width: 860px)" srcset="/eden/meadow-m.webp" /><img src="/eden/meadow-wide.webp" alt="" decoding="async" /></picture></div>
           <canvas class="eden-petals" id="edenPetalsBack"></canvas>
           <div class="eden-copy">
             <div class="eden-job-wrap">
