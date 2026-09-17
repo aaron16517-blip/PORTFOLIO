@@ -37,13 +37,23 @@ export function initProjects() {
     opacity: 0,
     y: 48,
     scale: 0.965,
-    /* six blurred cards at once is a lot for a phone; they still rise */
-    filter: isLowPower ? 'blur(0px)' : 'blur(12px)',
+    /* six blurred cards at once is a lot for a phone; they still rise.
+       No filter at all there — even blur(0px) gives each card a filter pass */
+    ...(isLowPower ? {} : { filter: 'blur(12px)' }),
     duration: 1.1,
     ease: 'expo.out',
     stagger: 0.075,
-    clearProps: 'filter,scale'
+    clearProps: isLowPower ? 'scale' : 'filter,scale'
   });
+
+  /* ---------- decode the shots before they are scrolled to ----------
+     The first frame a ~1000px photo is painted used to pay for its decode,
+     a visible hitch as the grid came up on a phone. Decoding them while the
+     visitor is still in the opening scene moves that cost off the scroll. */
+  const warm = () => section.querySelectorAll('img').forEach((img) => img.decode?.().catch(() => {}));
+  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
+  if (document.readyState === 'complete') idle(warm);
+  else window.addEventListener('load', () => idle(warm), { once: true });
 
   /* ---------- the sheen follows the pointer ----------
      Written to .card__sheen, never to the backdrop-filtered .card__inner,

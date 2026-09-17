@@ -47,6 +47,42 @@ export function initMind(canvas) {
 
   const px = new Float32Array(N), py = new Float32Array(N), pz = new Float32Array(N);
 
+  /* Batching: every edge and node used to be its own stroke()/fill() with a
+     freshly built colour string — ~570 draw calls and colour parses a frame.
+     Colour depends only on the signal pulse and the depth, so both are
+     quantised into buckets and each bucket is one path, one draw call.
+     The steps are finer than the eye can pick out on hairlines. */
+  const PQ = 12;                  /* pulse levels */
+  const DQ = 6;                   /* depth levels */
+  const NB = PQ * DQ;
+  const ink = (p) => Math.round(15 + p * 28) + ',' + Math.round(34 + p * 110) + ',' + Math.round(32 + p * 98);
+  const edgeStyle = [], nodeStyle = [];
+  for (let q = 0; q < PQ; q++) {
+    const p = q / (PQ - 1);
+    for (let s = 0; s < DQ; s++) {
+      const depth = s / (DQ - 1);
+      edgeStyle.push('rgba(' + ink(p) + ',' + ((0.025 + depth * 0.075 + p * 0.30) * 1.4).toFixed(3) + ')');
+      nodeStyle.push('rgba(' + ink(p) + ',' + (0.09 + depth * 0.22 + p * 0.42).toFixed(3) + ')');
+    }
+  }
+  const nE = E.length / 2;
+  const eBucket = new Uint8Array(nE), nBucket = new Uint8Array(N);
+  const eCount = new Uint16Array(NB + 1), nCount = new Uint16Array(NB + 1);
+  const eOrder = new Uint16Array(nE), nOrder = new Uint16Array(N);
+  const nRad = new Float32Array(N);
+  const bucketOf = (pulse, depth) =>
+    Math.min(PQ - 1, Math.round(pulse * (PQ - 1))) * DQ + Math.min(DQ - 1, Math.max(0, Math.round(depth * (DQ - 1))));
+  /* counting sort into buckets, so each bucket is a contiguous run */
+  const sortInto = (bucket, count, order, n) => {
+    count.fill(0);
+    for (let i = 0; i < n; i++) count[bucket[i] + 1]++;
+    for (let b = 0; b < NB; b++) count[b + 1] += count[b];
+    const at = count.slice(0, NB);
+    for (let i = 0; i < n; i++) order[at[bucket[i]]++] = i;
+  };
+  /* the glow only changes with the canvas size */
+  let core = null;
+
   const size = () => {
     const r = canvas.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) { W = H = 0; return; }
@@ -58,6 +94,11 @@ export function initMind(canvas) {
     canvas.width = W * DPR;
     canvas.height = H * DPR;
     c.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const R = Math.min(W, H) * 0.34;
+    core = c.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, R * 0.9);
+    core.addColorStop(0,   'rgba(127,196,181,0.34)');
+    core.addColorStop(0.5, 'rgba(127,196,181,0.12)');
+    core.addColorStop(1,   'rgba(127,196,181,0)');
   };
   size();
   /* the observer already catches every size change that matters, and the
@@ -77,7 +118,8 @@ export function initMind(canvas) {
     /* it turns at a fifth of a radian a second — 30fps is indistinguishable
        and halves the work while the phone is also scrolling */
     /* full rate on phones too — at 30fps the turn read as a stutter */
-    if (now - lastDraw < 12) return;
+    /* and uncapped: batched, a frame is cheap enough for a 120Hz panel */
+    if (now === lastDraw) return;
     lastDraw = now;
 
     const t = now * 0.001;
@@ -107,22 +149,24 @@ export function initMind(canvas) {
     const phase = ((t * 0.30) % 1) * 2 - 1;
 
     /* ---------- edges ---------- */
-    c.lineWidth = 1;
-    for (let k = 0; k < E.length; k += 2) {
-      const i = E[k], j = E[k + 1];
-      const zm = (pz[i] + pz[j]) * 0.5;
-      const depth = (zm + 1) * 0.5;               /* 0 back .. 1 front */
+    /* sea-ink at rest, the ice teal where the signal is */
+    for (let k = 0; k < nE; k++) {
+      const zm = (pz[E[k * 2]] + pz[E[k * 2 + 1]]) * 0.5;
       const dz = zm - phase;
-      const pulse = Math.exp(-(dz * dz) / 0.012);
-      const a = 0.025 + depth * 0.075 + pulse * 0.30;
-      /* sea-ink at rest, the ice teal where the signal is */
-      c.strokeStyle = 'rgba(' + Math.round(15 + pulse * 28) + ','
-                              + Math.round(34 + pulse * 110) + ','
-                              + Math.round(32 + pulse * 98) + ','
-                              + (a * 1.4).toFixed(3) + ')';
+      eBucket[k] = bucketOf(Math.exp(-(dz * dz) / 0.012), (zm + 1) * 0.5);
+    }
+    sortInto(eBucket, eCount, eOrder, nE);
+    c.lineWidth = 1;
+    for (let b = 0; b < NB; b++) {
+      const from = eCount[b], to = eCount[b + 1];
+      if (from === to) continue;
+      c.strokeStyle = edgeStyle[b];
       c.beginPath();
-      c.moveTo(px[i], py[i]);
-      c.lineTo(px[j], py[j]);
+      for (let o = from; o < to; o++) {
+        const k = eOrder[o], i = E[k * 2], j = E[k * 2 + 1];
+        c.moveTo(px[i], py[i]);
+        c.lineTo(px[j], py[j]);
+      }
       c.stroke();
     }
 
@@ -131,21 +175,24 @@ export function initMind(canvas) {
       const depth = (pz[i] + 1) * 0.5;
       const dz = pz[i] - phase;
       const pulse = Math.exp(-(dz * dz) / 0.012);
-      const rad = 0.6 + depth * 1.3 + pulse * 1.6;
-      c.fillStyle = 'rgba(' + Math.round(15 + pulse * 28) + ','
-                            + Math.round(34 + pulse * 110) + ','
-                            + Math.round(32 + pulse * 98) + ','
-                            + (0.09 + depth * 0.22 + pulse * 0.42).toFixed(3) + ')';
+      nRad[i] = 0.6 + depth * 1.3 + pulse * 1.6;
+      nBucket[i] = bucketOf(pulse, depth);
+    }
+    sortInto(nBucket, nCount, nOrder, N);
+    for (let b = 0; b < NB; b++) {
+      const from = nCount[b], to = nCount[b + 1];
+      if (from === to) continue;
+      c.fillStyle = nodeStyle[b];
       c.beginPath();
-      c.arc(px[i], py[i], rad, 0, TAU);
+      for (let o = from; o < to; o++) {
+        const i = nOrder[o];
+        c.moveTo(px[i] + nRad[i], py[i]);
+        c.arc(px[i], py[i], nRad[i], 0, TAU);
+      }
       c.fill();
     }
 
     /* ---------- the core ---------- */
-    const core = c.createRadialGradient(cx, cy, 0, cx, cy, R * 0.9);
-    core.addColorStop(0,   'rgba(127,196,181,0.34)');
-    core.addColorStop(0.5, 'rgba(127,196,181,0.12)');
-    core.addColorStop(1,   'rgba(127,196,181,0)');
     c.fillStyle = core;
     c.beginPath();
     c.arc(cx, cy, R * 0.9, 0, TAU);

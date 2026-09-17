@@ -247,7 +247,11 @@ export function createClouds(canvas) {
      the same and the full-screen shader runs half as often or less */
   /* 60 everywhere: on a phone the buffer is about half a CSS pixel, cheap
      enough for full rate — and the scroll-linked rise looked stepped at 30 */
-  const FRAME_MS = 1000 / 60;
+  /* Phones now run at the panel's own rate (90/120Hz where the browser
+     allows it): their buffer is ~80k pixels, and a 120Hz scroll against
+     60Hz smoke reads as judder. Desktop buffers are 30x larger, so they
+     keep the 60 cap. */
+  const FRAME_MS = isLowPower ? 0 : 1000 / 60;
   let sinceDraw = 0;
 
   const state = { intro: 0, rise: 1 };

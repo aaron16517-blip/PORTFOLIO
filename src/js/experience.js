@@ -75,9 +75,9 @@ export function initExperience() {
     path.style.strokeDashoffset = String(len * (1 - draw.p));
     /* the dot sits on the drawn end of the line — same units, so it stays
        exactly on the head of the stroke the whole way down */
+    /* moved by transform: left/top re-laid the page out on every scrub frame */
     const pt = path.getPointAtLength(len * draw.p);
-    dot.style.left = pt.x + 'px';
-    dot.style.top  = pt.y + 'px';
+    dot.style.transform = `translate3d(${pt.x.toFixed(1)}px,${pt.y.toFixed(1)}px,0)`;
   };
 
   const measure = () => {

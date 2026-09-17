@@ -56,15 +56,26 @@ export function igniteSmoke(duration = 1.6) {
 /* 0..1 while the hero rises over Eden. The frost ground and veil behind
    the canvas would cover the dive, so they wait for the smoke, unless
    there is no WebGL smoke, when they are all there is. */
+/* A custom property on .hero restyles the whole hero subtree, so each is
+   written only when its value actually changes — during the rise that is
+   one or two a frame, and none at all once the hero has settled. */
+let heroEl;
+const heroVars = {};
+const putHeroVar = (name, value) => {
+  if (heroVars[name] === value) return;
+  heroVars[name] = value;
+  heroEl.style.setProperty(name, value);
+};
+
 export function setSmokeRise(v) {
   clouds.setRise(v);
-  const hero = document.getElementById('hero');
-  hero.style.setProperty('--hero-solid', !clouds.ok || v > 0.999 ? '1' : '0');
-  hero.style.setProperty('--hero-veil', clouds.ok ? (v * v).toFixed(3) : '1');
+  heroEl ||= document.getElementById('hero');
+  putHeroVar('--hero-solid', !clouds.ok || v > 0.999 ? '1' : '0');
+  putHeroVar('--hero-veil', clouds.ok ? (v * v).toFixed(3) : '1');
   /* the type waits for the smoke to reach it, so none of it floats over
      the meadow when the visitor scrolls back up */
   const c = Math.min(1, Math.max(0, (v - 0.35) / 0.4));
-  hero.style.setProperty('--hero-content', (c * c * (3 - 2 * c)).toFixed(3));
+  putHeroVar('--hero-content', (c * c * (3 - 2 * c)).toFixed(3));
 }
 
 export function revealHero() {

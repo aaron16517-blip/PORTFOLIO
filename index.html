@@ -9,10 +9,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap" rel="stylesheet" />
-  <!-- the Eden opening scene's own faces -->
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- one stylesheet request for every face (the last three are the Eden
+       opening scene's own) — three render-blocking requests cost a phone
+       on a slow network most of a second -->
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="/eden/ice.webp" />
   <!-- phones get half-size scene images: a 4000px meadow is ~26MB decoded -->
   <link rel="preload" as="image" href="/eden/sky.jpg" media="(min-width: 861px)" />
@@ -152,7 +152,7 @@
         <a class="card card--feature" href="/work/obsidian/index.html" target="_blank" rel="noopener">
           <span class="card__inner">
             <span class="card__thumb">
-              <img src="/assets/obsidian.jpg" alt="" style="object-position: 50% 26%" />
+              <img src="/assets/obsidian.jpg" alt="" decoding="async" style="object-position: 50% 26%" />
             </span>
             <span class="card__meta">
               <span class="card__index">01</span>
@@ -187,7 +187,7 @@
         <a class="card" href="/work/solara/index.html" target="_blank" rel="noopener">
           <span class="card__inner">
             <span class="card__thumb">
-              <img src="/assets/solara.jpg" alt="" style="object-position: 50% 42%" />
+              <img src="/assets/solara.jpg" alt="" decoding="async" style="object-position: 50% 42%" />
             </span>
             <span class="card__meta">
               <span class="card__index">03</span>
@@ -550,7 +550,7 @@
           </ul>
 
           <figure class="map">
-            <img class="map__dots" src="/assets/world-dots.svg" alt="" width="1230" height="620" />
+            <img class="map__dots" src="/assets/world-dots.svg" alt="" decoding="async" width="1230" height="620" />
             <span class="map__pin">
               <span class="map__label">We are here</span>
               <span class="map__beam"></span>

@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import { isLowPower } from './device.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -142,11 +143,11 @@ export function initProcess() {
   gsap.from(section.querySelectorAll('.process__eyebrow, .process__title, .process__lede'), {
     y: 26,
     opacity: 0,
-    filter: 'blur(7px)',
+    /* no reveal blur on phones — it rasterises three text blocks per frame */
+    ...(isLowPower ? {} : { filter: 'blur(7px)', clearProps: 'filter' }),
     duration: 1,
     ease: 'power3.out',
     stagger: 0.09,
-    clearProps: 'filter',
     scrollTrigger: { trigger: section, start: 'top 72%' }
   });
 

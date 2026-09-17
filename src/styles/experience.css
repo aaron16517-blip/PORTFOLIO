@@ -117,7 +117,10 @@
    stretched coordinate space the thread is drawn in */
 .exp__dot {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 0;
+  will-change: transform;
   width: 9px;
   height: 9px;
   margin: -4.5px 0 0 -4.5px;

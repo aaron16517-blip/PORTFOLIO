@@ -77,7 +77,14 @@ a section.
   silently skip layers (blank sky, missing hero name) — keep it lean.
   The sky/meadow colour grade is baked into the files (no CSS filters).
   Eden sleeps as soon as the hero has fully risen over it. The hero smoke
-  and the practice sphere run at 60fps on phones too. On touch the hero
+  and the practice sphere are uncapped on phones (90/120Hz panels get their
+  full rate); desktop smoke stays capped at 60. The sphere batches its
+  strokes into colour buckets (`mind.js`) — keep it that way.
+- **Per-frame loops never read layout.** Eden caches its runway
+  (`measureRunway`), per-frame style writes go through `put`/`putVar` or a
+  value cache (`putHeroVar` in hero.js), the experience dot moves by
+  transform, and CSS keyframes animate transform/opacity only (the process
+  equaliser used to animate `height`). On touch the hero
   name drops its outline copy, is size/layout-contained on phones, and
   steps its axes coarsely from the rest pose (so shapes cache).
   The ice shader renders at 1x with 3 fbm octaves on phones.

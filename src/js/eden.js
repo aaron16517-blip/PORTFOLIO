@@ -455,10 +455,19 @@ export function initEden({ lenis } = {}) {
   /* ---------- layout ---------- */
   let W = 0, H = 0, U = 1, HS = 1;
   let C = { x: 0, y: 0 };
+  /* Where the runway sits on the page, read here and not per frame: the
+     loop writes styles before it reads, so each offsetTop in it forced a
+     style and layout pass over the whole page, every frame. */
+  let runTop = 0, runH = 0;
+  const measureRunway = () => {
+    runTop = hero.offsetTop;
+    runH = hero.offsetHeight;
+  };
 
   function layout() {
     W = stage.clientWidth;
     H = stage.clientHeight;
+    measureRunway();
     const portrait = W / H < 1;
     /* meadow-wide is 2006×823 at 1x, horizon at y≈200 */
     const S = portrait ? Math.max(W / 1000, H / 1500) : Math.max(W / 2006 * 1.04, H / 1050);
@@ -507,7 +516,7 @@ export function initEden({ lenis } = {}) {
   function setPose(el, m, x, y, r, sc) {
     const tx = x - m.tx * m.w * HS;
     const ty = y - m.ty * m.h * HS;
-    el.style.transform = `translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0) rotate(${r.toFixed(3)}deg) scale(${sc.toFixed(4)})`;
+    put(el, 'transform', `translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0) rotate(${r.toFixed(3)}deg) scale(${sc.toFixed(4)})`);
   }
 
   function line(el, p, a, b, c, d) {
@@ -542,7 +551,7 @@ export function initEden({ lenis } = {}) {
     lastY = y;
 
     /* opening: the ice sheet parts over the first OPEN screens of scroll */
-    const oRaw = clamp((y - hero.offsetTop) / (OPEN * H));
+    const oRaw = clamp((y - runTop) / (OPEN * H));
     oS = Number.isFinite(oS) ? lerp(oS, oRaw, 1 - Math.exp(-dt * 12)) : oRaw;
     if (Math.abs(oS - oRaw) < 0.0005) oS = oRaw;
     const o = oS;
@@ -554,7 +563,7 @@ export function initEden({ lenis } = {}) {
     /* cracks race out first, then the centre gives way */
     const portal = seg(o, 0.07, 0.13) * 0.12 + (rEnd - 0.12) * E.inOut(seg(o, 0.13, 1));
     const sheetA = 1 - seg(o, 0.9, 1);
-    introEl.style.visibility = o >= 1 ? 'hidden' : '';
+    put(introEl, 'visibility', o >= 1 ? 'hidden' : '');
     if (ice && iceGL) {
       Object.assign(ice.st, {
         portal,
@@ -566,13 +575,13 @@ export function initEden({ lenis } = {}) {
         zoom: 1 + 0.35 * E.in(o)
       });
     } else {
-      introEl.style.setProperty('--r', (portal * H).toFixed(1) + 'px');
-      introEl.style.opacity = sheetA;
+      putVar(introEl, '--r', (portal * H).toFixed(1) + 'px');
+      put(introEl, 'opacity', sheetA.toFixed(3));
     }
     put(scrollHint, 'opacity', (hintOn * (1 - seg(oRaw, 0.01, 0.08))).toFixed(3));
     put(jobWrap, 'opacity', E.smooth(seg(o, 0.5, 0.9)).toFixed(3));
 
-    const pRaw = clamp((y - hero.offsetTop - OPEN * H) / (hero.offsetHeight - H - OPEN * H));
+    const pRaw = clamp((y - runTop - OPEN * H) / (runH - H - OPEN * H));
     /* a softer follow than the wheel itself, so each beat glides in */
     pS = Number.isFinite(pS) ? lerp(pS, pRaw, 1 - Math.exp(-dt * 9)) : pRaw;
     const p = pS;
@@ -593,10 +602,10 @@ export function initEden({ lenis } = {}) {
        meadow more, the hands and copy most — depth, not a slide */
     mX = lerp(mX, tmX, 1 - Math.exp(-dt * 3.5));
     mY = lerp(mY, tmY, 1 - Math.exp(-dt * 3.5));
-    sky.style.transform = `translate3d(${(-mX * 10).toFixed(2)}px,${(H * 0.025 * k + H * 0.05 * dive - mY * 6).toFixed(2)}px,0) scale(${(1 + 0.07 * k + 0.5 * dive * DV).toFixed(4)})`;
-    meadow.style.transform = `translate3d(${(-mX * 8).toFixed(2)}px,${(-H * 0.06 * k - mY * 5).toFixed(2)}px,0) scale(${(1.01 + 0.2 * k + 1.3 * dive * DV).toFixed(4)})`;
+    put(sky, 'transform', `translate3d(${(-mX * 10).toFixed(2)}px,${(H * 0.025 * k + H * 0.05 * dive - mY * 6).toFixed(2)}px,0) scale(${(1 + 0.07 * k + 0.5 * dive * DV).toFixed(4)})`);
+    put(meadow, 'transform', `translate3d(${(-mX * 8).toFixed(2)}px,${(-H * 0.06 * k - mY * 5).toFixed(2)}px,0) scale(${(1.01 + 0.2 * k + 1.3 * dive * DV).toFixed(4)})`);
     copyEls.forEach((el, i) => {
-      el.style.transform = `translate3d(${(mX * (6 + i * 4)).toFixed(2)}px,${(mY * (4 + i * 2)).toFixed(2)}px,0)`;
+      put(el, 'transform', `translate3d(${(mX * (6 + i * 4)).toFixed(2)}px,${(mY * (4 + i * 2)).toFixed(2)}px,0)`);
     });
 
     /* press & hold */
@@ -606,7 +615,7 @@ export function initEden({ lenis } = {}) {
     const auto = E.inOut(seg(p, 0.82, 0.88));
     const touchT = connected ? 1 : Math.max(E.inOut(holdV) * 0.92, auto);
     touchS = lerp(touchS, touchT, 1 - Math.exp(-dt * (connected ? 6 : 10)));
-    holdArc.style.strokeDashoffset = (ARC * (1 - (connected ? 1 : holdV))).toFixed(2);
+    put(holdArc, 'strokeDashoffset', (ARC * (1 - (connected ? 1 : holdV))).toFixed(2));
     putVar(hold, '--hv', (connected ? 1 : holdE).toFixed(2));
     nudgeT = Math.max(0, nudgeT - dt);
     const lbl = connected ? 'Connected'
@@ -646,7 +655,7 @@ export function initEden({ lenis } = {}) {
     sparkPulse = Math.max(0, sparkPulse - dt * 0.9);
     const glow = Math.pow(touchS, 4) * (0.75 + 0.25 * Math.sin(t * 3)) + sparkPulse * 1.2;
     put(spark, 'opacity', clamp(glow * (1 - retreat)).toFixed(3));
-    if (glow * (1 - retreat) > 0.001) spark.style.transform = `translate3d(${cx}px,${cy}px,0) scale(${(0.32 + glow * 0.5 + dive * 3).toFixed(3)})`;
+    if (glow * (1 - retreat) > 0.001) put(spark, 'transform', `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0) scale(${(0.32 + glow * 0.5 + dive * 3).toFixed(3)})`);
 
     /* hold control — blooms in from small, a touch past full size, and
        settles, so the eye is pulled to it before the copy asks */
@@ -658,7 +667,7 @@ export function initEden({ lenis } = {}) {
       put(hold, 'transform', `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0) scale(${bloom.toFixed(3)})`);
       /* the tick ring turns on its own compositor layer */
       tickA = (tickA + dt * (14 + 260 * holdE * holdE)) % 360;
-      holdTicks.style.transform = `rotate(${tickA.toFixed(1)}deg)`;
+      put(holdTicks, 'transform', `rotate(${tickA.toFixed(1)}deg)`);
     }
     hold.classList.toggle('is-live', holdVis > 0.5);
     if (holdVis < 0.5 && pressing) endPress();
@@ -759,7 +768,7 @@ export function initEden({ lenis } = {}) {
   hold.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') endPress(); });
 
   /* ---------- the gate ---------- */
-  const gateY = () => hero.offsetTop + OPEN * H + GATE * (hero.offsetHeight - H - OPEN * H);
+  const gateY = () => runTop + OPEN * H + GATE * (runH - H - OPEN * H);
   let nudgeClass = 0;
   function nudge() {
     if (nudgeT > 0.35) return;
@@ -849,7 +858,7 @@ export function initEden({ lenis } = {}) {
        risen (the dive is complete) the scene is entirely covered. It used to
        keep running a screen past that — petals included — while the visitor
        was looking at the hero. */
-    const past = window.scrollY >= hero.offsetTop + hero.offsetHeight - H - 1;
+    const past = window.scrollY >= runTop + runH - H - 1;
     if (past && wasPast) return;
     wasPast = past;
     /* the last update before sleeping must land on the end state, not
@@ -873,6 +882,8 @@ export function initEden({ lenis } = {}) {
   });
   layout();
   setWall();
+  /* late fonts and images can still move the page — measure once more */
+  addEventListener('load', () => { measureRunway(); setWall(); }, { once: true });
 
   return {
     /* the countdown has lifted: settle the ice in and show the hint */
