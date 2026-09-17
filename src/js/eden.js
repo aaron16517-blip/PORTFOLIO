@@ -680,8 +680,11 @@ export function initEden({ lenis } = {}) {
     putVar(flash, '--bloom', (1 - E.smooth(seg(p, 0.95, 1))).toFixed(3));
 
     /* petals */
-    back.step(dt, 18 + k * 10, vel * 0.5);
-    front.step(dt, 22, vel * 0.8);
+    /* petals live inside the world — nothing to draw once it is hidden */
+    if (p <= 0.965) {
+      back.step(dt, 18 + k * 10, vel * 0.5);
+      front.step(dt, 22, vel * 0.8);
+    }
   }
 
   /* ---------- hold interaction ---------- */
@@ -837,7 +840,11 @@ export function initEden({ lenis } = {}) {
     /* Past the scene (plus a screen of slack for the dive's last frames),
        nothing here is visible. Run one last update so it rests at its end
        state, then stop paying for it until the visitor scrolls back. */
-    const past = window.scrollY > hero.offsetTop + hero.offsetHeight + H;
+    /* The hero overlaps the scene's last screen, so once it has fully
+       risen (the dive is complete) the scene is entirely covered. It used to
+       keep running a screen past that — petals included — while the visitor
+       was looking at the hero. */
+    const past = window.scrollY >= hero.offsetTop + hero.offsetHeight - H - 1;
     if (past && wasPast) return;
     wasPast = past;
     update(dt, time);

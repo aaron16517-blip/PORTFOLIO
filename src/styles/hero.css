@@ -270,7 +270,21 @@
     text-indent: 0.16em;
     white-space: normal;
   }
-  .pressure { height: clamp(90px, 20vh, 160px); }
+  .pressure {
+    height: clamp(90px, 20vh, 160px);
+    /* the letters change width every frame of a swell; with a fixed box,
+       size + layout containment keeps that re-layout inside the name
+       instead of re-laying the whole hero (no paint containment — the halo
+       behind the name overhangs the box) */
+    contain: size layout style;
+  }
+}
+
+/* touch: the frost outline is a second copy of every letter, so each swell
+   frame shaped and rasterised the name twice. The rest pose is light and
+   even and reads without it. */
+@media (hover: none), (pointer: coarse) {
+  .text-pressure-title.is-stroke span::after { display: none; }
 }
 
 /* a tap leaves :hover stuck on until the next tap elsewhere */

@@ -281,8 +281,10 @@ export function createTextPressure(container, {
         /* coarse steps: each new value re-shapes and re-rasterises a
            100px glyph and its outline, and single-unit steps at the tail of
            an ease are invisible */
-        const wg = Math.round(c.wght / 8) * 8;
-        const wd = Math.round(c.wdth / 2) * 2;
+        /* phones: coarser still. The browser caches each shaped variation,
+           so fewer distinct values means most frames reuse a cached shape */
+        const wg = REST.wght + Math.round((c.wght - REST.wght) / 20) * 20;
+        const wd = REST.wdth + Math.round((c.wdth - REST.wdth) / 4) * 4;
         /* compared with what was last written: the browser hands the style
            back re-quoted, so comparing with it matched nothing and every
            letter was rewritten every frame */

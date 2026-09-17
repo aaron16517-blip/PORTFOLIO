@@ -245,7 +245,9 @@ export function createClouds(canvas) {
   /* the smoke drifts slowly, so phones draw every other frame, and
      high-refresh desktop screens (120–165Hz) stop at 60 — the drift looks
      the same and the full-screen shader runs half as often or less */
-  const FRAME_MS = isLowPower ? 1000 / 30 : 1000 / 60;
+  /* 60 everywhere: on a phone the buffer is about half a CSS pixel, cheap
+     enough for full rate — and the scroll-linked rise looked stepped at 30 */
+  const FRAME_MS = 1000 / 60;
   let sinceDraw = 0;
 
   const state = { intro: 0, rise: 1 };

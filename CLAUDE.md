@@ -76,6 +76,10 @@ a section.
   once the dive's light covers it. Running out of GPU memory makes a phone
   silently skip layers (blank sky, missing hero name) — keep it lean.
   The sky/meadow colour grade is baked into the files (no CSS filters).
+  Eden sleeps as soon as the hero has fully risen over it. The hero smoke
+  and the practice sphere run at 60fps on phones too. On touch the hero
+  name drops its outline copy, is size/layout-contained on phones, and
+  steps its axes coarsely from the rest pose (so shapes cache).
 - The hero cursor trail blends `multiply` with a `tint` (main.js);
   `heroInk.js` is no longer wired in.
 - No `backdrop-filter` over smooth gradients or on moving elements, no

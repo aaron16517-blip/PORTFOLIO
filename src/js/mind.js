@@ -76,7 +76,8 @@ export function initMind(canvas) {
     if (!W || !H) { size(); return; }
     /* it turns at a fifth of a radian a second — 30fps is indistinguishable
        and halves the work while the phone is also scrolling */
-    if (isLowPower && now - lastDraw < 31) return;
+    /* full rate on phones too — at 30fps the turn read as a stutter */
+    if (now - lastDraw < 12) return;
     lastDraw = now;
 
     const t = now * 0.001;
