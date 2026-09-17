@@ -46,7 +46,13 @@ html.eden-gated body { overscroll-behavior-y: none; }
 /* ---------- the ice sheet the scroll opens ---------- */
 .eden-intro {
   position: fixed;
-  inset: 0;
+  /* the same height as the stage below it (100vh = the large viewport).
+     inset: 0 followed the small viewport on some Android browsers, so
+     once the toolbar hid, the meadow showed in a strip under the ice. */
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
   z-index: 60;
   pointer-events: none;
   background: #6fb3a2 url(/eden/ice.webp) center / cover;
@@ -449,9 +455,16 @@ html.eden-gated body { overscroll-behavior-y: none; }
 .is-lowpower .eden-hand { will-change: transform; }
 .is-lowpower .eden-rays { display: none; }
 .is-lowpower .eden-sunwash { mix-blend-mode: normal; opacity: 0.55; animation: none; }
-.is-lowpower .eden-spark { mix-blend-mode: normal; will-change: auto; }
-.is-lowpower .eden-job,
+.is-lowpower .eden-spark { mix-blend-mode: normal; }
 .is-lowpower .eden-job span { will-change: auto; }
+/* Everything eden.js fades or moves per scroll frame gets its own layer.
+   Without one, each frame repainted the text with its 42–50px glow
+   shadows, which was the heaviest thing on a phone in the whole opening.
+   As layers they are painted once and only composited after that. */
+.is-lowpower .eden-job,
+.is-lowpower .eden-job-wrap,
+.is-lowpower .eden-statement,
+.is-lowpower .eden-hint { will-change: transform, opacity; }
 /* once the dive's light covers it, the scene is dropped entirely */
 .eden-world.is-gone { visibility: hidden; }
 .is-lowpower .eden-hint {

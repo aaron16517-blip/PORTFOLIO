@@ -87,7 +87,18 @@ a section.
   equaliser used to animate `height`). On touch the hero
   name drops its outline copy, is size/layout-contained on phones, and
   steps its axes coarsely from the rest pose (so shapes cache).
-  The ice shader renders at 1x with 3 fbm octaves on phones.
+  The ice shader renders at 0.9x with 3 fbm octaves and a `LOW` define
+  (single-noise UV drift and rim wobble) on phones, and its buffer follows
+  `quality()` from `src/js/quality.js` — a frame-time governor that drops
+  the resolution (down to 0.5) when frames drop and restores it when calm.
+  No frame caps: never add one; lower the resolution instead.
+  The intro is `height: 100vh` like the stage, not `inset: 0` (on some
+  Android browsers that followed the small viewport and left a strip of
+  meadow under the ice once the toolbar hid). On phones the Vision title,
+  its wrap, the statements and the SCROLL pill are `will-change` layers —
+  without that every scroll frame repainted their big glow shadows.
+  Petals render at 1x (back) / 0.7x (front) on phones and sleep while the
+  closed ice sheet covers the scene.
 - **Process on phones** (≤900px): the step list is held at its tallest
   state and contained (`lockHeight` in process.js), so opening a step never
   moves the panel below; the rail fill is `.pr-step__fill`, moved by

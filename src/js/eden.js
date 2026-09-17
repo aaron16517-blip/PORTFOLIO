@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import { isTouch, isLowPower } from './device.js';
+import { quality } from './quality.js';
 
 /* ============================================================
    EDEN — the opening scene, after the countdown.
@@ -78,9 +79,7 @@ float noise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
   return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}
 float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<ICE_OCT;i++){v+=a*noise(p);p=m*p;a*=.5;}return v;}
 // hairline fractures radiating from the centre; len = reach in screen-heights
-float cracks(vec2 p,float len,float rays,float seed){
-  float d=length(p);
-  float a=atan(p.y,p.x)/6.2831853+.5;
+float cracks(float d,float a,float len,float rays,float seed){
   float kd=d*9.; float k0=floor(kd);
   float kink=mix(hash(vec2(k0,seed+floor(a*rays))),hash(vec2(k0+1.,seed+floor(a*rays))),fract(kd))-.5;
   a+=kink*.9/rays*min(1.,d*6.);
@@ -100,27 +99,40 @@ void main(){
   vec2 q=vUv-.5;
   if(asp>uImgAsp) q.y*=uImgAsp/asp; else q.x*=asp/uImgAsp;
   q/=uZoom;
+#ifdef LOW
+  q+=(vec2(noise(p*4.+t*.1),noise(p*4.-t*.09+4.))-.5)*.006;
+#else
   q+=(vec2(fbm(p*3.+t*.08),fbm(p*3.-t*.07+4.))-.5)*.006;
+#endif
   q+=p/(d+1e-4)*exp(-(d-uPortal)*(d-uPortal)/.02)*.02*on;
   vec3 col=mix(vec3(.44,.70,.64),texture2D(uTex,q+.5).rgb,uReady);
   float md=length(p-uMouse);
   col+=exp(-md*md*7.)*.07*vec3(.85,1.,.95);
   col*=1.-smoothstep(.45,1.2,d)*.12;
   float ang=atan(p.y,p.x);
-  float wob=(fbm(vec2(ang*2.2+t*.3,t*.6))-.5)*(.05+.16*uPortal)+(noise(vec2(ang*14.,t*1.5))-.5)*.035*(.3+uPortal);
-  float rr=uPortal+wob;
-  float inside=(1.-smoothstep(rr-.035,rr+.004,d))*on;
-  float thick=.014+.038*uPortal;
-  float dd=d-rr;
-  float ring=exp(-dd*dd/(thick*thick))*on;
-  float halo=exp(-dd*dd/((thick*4.)*(thick*4.)))*.3*on;
+  /* the portal rim only exists once it has started to open */
+  float inside=0.,ring=0.,halo=0.,rr=uPortal;
+  if(on>.5){
+#ifdef LOW
+    float wob=(noise(vec2(ang*2.2+t*.3,t*.6))-.5)*(.05+.16*uPortal)+(noise(vec2(ang*14.,t*1.5))-.5)*.035*(.3+uPortal);
+#else
+    float wob=(fbm(vec2(ang*2.2+t*.3,t*.6))-.5)*(.05+.16*uPortal)+(noise(vec2(ang*14.,t*1.5))-.5)*.035*(.3+uPortal);
+#endif
+    rr=uPortal+wob;
+    inside=1.-smoothstep(rr-.035,rr+.004,d);
+    float thick=.014+.038*uPortal;
+    float dd=d-rr;
+    ring=exp(-dd*dd/(thick*thick));
+    halo=exp(-dd*dd/((thick*4.)*(thick*4.)))*.3;
+  }
   float outA=uAlpha*(1.-inside);
   vec3 rgb=col*outA;
   float a=outA;
   float wash=inside*uWash*(.55+.45*smoothstep(0.,rr,d));
   vec3 washc=mix(vec3(.80,.95,.89),vec3(.40,.70,.61),smoothstep(0.,.32,d));
   rgb+=washc*wash; a+=wash;
-  float cr=(cracks(p,uCrack,11.,1.)+cracks(p*1.07,uCrack*.6,19.,5.)*.6)*(1.-inside)*uAlpha;
+  float a0=ang/6.2831853+.5;
+  float cr=(cracks(d,a0,uCrack,11.,1.)+cracks(d*1.07,a0,uCrack*.6,19.,5.)*.6)*(1.-inside)*uAlpha;
   float crGlow=cr*(.55+.45*exp(-d*d/(.02+uCrack*.1)));
   float core=exp(-d*d/.00006)*1.1+exp(-d*d/(.0016+.004*uPortal))*.45;
   float ga=t*.15; vec2 g=mat2(cos(ga),-sin(ga),sin(ga),cos(ga))*p;
@@ -151,7 +163,7 @@ function createIce(canvas) {
   /* the fbm only nudges UVs and the portal rim — three octaves read the
      same on a phone and cost far less per pixel */
   gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ICE_FS.replace('precision highp float;',
-    `precision highp float;\n#define ICE_OCT ${isLowPower ? 3 : 5}`)));
+    `precision highp float;\n#define ICE_OCT ${isLowPower ? 3 : 5}${isLowPower ? '\n#define LOW' : ''}`)));
   gl.linkProgram(prog);
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
     console.error(gl.getProgramInfoLog(prog));
@@ -192,16 +204,22 @@ function createIce(canvas) {
   img.src = ICE_SRC;
 
   let lastW = 0;
-  function resize() {
+  let lastQ = 0;
+  function resize(force) {
     /* a phone's address bar changes only the height; the buffer simply
        stretches a few percent — reallocating it blanked the frame */
-    if (isTouch && lastW === innerWidth && canvas.width) return;
+    if (!force && isTouch && lastW === innerWidth && canvas.width) return;
     lastW = innerWidth;
+    lastQ = quality();
     /* phones draw it at one buffer pixel per CSS pixel: the shader is heavy
        and this is the very first thing on screen */
-    const scale = isLowPower ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
-    const w = innerWidth * scale;
-    const h = innerHeight * scale;
+    /* phones start a touch under one buffer pixel per CSS pixel, and the
+       governor (quality.js) takes it lower if frames still drop */
+    const scale = (isLowPower ? 0.9 : Math.min(window.devicePixelRatio || 1, 1.5)) * lastQ;
+    /* the canvas's own box (the large viewport), not innerHeight — on a
+       phone that is the small one, and the portal drew as an ellipse */
+    const w = (canvas.clientWidth || innerWidth) * scale;
+    const h = (canvas.clientHeight || innerHeight) * scale;
     const k = Math.min(1, Math.sqrt(3e6 / (w * h)));
     canvas.width = Math.round(w * k);
     canvas.height = Math.round(h * k);
@@ -209,6 +227,9 @@ function createIce(canvas) {
   }
 
   function draw(t) {
+    /* resized right before a draw, so a quality change never shows a
+       cleared frame */
+    if (quality() !== lastQ) resize(true);
     st.mx = lerp(st.mx, st.tmx, 0.06);
     st.my = lerp(st.my, st.tmy, 0.06);
     gl.uniform2f(U.uRes, canvas.width, canvas.height);
@@ -263,7 +284,7 @@ function makeSprite(kind, blur) {
   return c;
 }
 
-function petalField(canvas, opts, SPR) {
+function petalField(canvas, opts, SPR, lowDpr = 1) {
   const ctx = canvas.getContext('2d');
   let W = 0;
   let H = 0;
@@ -287,7 +308,7 @@ function petalField(canvas, opts, SPR) {
   };
 
   function resize(w, h) {
-    dpr = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.25 : 2);
+    dpr = isLowPower ? lowDpr : Math.min(window.devicePixelRatio || 1, 2);
     W = w; H = h;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
@@ -441,9 +462,9 @@ export function initEden({ lenis } = {}) {
   const SPR = {};
   ['pink', 'green'].forEach((k) => { SPR[k] = [0, 2.5, 8].map((b) => makeSprite(k, b)); });
   const back = petalField($('#edenPetalsBack'),
-    { count: 46, z: [0.35, 1], size: [10, 26], green: 0.22, blur: (z) => (z < 0.55 ? 1 : 0), alpha: (z) => 0.55 + 0.45 * z }, SPR);
+    { count: 46, z: [0.35, 1], size: [10, 26], green: 0.22, blur: (z) => (z < 0.55 ? 1 : 0), alpha: (z) => 0.55 + 0.45 * z }, SPR, 1);
   const front = petalField($('#edenPetalsFront'),
-    { count: 12, z: [1.3, 2.3], size: [38, 90], green: 0.25, blur: (z) => (z > 1.8 ? 2 : 1), alpha: () => 0.9 }, SPR);
+    { count: 12, z: [1.3, 2.3], size: [38, 90], green: 0.25, blur: (z) => (z > 1.8 ? 2 : 1), alpha: () => 0.9 }, SPR, 0.7);
 
   /* phones move each sentence as one piece: per-word motion was ~45 layers */
   const s1 = $('#edenS1'), s2 = $('#edenS2'), s3 = $('#edenS3');
@@ -695,7 +716,7 @@ export function initEden({ lenis } = {}) {
 
     /* petals */
     /* petals live inside the world — nothing to draw once it is hidden */
-    if (p <= 0.965) {
+    if (p <= 0.965 && !(iceGL && portal <= 0 && sheetA >= 1)) {
       back.step(dt, 18 + k * 10, vel * 0.5);
       front.step(dt, 22, vel * 0.8);
     }
