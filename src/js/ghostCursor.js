@@ -330,6 +330,7 @@ export function createGhostCursor(host, options = {}) {
   let fadeOpacity = 1.0;
   let lastMoveTime = performance.now();
   let pointerActive = false;
+  let reportTick = 0;
 
   const start = performance.now();
 
@@ -380,7 +381,11 @@ export function createGhostCursor(host, options = {}) {
     if (filmPass.uniforms?.iTime) filmPass.uniforms.iTime.value = t;
 
     composer.render();
-    if (onFrame) report(fadeOpacity);
+    /* Reading pixels back makes the CPU wait for the GPU, so the ink is
+       sampled every other frame — plenty for type flipping between two
+       colours. The last, faded frame always reports, to reset the type. */
+    reportTick++;
+    if (onFrame && (reportTick % 2 === 0 || fadeOpacity <= 0.001)) report(fadeOpacity);
 
     /* fully faded — stop dead. onPointerMove calls ensureLoop(), so the next
        movement restarts it; there is nothing to keep spinning for. */

@@ -98,10 +98,13 @@
   -webkit-touch-callout: none;
 }
 
+/* Sized by the name itself. The letters scale with the width (up to
+   300px) while this box used to scale with the height, so on a wide,
+   short window the name spilled out of it and across the caption. */
 .pressure {
   position: relative;
   width: 100%;
-  height: clamp(110px, 30vh, 320px);
+  min-height: 110px;
 }
 
 /* the h1 built by createTextPressure() */
@@ -115,23 +118,19 @@
   white-space: nowrap;
   user-select: none;
   transform-origin: center top;
-  /* the glow that makes it sit inside the smoke rather than on top of it */
-  text-shadow: 0 0 80px rgba(255, 120, 70, 0.25);
 }
-/* Touch: an 80px text-shadow is re-blurred on every letter (and its
-   outline) each frame the name swells — the main cost of that animation
-   on a phone GPU. The same warm glow is painted once, behind the name,
-   as a static gradient that never repaints. */
-@media (hover: none), (pointer: coarse) {
-  .text-pressure-title { text-shadow: none; }
-  .pressure::before {
-    content: '';
-    position: absolute;
-    inset: -30% 0;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(50% 50% at 50% 50%, rgba(255, 120, 70, 0.14) 0%, transparent 70%);
-  }
+/* The warm glow that sits the name inside the smoke. It used to be an
+   80px text-shadow, re-blurred on every letter (and its outline) each
+   frame the name changes shape under the cursor or a finger — the main
+   cost of that animation. Painted once behind the name instead, as a
+   static gradient that never repaints. */
+.pressure::before {
+  content: '';
+  position: absolute;
+  inset: -30% 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 120, 70, 0.14) 0%, transparent 70%);
 }
 .text-pressure-title.is-flex {
   display: flex;

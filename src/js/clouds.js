@@ -196,8 +196,10 @@ export function createClouds(canvas) {
     onScreen = entries[0].isIntersecting;
   }).observe(canvas);
 
-  /* the smoke drifts slowly, so phones draw every other frame */
-  const FRAME_MS = isLowPower ? 1000 / 30 : 0;
+  /* the smoke drifts slowly, so phones draw every other frame, and
+     high-refresh desktop screens (120–165Hz) stop at 60 — the drift looks
+     the same and the full-screen shader runs half as often or less */
+  const FRAME_MS = isLowPower ? 1000 / 30 : 1000 / 60;
   let sinceDraw = 0;
 
   const state = { intro: 0 };
