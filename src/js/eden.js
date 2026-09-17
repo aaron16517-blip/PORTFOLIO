@@ -698,8 +698,54 @@ export function initEden({ lenis } = {}) {
     pressing = false;
     hold.classList.remove('is-pressing');
   }
-  hold.addEventListener('pointerdown', startPress);
-  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((ev) => hold.addEventListener(ev, endPress));
+  /* A finger on the lens may mean "hold" or "scroll", and the lens can't
+     let the browser decide: a browser-owned swipe cancels the pointer, so a
+     wobbly thumb would break a real hold. So the lens keeps the gesture and
+     reads it — still for a beat means hold; moving first means scroll, and
+     the page follows the finger (the gate still stops it going down). */
+  const g = { mode: '', id: -1, y0: 0, y: 0, t: 0, v: 0, timer: 0 };
+  function releaseGesture() {
+    clearTimeout(g.timer);
+    if (g.mode === 'scroll' && Math.abs(g.v) > 0.25) {
+      const to = window.scrollY + g.v * 320;
+      if (lenis) lenis.scrollTo(to, { duration: 0.9, easing: E.out });
+      else window.scrollTo({ top: to, behavior: 'smooth' });
+    }
+    g.mode = '';
+    g.id = -1;
+    endPress();
+  }
+  hold.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') { startPress(e); return; }
+    if (connected || !hold.classList.contains('is-live')) return;
+    e.preventDefault();
+    try { hold.setPointerCapture(e.pointerId); } catch (_) { /* not capturable */ }
+    Object.assign(g, { mode: 'pending', id: e.pointerId, y0: e.clientY, y: e.clientY, t: e.timeStamp, v: 0 });
+    clearTimeout(g.timer);
+    g.timer = setTimeout(() => {
+      if (g.mode !== 'pending') return;
+      g.mode = 'press';
+      pressing = true;
+      hold.classList.add('is-pressing');
+    }, 120);
+  });
+  hold.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== g.id || !g.mode) return;
+    const total = e.clientY - g.y0;
+    if (g.mode === 'pending' && Math.abs(total) > 10) { clearTimeout(g.timer); g.mode = 'scroll'; }
+    else if (g.mode === 'press' && Math.abs(total) > 28) { endPress(); g.mode = 'scroll'; }
+    const dy = e.clientY - g.y;
+    const dt = Math.max(1, e.timeStamp - g.t);
+    g.y = e.clientY;
+    g.t = e.timeStamp;
+    if (g.mode !== 'scroll') return;
+    window.scrollBy(0, -dy);
+    g.v = g.v * 0.6 + (-dy / dt) * 0.4;
+  });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((ev) => hold.addEventListener(ev, (e) => {
+    if (e.pointerType === 'mouse') { endPress(); return; }
+    if (e.pointerId === g.id) releaseGesture();
+  }));
   hold.addEventListener('contextmenu', (e) => e.preventDefault());
   hold.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) startPress(e); });
   hold.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') endPress(); });

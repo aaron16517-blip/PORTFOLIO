@@ -31,6 +31,9 @@ html.eden-gated .site {
   overflow: clip;
 }
 html.eden-gated .foot { display: none; }
+/* no rubber-band or pull effects against the wall */
+html.eden-gated,
+html.eden-gated body { overscroll-behavior-y: none; }
 
 /* the scene positions its layers wider than the viewport on purpose */
 .eden img,
@@ -257,6 +260,7 @@ html.eden-gated .foot { display: none; }
   will-change: transform, opacity;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
 .eden-hold.is-live { pointer-events: auto; }
