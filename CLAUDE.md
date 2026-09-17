@@ -34,7 +34,38 @@ a section.
   zoom the layout out and push the fixed DIVE IN toggle off screen. Use
   `overflow-x: clip` on sections with overhanging glows (not `hidden`,
   which breaks sticky).
-- Palette is warm/neutral — no blue-tinted darks or blue glows. Page ground is
-  `#09090a`; the footer watermark is an opaque colour matched to it.
+- Palette is **ice**: frost-white ground `#f7faf9`, sea-ink type, `--ice`
+  `#7fc4b5` for fills/glows and `--accent` `#2b7a6f` for anything read (the
+  light teal fails contrast on white). Tokens + `*-rgb` triplets live in
+  `base.css`; don't add raw colours. The hero smoke's `ground` in `clouds.js`
+  must match `--bg`. Form errors keep a true red; red means only "wrong".
+- **Page order:** countdown → Eden (`eden.js` / `eden.css`, assets in
+  `public/eden/`) → Michael hero → Projects → … The countdown dissolves onto
+  Eden's ice sheet (no panel wipe). The hero intro plays on a ScrollTrigger
+  when it is reached; the hold-to-connect dive scrolls onto `#hero`. Vision
+  was removed. Eden's classes are all `eden-`-prefixed; keep it that way.
+- **Eden → hero hand-off:** Eden's copy is the VISION statement (title +
+  three sentences, the last one held through press & hold). The runway is
+  `.eden` 1300vh + `OPEN` 2.2 screens. `.hero` has `margin-top: -100vh`, so it
+  slides over the pinned stage's last screen; its smoke canvas is
+  transparent above a rising front (`setRise` in `clouds.js`, driven from
+  main.js), and the hero ground / veil / type follow `--hero-solid`,
+  `--hero-veil`, `--hero-content`. DIVE IN is hidden until the hero
+  (`visibility: hidden` in menu.css, shown by a ScrollTrigger in main.js).
+- **The hold is a scroll gate** (`GATE` in eden.js), on every device: until
+  the hold completes, `html.eden-gated` clips `.site` to `--eden-wall` and
+  hides `.foot`, so the page physically ends at the hold (touch momentum,
+  wheel, keys and scrollbar all stop there; scrolling up is free). The
+  wheel handler in `lenis.options.virtualScroll` only lands the wheel on the
+  gate and nudges the control. `eden:connect` lifts the wall and main.js
+  runs `ScrollTrigger.refresh()`.
+  Lenis runs with `respectReducedMotion: false`, or the post-hold dive jumps.
+- **Eden hands** are the gilded pair (`public/eden/hand-left|right.webp`, cut
+  from one PNG at the gap between them). `IMG` in eden.js holds their 1x
+  size and fingertip fractions; `HS` sizes them (27% of the width on desktop,
+  48% on phones). The current cut includes forearms.
+  The hold control's light is white only (no mint).
+- The hero cursor trail blends `multiply` with a `tint` (main.js);
+  `heroInk.js` is no longer wired in.
 - No `backdrop-filter` over smooth gradients or on moving elements, no
   `filter: blur()` layer behind a backdrop-filtered one (see README gotchas).

@@ -27,7 +27,7 @@
   /* centred below the top edge, and masked to zero at BOTH ends — the section
      above also fades to zero, so the two meet at the same value and there is
      no step to see. This is the same rule the rest of the page follows. */
-  background: radial-gradient(62% 44% at 50% 22%, rgba(224, 57, 63, 0.15) 0%, transparent 72%);
+  background: radial-gradient(62% 44% at 50% 22%, rgba(var(--ice-rgb), 0.3) 0%, transparent 72%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%, #000 54%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 26%, #000 54%, transparent 100%);
 }
@@ -55,8 +55,8 @@
 .practice__half--r { right: 0; transform: translateX(100%); }
 
 /* Starts on the section's top edge — the exact pixel the thread above stops
-   on — and grows down from there. It opens in the thread's own near-white and
-   turns red over the first stretch, so the hand-off reads as one line
+   on — and grows down from there. It opens in the thread's own pale teal and
+   deepens over the first stretch, so the hand-off reads as one line
    changing colour rather than as a second line starting. */
 .practice__seam {
   position: absolute;
@@ -68,8 +68,8 @@
   margin-left: -0.5px;
   background: linear-gradient(
     to bottom,
-    rgba(243, 244, 246, 0.22) 0%,
-    rgba(224, 57, 63, 0.7) 26%,
+    rgba(var(--deep-rgb), 0.32) 0%,
+    rgba(var(--deep-rgb), 0.7) 26%,
     var(--accent) 60%
   );
   box-shadow: 0 0 10px var(--accent-soft);
@@ -151,7 +151,7 @@
   max-width: 44ch;
   font-size: clamp(0.78rem, 1vw, 0.95rem);
   line-height: 1.75;
-  color: rgba(243, 244, 246, 0.58);
+  color: var(--ink-muted);
 }
 
 /* ---------- the spine ----------
@@ -164,9 +164,9 @@
   margin-left: -0.5px;
   background: linear-gradient(
     to bottom,
-    rgba(224, 57, 63, 0.55) 0%,
-    rgba(243, 244, 246, 0.16) 18%,
-    rgba(243, 244, 246, 0.16) 82%,
+    rgba(var(--deep-rgb), 0.6) 0%,
+    rgba(var(--deep-rgb), 0.2) 18%,
+    rgba(var(--deep-rgb), 0.2) 82%,
     transparent 100%
   );
   transform-origin: top center;
@@ -202,7 +202,7 @@
   margin-left: -4.5px;
   border-radius: 50%;
   background: var(--bg);
-  border: 1px solid rgba(224, 57, 63, 0.75);
+  border: 1px solid var(--accent);
   box-shadow: 0 0 0 4px var(--bg), 0 0 12px var(--accent-soft);
 }
 
@@ -238,7 +238,7 @@
   margin: clamp(0.55rem, 1.4vh, 0.85rem) 0 0;
   font-size: clamp(0.74rem, 0.95vw, 0.88rem);
   line-height: 1.75;
-  color: rgba(243, 244, 246, 0.56);
+  color: rgba(var(--ink-rgb), 0.64);
 }
 
 /* the promise, set apart from the description so it can be skimmed on its own */
@@ -249,7 +249,7 @@
   line-height: 1.7;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(243, 244, 246, 0.34);
+  color: rgba(var(--deep-rgb), 0.85);
 }
 
 /* ---------- the terms ---------- */
@@ -260,7 +260,7 @@
   max-width: 62rem;
   margin: clamp(3.5rem, 9vh, 6rem) auto 0;
   padding-top: clamp(1.6rem, 4vh, 2.4rem);
-  border-top: 1px solid rgba(243, 244, 246, 0.09);
+  border-top: 1px solid var(--ink-faint);
   text-align: center;
 }
 
@@ -275,7 +275,7 @@
   margin: 0.7em 0 0;
   font-size: clamp(0.76rem, 0.95vw, 0.9rem);
   line-height: 1.6;
-  color: rgba(243, 244, 246, 0.66);
+  color: rgba(var(--ink-rgb), 0.72);
 }
 
 /* ---------- narrower ----------

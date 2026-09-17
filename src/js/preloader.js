@@ -2,12 +2,12 @@ import gsap from 'gsap';
 
 /* ============================================================
    PRELOADER
-   Counts 0 -> 100 against real page-load progress, then lifts
-   five panels to uncover the site.
+   Counts 0 -> 100 against real page-load progress, then dissolves
+   onto the Eden ice sheet, which has been drawing underneath.
 
    initPreloader({ onReveal })  ->  Promise (resolves when done)
-   `onReveal` fires the instant the panels start moving, so the
-   hero animation overlaps the wipe instead of waiting for it.
+   `onReveal` fires the instant the dissolve starts, so the ice
+   settles in while the countdown is still fading.
    ============================================================ */
 
 
@@ -25,7 +25,7 @@ export function initPreloader({ onReveal = () => {} } = {}) {
   const brandEl = document.getElementById('brandText');
   const barFill = document.getElementById('barFill');
   const barEl   = root.querySelector('.bar');
-  const panels  = root.querySelectorAll('.panel');
+  const ground  = root.querySelector('.preloader__ground');
   const grain   = root.querySelector('.preloader__grain');
 
   const state = { v: 0 };
@@ -50,7 +50,7 @@ export function initPreloader({ onReveal = () => {} } = {}) {
   const tl = gsap.timeline();
 
   /* ---------- 1. entrance ---------- */
-  tl.from(panels, { opacity: 0, duration: 1.2, ease: 'power2.out' }, 0)
+  tl.from(ground, { opacity: 0, duration: 1.2, ease: 'power2.out' }, 0)
     .from(valueEl, { yPercent: 115, duration: 1.1, ease: 'expo.out' }, 0)
     .from(brandEl, { yPercent: 115, duration: 1.0, ease: 'expo.out' }, 0.25)
     .from(barEl,   { scaleX: 0, transformOrigin: 'left center', duration: 0.9, ease: 'expo.out' }, 0.45);
@@ -90,17 +90,12 @@ export function initPreloader({ onReveal = () => {} } = {}) {
     }, '-=0.35')
     .to(barEl, { opacity: 0, duration: 0.3 }, '<');
 
-  /* ---------- 6. the wipe ---------- */
+  /* ---------- 6. the dissolve onto the ice ---------- */
   tl.call(() => {
       root.classList.add('is-done');
       onReveal();
     }, null, '-=0.25')
-    .to(panels, {
-      yPercent: -101,
-      duration: 1.0,
-      ease: 'power4.inOut',
-      stagger: { each: 0.08, from: 'start' }
-    }, '<')
+    .to(root, { opacity: 0, duration: 1.1, ease: 'power2.inOut' }, '<')
     .to(grain, { opacity: 0, duration: 0.5 }, '<')
     .set(root, { display: 'none' });
 

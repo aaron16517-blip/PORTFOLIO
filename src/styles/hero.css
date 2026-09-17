@@ -1,8 +1,12 @@
 /* ============================================================
-   HERO — red smoke + the pressure-sensitive name
+   HERO — ice smoke + the pressure-sensitive name
    ============================================================ */
 .hero {
   position: relative;
+  z-index: 1;
+  /* pulled up over the last screen of the Eden scene (a 100vh sticky
+     stage), so the smoke can rise over the dive while it is still running */
+  margin-top: -100vh;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -28,22 +32,25 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  /* held back while the smoke rises over Eden (hero.js) */
+  opacity: var(--hero-veil, 1);
   background:
-    radial-gradient(120% 75% at 50% 8%, rgba(255, 90, 40, 0.07) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(6, 6, 7, 0.55) 0%, transparent 28%, transparent 52%,
-      rgba(9, 9, 10, 0.35) 70%, rgba(9, 9, 10, 0.8) 88%, var(--bg) 100%);
+    radial-gradient(120% 75% at 50% 8%, rgba(255, 255, 255, 0.35) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(247, 250, 249, 0.6) 0%, transparent 24%, transparent 56%,
+      rgba(247, 250, 249, 0.45) 74%, rgba(247, 250, 249, 0.86) 90%, var(--bg) 100%);
 }
-/* the vignetted smoke bottoms out darker than the page ground, so the veil
-   lands on exactly var(--bg) — the next section then starts with no seam */
+/* the veil frosts the top row and the bottom row so the small type sits on
+   near-white, and lands on exactly var(--bg) at the foot */
 /* sits behind the canvas so a WebGL-less browser still looks intentional */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -3;
+  opacity: var(--hero-solid, 1);
   background:
-    radial-gradient(90% 60% at 50% 12%, rgba(190, 45, 25, 0.35) 0%, transparent 62%),
-    linear-gradient(180deg, #0c0a0c 0%, var(--bg) 100%);
+    radial-gradient(90% 60% at 50% 40%, rgba(var(--ice-rgb), 0.55) 0%, transparent 62%),
+    linear-gradient(180deg, #eef6f3 0%, var(--bg) 100%);
 }
 
 /* All hero content sits above the ghost cursor canvas (z-index 0). This
@@ -55,6 +62,8 @@
 .hero__foot {
   position: relative;
   z-index: 1;
+  /* follows the smoke rising over Eden (hero.js) */
+  opacity: var(--hero-content, 1);
 }
 
 /* ---------- top row ---------- */
@@ -70,7 +79,7 @@
   font-size: clamp(0.58rem, 0.72vw, 0.7rem);
   font-weight: 500;
   letter-spacing: 0.24em;
-  color: rgba(243, 244, 246, 0.9);
+  color: rgba(var(--ink-rgb), 0.86);
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
@@ -82,7 +91,7 @@
   height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--ice-rgb), 0.35), 0 0 12px var(--ice);
 }
 
 /* ---------- the name ---------- */
@@ -119,7 +128,7 @@
   user-select: none;
   transform-origin: center top;
 }
-/* The warm glow that sits the name inside the smoke. It used to be an
+/* The light halo that sits the name inside the ice. It used to be an
    80px text-shadow, re-blurred on every letter (and its outline) each
    frame the name changes shape under the cursor or a finger — the main
    cost of that animation. Painted once behind the name instead, as a
@@ -130,7 +139,7 @@
   inset: -30% 0;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 120, 70, 0.14) 0%, transparent 70%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
 }
 .text-pressure-title.is-flex {
   display: flex;
@@ -154,9 +163,9 @@
   -webkit-text-stroke-color: var(--tp-stroke-color, var(--accent));
 }
 
-/* the red line of copy under the name. It used to be laid across it, but
-   the swelling letters cut through the words and red on red smoke left
-   it barely legible. No transform here: the intro reveal tweens y on
+/* the accent line of copy under the name. It used to be laid across it,
+   but the swelling letters cut through the words and it went illegible
+   over the smoke. No transform here: the intro reveal tweens y on
    .js-reveal and GSAP owns the whole transform. */
 .hero__caption {
   margin: clamp(1rem, 2.6vh, 1.8rem) 0 0;
@@ -166,7 +175,9 @@
   letter-spacing: 0.38em;
   text-indent: 0.38em;
   color: var(--accent);
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 0 18px rgba(0, 0, 0, 0.7);
+  font-weight: 600;
+  /* a frost halo lifts the teal off teal smoke */
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.95), 0 0 18px rgba(255, 255, 255, 0.8);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -186,7 +197,7 @@
   font-weight: 400;
   line-height: 1.75;
   letter-spacing: 0.1em;
-  color: rgba(243, 244, 246, 0.72);
+  color: rgba(var(--ink-rgb), 0.74);
 }
 
 .hero__cta {
@@ -216,17 +227,20 @@
 .btn--solid {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 10px 40px -12px rgba(224, 57, 63, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 12px 36px -12px rgba(var(--deep-rgb), 0.75);
 }
-.btn--solid:hover { background: #f04a50; }
+.btn--solid:hover { background: var(--accent-hover); }
 
 .btn--ghost {
-  border: 1px solid rgba(243, 244, 246, 0.28);
-  color: rgba(243, 244, 246, 0.9);
+  border: 1px solid rgba(var(--ink-rgb), 0.24);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.55);
   /* no backdrop blur: the ghost cursor moves behind it, so the blur was
      re-sampled every frame and smeared the smoke into a grey haze */
 }
-.btn--ghost:hover { border-color: rgba(243, 244, 246, 0.6); }
+.btn--ghost:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.85); }
 
 .btn__arrow { font-size: 1.1em; line-height: 0; }
 
@@ -243,8 +257,8 @@
     align-self: stretch;
   }
   .btn { flex: 1; justify-content: center; }
-  /* a dark tint keeps the label readable over the smoke at this size */
-  .btn--ghost { background: rgba(9, 9, 10, 0.4); }
+  /* a frost tint keeps the label readable over the smoke at this size */
+  .btn--ghost { background: rgba(255, 255, 255, 0.7); }
   .hero__caption { letter-spacing: 0.22em; text-indent: 0.22em; }
 }
 

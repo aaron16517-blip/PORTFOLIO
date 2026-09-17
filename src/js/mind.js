@@ -114,11 +114,11 @@ export function initMind(canvas) {
       const dz = zm - phase;
       const pulse = Math.exp(-(dz * dz) / 0.012);
       const a = 0.025 + depth * 0.075 + pulse * 0.30;
-      /* near-white at rest, the accent red where the signal is */
-      c.strokeStyle = 'rgba(' + Math.round(243 - pulse * 19) + ','
-                              + Math.round(244 - pulse * 187) + ','
-                              + Math.round(246 - pulse * 183) + ','
-                              + a.toFixed(3) + ')';
+      /* sea-ink at rest, the ice teal where the signal is */
+      c.strokeStyle = 'rgba(' + Math.round(15 + pulse * 28) + ','
+                              + Math.round(34 + pulse * 110) + ','
+                              + Math.round(32 + pulse * 98) + ','
+                              + (a * 1.4).toFixed(3) + ')';
       c.beginPath();
       c.moveTo(px[i], py[i]);
       c.lineTo(px[j], py[j]);
@@ -131,9 +131,9 @@ export function initMind(canvas) {
       const dz = pz[i] - phase;
       const pulse = Math.exp(-(dz * dz) / 0.012);
       const rad = 0.6 + depth * 1.3 + pulse * 1.6;
-      c.fillStyle = 'rgba(' + Math.round(243 - pulse * 19) + ','
-                            + Math.round(244 - pulse * 187) + ','
-                            + Math.round(246 - pulse * 183) + ','
+      c.fillStyle = 'rgba(' + Math.round(15 + pulse * 28) + ','
+                            + Math.round(34 + pulse * 110) + ','
+                            + Math.round(32 + pulse * 98) + ','
                             + (0.09 + depth * 0.22 + pulse * 0.42).toFixed(3) + ')';
       c.beginPath();
       c.arc(px[i], py[i], rad, 0, TAU);
@@ -142,9 +142,9 @@ export function initMind(canvas) {
 
     /* ---------- the core ---------- */
     const core = c.createRadialGradient(cx, cy, 0, cx, cy, R * 0.9);
-    core.addColorStop(0,   'rgba(224,57,63,0.13)');
-    core.addColorStop(0.5, 'rgba(224,57,63,0.05)');
-    core.addColorStop(1,   'rgba(224,57,63,0)');
+    core.addColorStop(0,   'rgba(127,196,181,0.34)');
+    core.addColorStop(0.5, 'rgba(127,196,181,0.12)');
+    core.addColorStop(1,   'rgba(127,196,181,0)');
     c.fillStyle = core;
     c.beginPath();
     c.arc(cx, cy, R * 0.9, 0, TAU);
@@ -154,7 +154,7 @@ export function initMind(canvas) {
     for (let k = 0; k < 2; k++) {
       const tilt = 0.34 + k * 0.5;
       const rr = R * (1.26 + k * 0.24);
-      c.strokeStyle = 'rgba(243,244,246,' + (0.09 - k * 0.035) + ')';
+      c.strokeStyle = 'rgba(43,122,111,' + (0.16 - k * 0.05) + ')';
       c.lineWidth = 1;
       c.save();
       c.translate(cx, cy);

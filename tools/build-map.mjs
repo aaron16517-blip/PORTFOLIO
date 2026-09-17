@@ -17,7 +17,7 @@ const map = new DottedMap({ height: HEIGHT, grid: 'diagonal' });
 
 const svg = map.getSVG({
   radius: 0.22,
-  color: '#FFFFFF28',          /* faint: the map is a ground, not the subject */
+  color: '#0F2220',            /* --ink, the same as the Contact us heading */
   shape: 'circle',
   backgroundColor: 'transparent'
 });

@@ -11,8 +11,8 @@
   background: var(--bg);
 }
 
-/* Picks the warmth up where Projects lets it go and carries it down into the
-   black, so the join between the two sections has no edge to see. Sits at the
+/* Picks the ice light up where Projects lets it go and carries it down into
+   the frost, so the join between the two sections has no edge to see. Sits at the
    top of the runway and scrolls away behind the sticky frame. */
 .exp::before {
   content: '';
@@ -23,15 +23,15 @@
   height: clamp(320px, 48vh, 580px);
   pointer-events: none;
 
-  /* A glow rising out of the black rather than a band laid on it. The radial
+  /* A glow rising out of the ground rather than a band laid on it. The radial
      gives it a centre; the mask forces it to zero at BOTH ends — zero at the
      top is the important one, because Projects also fades to zero at its
      bottom edge, so the two sections meet at the same value and there is no
      step to see. */
   background: radial-gradient(
     72% 82% at 50% 30%,
-    rgba(224, 92, 57, 0.16) 0%,
-    rgba(196, 58, 58, 0.07) 45%,
+    rgba(var(--ice-rgb), 0.3) 0%,
+    rgba(var(--ice-rgb), 0.1) 45%,
     transparent 75%
   );
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 32%, #000 62%, transparent 100%);
@@ -95,7 +95,7 @@
   font-size: clamp(0.72rem, 1vw, 0.92rem);
   line-height: 1.7;
   letter-spacing: 0.02em;
-  color: rgba(243, 244, 246, 0.6);
+  color: var(--ink-muted);
 }
 
 /* ---------- the thread ---------- */
@@ -108,7 +108,7 @@
   pointer-events: none;
 }
 #expPath {
-  stroke: rgba(243, 244, 246, 0.22);
+  stroke: rgba(var(--deep-rgb), 0.32);
   stroke-width: 1.2;
   fill: none;
   stroke-linecap: round;
@@ -123,7 +123,7 @@
   margin: -4.5px 0 0 -4.5px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 7px var(--accent), 0 0 18px var(--accent-soft);
+  box-shadow: 0 0 0 4px rgba(var(--ice-rgb), 0.3), 0 0 18px var(--ice);
   pointer-events: none;
 }
 
@@ -148,28 +148,26 @@
      polygon only removes the bottom-right wedge */
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%);
 
-  /* The white-alpha gradient is the whole look, but on its own it is a film:
-     the thread behind reads straight through the card and across the copy.
-     Laying the same colour the section is painted in underneath makes the
-     card opaque without changing what it looks like — the page behind it is
-     that colour anyway — so the thread passes behind it, as intended. */
+  /* Opaque on purpose, so the thread passes behind the card rather than
+     reading through it and across the copy. A milk-white face with a faint
+     ice cast toward the cut corner. The clip-path would crop an outer
+     shadow, so depth comes from the edge and the inner light instead. */
   background:
-    linear-gradient(158deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.055) 100%),
-    var(--bg);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    linear-gradient(158deg, #ffffff 0%, #fbfdfc 55%, #eef6f3 100%);
+  border: 1px solid rgba(var(--ink-rgb), 0.09);
+  box-shadow: inset 0 1px 0 #fff, inset 0 -30px 60px -40px rgba(var(--ice-rgb), 0.35);
   will-change: transform, opacity;
 }
 
-/* the middle card is the solid one, as in the reference */
+/* the middle card is the solid one, as in the reference — the lake itself:
+   deep sea-glass with the ice colour lit from the top */
 .exp-card--solid {
+  --ink: #f4fbf9;
   background:
-    linear-gradient(158deg, rgba(255, 255, 255, 0.06) 0%, transparent 60%),
-    linear-gradient(170deg, #1b1013 0%, #120c10 100%);
-  border-color: rgba(224, 57, 63, 0.3);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 40px -18px var(--accent);
+    radial-gradient(120% 70% at 20% 0%, rgba(var(--ice-rgb), 0.55) 0%, transparent 62%),
+    linear-gradient(170deg, #2f8579 0%, #1d5f56 100%);
+  border-color: rgba(var(--ice-rgb), 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 /* the three dots, a window chrome nod from the reference */
@@ -182,9 +180,11 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(243, 244, 246, 0.3);
+  background: rgba(var(--ink-rgb), 0.18);
 }
-.exp-card--solid .exp-card__dots i:first-child { background: var(--accent); }
+.exp-card__dots i:first-child { background: var(--ice); }
+.exp-card--solid .exp-card__dots i { background: rgba(255, 255, 255, 0.35); }
+.exp-card--solid .exp-card__dots i:first-child { background: #fff; }
 
 .exp-card__role {
   margin: 0;
@@ -208,7 +208,7 @@
   margin: clamp(0.7rem, 1.6vh, 1.1rem) 0 0;
   font-size: clamp(0.7rem, 0.92vw, 0.85rem);
   line-height: 1.7;
-  color: rgba(243, 244, 246, 0.62);
+  color: rgba(var(--ink-rgb), 0.66);
 }
 
 /* the three proof points under the body copy */
@@ -226,7 +226,7 @@
   font-size: clamp(0.64rem, 0.82vw, 0.76rem);
   line-height: 1.55;
   letter-spacing: 0.01em;
-  color: rgba(243, 244, 246, 0.5);
+  color: rgba(var(--ink-rgb), 0.55);
 }
 
 /* the marker — a small dot rather than a disc, so it reads as a note
@@ -239,9 +239,9 @@
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(243, 244, 246, 0.3);
+  background: var(--ice);
 }
-.exp-card--solid .exp-card__points li::before { background: var(--accent); }
+.exp-card--solid .exp-card__points li::before { background: #fff; }
 
 .exp-card__index {
   margin-top: auto;
@@ -251,9 +251,14 @@
   font-size: clamp(1.6rem, 3.4vw, 2.9rem);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: rgba(243, 244, 246, 0.1);
+  color: rgba(var(--deep-rgb), 0.14);
 }
-.exp-card--solid .exp-card__index { color: rgba(224, 57, 63, 0.28); }
+
+/* type on the solid card — light on the deep teal */
+.exp-card--solid .exp-card__meta { color: #c9f0e6; }
+.exp-card--solid .exp-card__body { color: rgba(244, 251, 249, 0.82); }
+.exp-card--solid .exp-card__points li { color: rgba(244, 251, 249, 0.7); }
+.exp-card--solid .exp-card__index { color: rgba(255, 255, 255, 0.2); }
 
 /* ---------- narrower ---------- */
 @media (max-width: 860px) {

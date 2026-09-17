@@ -1,5 +1,6 @@
 import '../styles/base.css';
 import '../styles/preloader.css';
+import '../styles/eden.css';
 import '../styles/hero.css';
 import '../styles/ghostCursor.css';
 import '../styles/menu.css';
@@ -9,7 +10,6 @@ import '../styles/practice.css';
 import '../styles/process.css';
 import '../styles/contact.css';
 import '../styles/footer.css';
-import '../styles/vision.css';
 import 'lenis/dist/lenis.css';
 
 import gsap from 'gsap';
@@ -18,10 +18,10 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 import { inject } from '@vercel/analytics';
 
 import { initPreloader } from './preloader.js';
-import { prepareHero, revealHero } from './hero.js';
+import { prepareHero, revealHero, igniteSmoke, setSmokeRise } from './hero.js';
 import { initMenu } from './menu.js';
 import { isTouch } from './device.js';
-import { initVision } from './vision.js';
+import { initEden } from './eden.js';
 import { initProjects } from './projects.js';
 import { initExperience } from './experience.js';
 import { initPractice } from './practice.js';
@@ -40,7 +40,10 @@ if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
 const lenis = new Lenis({
   duration: 1.1,
   smoothWheel: true,
-  touchMultiplier: 1.6
+  touchMultiplier: 1.6,
+  /* Lenis otherwise turns every scripted scroll into a jump when the
+     browser reports reduced motion, and the Eden dive is one */
+  respectReducedMotion: false
 });
 
 gsap.ticker.add((time) => lenis.raf(time * 1000));
@@ -72,19 +75,17 @@ prepareHero();
 if (!isTouch) initGhostCursor();
 
 async function initGhostCursor() {
-  const [{ createGhostCursor }, { createHeroInk }] = await Promise.all([
-    import('./ghostCursor.js'),
-    import('./heroInk.js')
-  ]);
+  const { createGhostCursor } = await import('./ghostCursor.js');
   createGhostCursor(document.getElementById('ghostCursor'), {
-    /* The reference values (brightness 1, bloom 0.1) assume a plain dark page;
-       this hero is already full of bright red smoke, so the trail needs gain to
-       read at all. But the canvas blends with 'screen', which only ever ADDS
-       light — and white adds to all three channels at once, where a tint adds
-       to one or two. So white needs far less gain than a colour does, or it
-       stops looking like smoke and just blows the hero out. */
+    /* The hero is light now, so a 'screen' trail (which only adds light)
+       would vanish into it. The trail multiplies instead: it can only
+       deepen what is behind it, like breath fogging ice. `color` still
+       drives how much smoke there is (white = full coverage); `tint` is the
+       colour that coverage is painted in. */
     color: '#ffffff',
-    brightness: 0.5,
+    tint: '#a3d6ca',
+    mixBlendMode: 'multiply',
+    brightness: 0.22,
     radius: 0.5,
     edgeIntensity: 0,
     trailLength: 50,
@@ -94,16 +95,16 @@ async function initGhostCursor() {
     bloomRadius: 0.8,
     bloomThreshold: 0.08,
     fadeDelayMs: 1000,
-    fadeDurationMs: 1500,
-    /* the small light type the smoke drifts behind goes black under it */
-    onFrame: createHeroInk({
-      split: [document.querySelector('.nav__tag'), document.querySelector('.hero__bio')],
-      whole: [document.getElementById('menuToggle'), document.querySelector('.hero .btn--ghost')]
-    })
+    fadeDurationMs: 1500
+    /* heroInk.js (light type turning black under the trail) is not wired in:
+       the hero type is already dark, and a multiplied trail only darkens
+       the ground behind it, so the type stays readable on its own */
   });
 }
 
-initVision();
+/* the opening scene, drawn under the countdown from the start */
+const eden = initEden({ lenis });
+
 initProjects();
 initExperience();
 initPractice();
@@ -120,11 +121,54 @@ initPreloader({
   onReveal: () => {
     document.body.classList.remove('is-loading');
     lenis.start();
-    revealHero();
+    eden.reveal();
     /* the curtain changed the layout height — remeasure the triggers */
     ScrollTrigger.refresh();
+
+    /* DIVE IN stays out of the opening: the ice and Eden are a scene, not a
+       page yet. It arrives with the hero and leaves again if the visitor
+       scrolls back into Eden. autoAlpha also takes it out of the tab order. */
+    const toggle = document.getElementById('menuToggle');
+    const showToggle = (on) => gsap.to(toggle, {
+      autoAlpha: on ? 1 : 0,
+      y: on ? 0 : -12,
+      duration: on ? 0.9 : 0.4,
+      ease: on ? 'power3.out' : 'power2.in',
+      overwrite: true
+    });
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top 40%',
+      onEnter: () => showToggle(true),
+      onLeaveBack: () => showToggle(false)
+    });
+
+    /* The hero slides up over the last screen of Eden's dive (hero.css
+       pulls it up by a viewport). Over that scroll its smoke rises from the
+       bottom and swallows the light; by the time it reaches the top it is
+       the solid hero again. */
+    setSmokeRise(0);
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top bottom',
+      end: 'top top',
+      onEnter: () => igniteSmoke(),
+      onUpdate: (self) => setSmokeRise(self.progress)
+    });
+
+    /* The Michael hero now follows the Eden scene, so its intro plays when
+       the dive into the light lands on it, not when the countdown ends. */
+    ScrollTrigger.create({
+      trigger: '#hero',
+      start: 'top 45%',
+      once: true,
+      onEnter: () => revealHero()
+    });
   }
 });
+
+/* the Eden hold lifts the wall at the end of the page — remeasure */
+window.addEventListener('eden:connect', () => ScrollTrigger.refresh());
 
 /* ---------- in-page anchors go through Lenis, not the native jump ---------- */
 document.addEventListener('click', (e) => {

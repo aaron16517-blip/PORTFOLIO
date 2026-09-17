@@ -39,7 +39,24 @@ no `?motion=` query param and no `src/js/motion.js`; don't reintroduce either.
 
 Whole sequence is ~5.5s.
 
-### 2. Hero — red smoke + the pressure-sensitive name
+### 2. Hero — ice smoke + the pressure-sensitive name
+
+> **Palette:** the site is now "ice" — frost white, sea-ink type and lake teal
+> (see `base.css`). Vision alone keeps the original dark palette. Mentions of
+> red / black further down describe the earlier version.
+>
+> **Opening:** the countdown now dissolves onto the **Eden** scene
+> (`src/js/eden.js`, from the standalone eden-scroll page): an ice sheet that
+> scroll cracks open, a meadow with two reaching hands and a press-and-hold,
+> and a dive into the light that lands on this hero. The five-panel wipe and
+> the Vision section are gone; the Vision statement now lives inside Eden
+> (VISION title, then three sentences over the reaching hands).
+>
+> **Hand-off:** the hero overlaps the scene's last screen (`margin-top:
+> -100vh`). While it rises, `clouds.js` draws the smoke see-through above a
+> turbulent front (`setRise`), so a wall of ice smoke billows up and swallows
+> the dive; the hero ground, veil and type fade in behind it. DIVE IN stays
+> hidden through the opening and arrives with the hero.
 
 - **Background** (`clouds.js`) — one full-screen WebGL quad. Domain-warped fBm
   noise drifting upward, rendered at 55% of device resolution (smoke is soft;

@@ -16,8 +16,8 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(60% 46% at 16% 18%, rgba(224, 57, 63, 0.24) 0%, transparent 72%),
-    radial-gradient(56% 44% at 88% 72%, rgba(224, 92, 57, 0.14) 0%, transparent 74%);
+    radial-gradient(60% 46% at 16% 18%, rgba(var(--ice-rgb), 0.4) 0%, transparent 72%),
+    radial-gradient(56% 44% at 88% 72%, rgba(var(--deep-rgb), 0.18) 0%, transparent 74%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 26%, #000 74%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 26%, #000 74%, transparent 100%);
 }
@@ -42,9 +42,9 @@
   margin-bottom: clamp(1.4rem, 4vh, 2.4rem);
   border-radius: 14px;
   color: var(--accent);
-  background: linear-gradient(158deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(158deg, #ffffff 0%, var(--ice-pale) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 1px 0 #fff, var(--shadow-soft);
 }
 .contact__badge svg { width: 55%; height: 55%; }
 
@@ -64,7 +64,7 @@
   max-width: 44ch;
   font-size: clamp(0.82rem, 1.1vw, 1rem);
   line-height: 1.75;
-  color: rgba(243, 244, 246, 0.6);
+  color: var(--ink-muted);
 }
 
 .contact__details {
@@ -77,10 +77,10 @@
   list-style: none;
   font-size: clamp(0.72rem, 0.92vw, 0.86rem);
   letter-spacing: 0.02em;
-  color: rgba(243, 244, 246, 0.42);
+  color: rgba(var(--ink-rgb), 0.35);
 }
 .contact__details a {
-  color: rgba(243, 244, 246, 0.78);
+  color: rgba(var(--ink-rgb), 0.82);
   transition: color var(--dur-fast) var(--ease-out);
 }
 .contact__details a:hover { color: var(--accent); }
@@ -99,6 +99,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  /* the dots ship in --ink (#0F2220), the colour of the Contact us heading */
   /* the map is a ground, not the subject — let it fall away at the edges */
   -webkit-mask-image: radial-gradient(76% 82% at 50% 50%, #000 40%, transparent 92%);
   mask-image: radial-gradient(76% 82% at 50% 50%, #000 40%, transparent 92%);
@@ -121,7 +122,7 @@
   height: clamp(30px, 5vw, 52px);
   translate: -50% 0;
   transform-origin: bottom center;
-  background: linear-gradient(to top, var(--accent) 0%, rgba(224, 57, 63, 0.35) 55%, transparent 100%);
+  background: linear-gradient(to top, var(--accent) 0%, rgba(var(--deep-rgb), 0.35) 55%, transparent 100%);
 }
 
 .map__core {
@@ -133,7 +134,7 @@
   translate: -50% -50%;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--ice-rgb), 0.45), 0 0 14px var(--ice);
 }
 
 /* two rings, offset in time, pushing out of the marker */
@@ -167,10 +168,10 @@
   font-size: clamp(0.56rem, 0.72vw, 0.68rem);
   font-weight: 500;
   letter-spacing: 0.08em;
-  color: var(--ink);
-  background: rgba(23, 23, 25, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.95);
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 26px -12px rgba(var(--deep-rgb), 0.8);
   animation: pin-float 3.4s ease-in-out infinite;
 }
 @keyframes pin-float {
@@ -183,11 +184,12 @@
   position: relative;
   padding: clamp(1.3rem, 2.4vw, 2.2rem);
   border-radius: clamp(18px, 1.7vw, 26px);
-  background: linear-gradient(158deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.028) 55%, rgba(255, 255, 255, 0.06) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: linear-gradient(158deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.78) 55%, rgba(255, 255, 255, 0.88) 100%);
+  border: 1px solid #fff;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 30px 60px -32px rgba(0, 0, 0, 0.95);
+    inset 0 1px 0 #fff,
+    0 0 0 1px rgba(var(--deep-rgb), 0.07),
+    0 30px 60px -32px rgba(var(--deep-rgb), 0.5);
 }
 /* the faint plotting grid behind the fields, as in the reference */
 .contact__panel::before {
@@ -197,8 +199,8 @@
   border-radius: inherit;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(var(--deep-rgb), 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--deep-rgb), 0.07) 1px, transparent 1px);
   background-size: 34px 34px;
   -webkit-mask-image: radial-gradient(120% 90% at 78% 12%, #000 0%, transparent 72%);
   mask-image: radial-gradient(120% 90% at 78% 12%, #000 0%, transparent 72%);
@@ -221,13 +223,13 @@
   font-size: clamp(0.68rem, 0.86vw, 0.8rem);
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: rgba(243, 244, 246, 0.86);
+  color: rgba(var(--ink-rgb), 0.86);
 }
 .cform__opt {
   margin-left: 0.5em;
   font-size: 0.86em;
   font-weight: 400;
-  color: rgba(243, 244, 246, 0.35);
+  color: rgba(var(--ink-rgb), 0.4);
 }
 
 .cform input,
@@ -239,8 +241,8 @@
   font-size: clamp(0.78rem, 0.95vw, 0.9rem);
   line-height: 1.5;
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(var(--ink-rgb), 0.12);
   transition:
     border-color var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out),
@@ -249,27 +251,28 @@
 .cform textarea { resize: vertical; min-height: 7.5em; }
 
 .cform input::placeholder,
-.cform textarea::placeholder { color: rgba(243, 244, 246, 0.3); }
+.cform textarea::placeholder { color: rgba(var(--ink-rgb), 0.35); }
 
 .cform input:focus,
 .cform textarea:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(224, 57, 63, 0.55);
-  box-shadow: 0 0 0 3px rgba(224, 57, 63, 0.16);
+  background: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--ice-rgb), 0.35);
 }
 
 /* flagged only after a validation run, never while someone is still typing */
 .cform [aria-invalid="true"] {
-  border-color: rgba(224, 57, 63, 0.75);
-  background: rgba(224, 57, 63, 0.06);
+  /* errors keep a true red: in an ice palette, red only ever means wrong */
+  border-color: rgba(200, 48, 56, 0.7);
+  background: rgba(200, 48, 56, 0.04);
 }
 
 .cform__error {
   margin: 0;
   font-size: clamp(0.6rem, 0.76vw, 0.7rem);
   letter-spacing: 0.02em;
-  color: #ff7a7f;
+  color: #b3262e;
 }
 .cform__error:empty { display: none; }
 
@@ -286,25 +289,25 @@
   letter-spacing: 0.1em;
   color: #fff;
   background: var(--accent);
-  box-shadow: 0 14px 40px -14px rgba(224, 57, 63, 0.9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 14px 36px -14px rgba(var(--deep-rgb), 0.8);
   transition:
     transform var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out),
     opacity var(--dur-fast) var(--ease-out);
 }
-.cform__submit:hover { transform: translateY(-2px); background: #f04a50; }
-.cform__submit:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.cform__submit:hover { transform: translateY(-2px); background: var(--accent-hover); }
+.cform__submit:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .cform__submit[disabled] { opacity: 0.55; cursor: not-allowed; transform: none; }
 
 .cform__status {
   margin: 0;
   font-size: clamp(0.68rem, 0.84vw, 0.78rem);
   line-height: 1.6;
-  color: rgba(243, 244, 246, 0.6);
+  color: var(--ink-muted);
 }
 .cform__status:empty { display: none; }
-.cform__status[data-state="ok"] { color: #7ee2a8; }
-.cform__status[data-state="fail"] { color: #ff7a7f; }
+.cform__status[data-state="ok"] { color: var(--accent); }
+.cform__status[data-state="fail"] { color: #b3262e; }
 
 /* ---------- what do you need ---------- */
 .cform__choices {
@@ -319,7 +322,7 @@
   font-size: clamp(0.68rem, 0.86vw, 0.8rem);
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: rgba(243, 244, 246, 0.86);
+  color: rgba(var(--ink-rgb), 0.86);
 }
 .cform__chips {
   display: flex;
@@ -348,21 +351,21 @@
   border-radius: 999px;
   font-size: clamp(0.7rem, 0.84vw, 0.78rem);
   letter-spacing: 0.02em;
-  color: rgba(243, 244, 246, 0.7);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(var(--ink-rgb), 0.72);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(var(--ink-rgb), 0.12);
   transition:
     color var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out),
     border-color var(--dur-fast) var(--ease-out);
 }
-.chip:hover span { border-color: rgba(255, 255, 255, 0.24); color: var(--ink); }
+.chip:hover span { border-color: rgba(var(--deep-rgb), 0.45); color: var(--ink); }
 .chip input:checked + span {
   color: #fff;
-  background: rgba(224, 57, 63, 0.18);
-  border-color: rgba(224, 57, 63, 0.7);
+  background: var(--accent);
+  border-color: var(--accent);
 }
-.chip input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
+.chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* spam trap — out of sight and out of the tab order */
 .cform .cform__trap {
@@ -399,8 +402,8 @@
     min-height: 48px;
     padding: 0 1.1rem;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.045);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(var(--ink-rgb), 0.1);
     overflow-wrap: anywhere;
   }
 

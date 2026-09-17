@@ -28,9 +28,10 @@ export function prepareHero() {
     weight: true,
     italic: true,
 
-    textColor:   '#ffffff',
-    /* red-on-red smoke is invisible; the reference's outlines read light */
-    strokeColor: '#ffffff',
+    /* deep sea-ink letters with a frost outline behind them — the outline
+       is what keeps the hairline far letters readable over the teal */
+    textColor:   '#0f2220',
+    strokeColor: '#f7faf9',
     minFontSize: 36,
     maxFontSize: 300,
 
@@ -46,6 +47,24 @@ export function prepareHero() {
     ? { opacity: 0, y: 60, filter: `blur(${LETTER_BLUR}px)` }
     : { opacity: 0, y: 60 });
   gsap.set('.js-reveal',   { opacity: 0, y: 22 });
+}
+
+/* the smoke comes up as the hero rises out of Eden's light */
+export function igniteSmoke(duration = 1.6) {
+  clouds.ignite(duration);
+}
+/* 0..1 while the hero rises over Eden. The frost ground and veil behind
+   the canvas would cover the dive, so they wait for the smoke, unless
+   there is no WebGL smoke, when they are all there is. */
+export function setSmokeRise(v) {
+  clouds.setRise(v);
+  const hero = document.getElementById('hero');
+  hero.style.setProperty('--hero-solid', !clouds.ok || v > 0.999 ? '1' : '0');
+  hero.style.setProperty('--hero-veil', clouds.ok ? (v * v).toFixed(3) : '1');
+  /* the type waits for the smoke to reach it, so none of it floats over
+     the meadow when the visitor scrolls back up */
+  const c = Math.min(1, Math.max(0, (v - 0.35) / 0.4));
+  hero.style.setProperty('--hero-content', (c * c * (3 - 2 * c)).toFixed(3));
 }
 
 export function revealHero() {
@@ -72,7 +91,7 @@ export function revealHero() {
         gsap.delayedCall(isLowPower ? 0.9 : 0, () => pressure.hint());
       }
     }, 0)
-    .to('.js-reveal', {
+    .to('.hero .js-reveal', {
       opacity: 1,
       y: 0,
       duration: 1,

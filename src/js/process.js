@@ -8,14 +8,17 @@ gsap.registerPlugin(ScrollTrigger);
 
    The stepper advances on its own while the section is on screen, and
    hands control over the moment you touch it: hovering a step pauses the
-   timer, clicking one takes you straight there and restarts the clock
-   from that step. It stops entirely once the section leaves the viewport
-   so it is not burning frames off screen.
+   clock, clicking one takes you straight there and restarts it from that
+   step. The active step's rail fills as its time runs out, so the change
+   is never a surprise and the section never looks frozen. It stops
+   entirely once the section leaves the viewport.
 
    Like the rest of the site, this always runs the full motion.
    ============================================================ */
 
-const DWELL = 4800;   /* ms a step holds before the next one takes over */
+/* ms a step holds before the next one takes over — long enough for each
+   pane's own motion (bubbles, deploy grid) to finish, no longer */
+const DWELL = 3000;
 
 export function initProcess() {
   const section = document.getElementById('process');
@@ -47,28 +50,36 @@ export function initProcess() {
 
   /* ---------- the stepper ---------- */
   let index = 0;
-  let timer = null;
+  let elapsed = 0;
   let paused = false;
   let live = false;
 
   function show(i) {
     index = ((i % steps.length) + steps.length) % steps.length;
-    steps.forEach((s, k) => s.classList.toggle('is-on', k === index));
+    elapsed = 0;
+    steps.forEach((s, k) => {
+      s.classList.toggle('is-on', k === index);
+      s.style.setProperty('--fill', '0');
+    });
     panes.forEach((p, k) => p.classList.toggle('is-on', k === index));
     if (index === 2) runShip();
   }
 
-  function queue() {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      if (live && !paused) show(index + 1);
-      queue();
-    }, DWELL);
-  }
+  /* one clock on the shared ticker: it only runs while the section is on
+     screen and nobody is hovering a step, and it drives the rail fill, so
+     the bar and the switch can never drift apart */
+  const tick = (_t, deltaMs) => {
+    if (!live || paused || document.hidden) return;
+    elapsed += deltaMs || 16;
+    if (elapsed >= DWELL) { show(index + 1); return; }
+    steps[index].style.setProperty('--fill', (elapsed / DWELL).toFixed(4));
+  };
+  const start = () => { if (!live) { live = true; gsap.ticker.add(tick); } };
+  const stop = () => { live = false; gsap.ticker.remove(tick); };
 
   steps.forEach((step, i) => {
-    step.addEventListener('click', () => { show(i); queue(); });
-    step.addEventListener('pointerenter', () => { paused = true; });
+    step.addEventListener('click', () => show(i));
+    step.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') paused = true; });
     step.addEventListener('pointerleave', () => { paused = false; });
   });
 
@@ -77,10 +88,10 @@ export function initProcess() {
     trigger: section,
     start: 'top 75%',
     end: 'bottom 25%',
-    onEnter: () => { live = true; show(0); queue(); },
-    onEnterBack: () => { live = true; queue(); },
-    onLeave: () => { live = false; clearTimeout(timer); },
-    onLeaveBack: () => { live = false; clearTimeout(timer); }
+    onEnter: () => { show(0); start(); },
+    onEnterBack: start,
+    onLeave: stop,
+    onLeaveBack: stop
   });
 
   /* ---------- the head and index arrive on scroll ---------- */

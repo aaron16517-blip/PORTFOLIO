@@ -17,7 +17,7 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  background: rgba(5, 5, 6, 0.62);
+  background: rgba(var(--ink-rgb), 0.28);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
@@ -31,10 +31,13 @@
   justify-content: space-between;
   gap: 2rem;
   padding: clamp(4.5rem, 9vh, 7rem) clamp(1.5rem, 3vw, 3rem) clamp(2rem, 5vh, 3.5rem);
-  background: rgba(11, 11, 12, 0.82);
+  background:
+    radial-gradient(90% 50% at 0% 100%, rgba(var(--ice-rgb), 0.32) 0%, transparent 70%),
+    rgba(247, 250, 249, 0.86);
   backdrop-filter: blur(22px) saturate(140%);
   -webkit-backdrop-filter: blur(22px) saturate(140%);
-  border-right: 1px solid rgba(243, 244, 246, 0.08);
+  border-right: 1px solid rgba(var(--ink-rgb), 0.08);
+  box-shadow: 30px 0 80px -40px rgba(var(--deep-rgb), 0.4);
   transform: translateX(-100%);
   overflow-y: auto;
 }
@@ -74,6 +77,8 @@
   display: block;
   will-change: transform;
 }
+.menu__link { transition: color var(--dur-fast) var(--ease-out); }
+.menu__link:hover { color: var(--accent); }
 .menu__link:hover .menu__mask { transform: translateX(0.12em); }
 
 .menu__index {
@@ -106,10 +111,10 @@
   font-size: 0.7rem;
   font-weight: 400;
   letter-spacing: 0.14em;
-  color: rgba(243, 244, 246, 0.72);
+  color: var(--ink-muted);
   transition: color var(--dur-fast) var(--ease-out);
 }
-.menu__socials-list a:hover { color: var(--ink); }
+.menu__socials-list a:hover { color: var(--accent); }
 
 /* ---------- the toggle: fixed, above everything, on every section ---------- */
 .nav__dive {
@@ -117,14 +122,21 @@
   top: clamp(1.1rem, 2.6vw, 2rem);
   right: var(--gutter);
   z-index: 80;
+  /* hidden through the Eden opening; main.js brings it in with the hero */
+  visibility: hidden;
 
   display: inline-flex;
   align-items: center;
   gap: 0.6em;
 
-  background: none;
-  border: 0;
-  padding: 0.4em 0;
+  /* It floats over every section, including the Eden photo scene, so it
+     carries its own frost pill rather than trusting the ground. No backdrop
+     blur: the page scrolls under it every frame. */
+  background: rgba(247, 250, 249, 0.88);
+  border: 1px solid rgba(var(--ink-rgb), 0.1);
+  border-radius: 999px;
+  padding: 0.75em 1.15em 0.75em 1.35em;
+  box-shadow: var(--shadow-soft);
   cursor: pointer;
 
   font-family: var(--font-body);
@@ -132,13 +144,15 @@
   font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(243, 244, 246, 0.9);
+  color: var(--ink);
 
-  transition: opacity var(--dur-fast) var(--ease-out);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
 }
-.nav__dive:hover { opacity: 0.62; }
-/* on touch the hover state sticks after the tap and leaves CLOSE dimmed */
-@media (hover: none) { .nav__dive:hover { opacity: 1; } }
+.nav__dive:hover { color: var(--accent); border-color: rgba(var(--deep-rgb), 0.4); }
+/* on touch the hover state sticks after the tap */
+@media (hover: none) { .nav__dive:hover { color: var(--ink); border-color: rgba(var(--ink-rgb), 0.1); } }
 .nav__dive-icon {
   display: inline-block;
   font-size: 1.15em;

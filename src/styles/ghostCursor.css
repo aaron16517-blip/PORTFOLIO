@@ -2,9 +2,9 @@
    GHOST CURSOR — the smear that follows the pointer across the hero
 
    Sits between the smoke (z -2) and the hero's content, so the trail
-   passes over the red clouds but the name and the copy stay on top of
-   it and unreadably crisp. The canvas blends with `screen`, so it only
-   ever adds light — it can brighten the smoke, never dim it.
+   passes over the ice but the name and the copy stay on top of it.
+   The canvas blends with `multiply` (set in main.js), so on the light
+   hero it only ever deepens the ground — a teal fog, never a glare.
    ============================================================ */
 .ghost-cursor {
   position: absolute;

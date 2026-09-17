@@ -1,8 +1,9 @@
 /* ============================================================
    PROJECTS — a glassy bento grid.
 
-   iOS-flavoured glass: large radii, a frosted panel, a specular
-   highlight along the top edge, and a sheen that tracks the cursor.
+   Frosted ice: large radii, a milk-white panel over teal light, a
+   specular highlight along the top edge, and a sheen that tracks the
+   cursor.
    ============================================================ */
 .projects {
   position: relative;
@@ -18,18 +19,18 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(58% 52% at 14% 26%, rgba(224, 57, 63, 0.50) 0%, rgba(224, 57, 63, 0.12) 46%, transparent 78%),
-    radial-gradient(54% 46% at 86% 38%, rgba(190, 38, 64, 0.40) 0%, rgba(190, 38, 64, 0.10) 46%, transparent 78%),
-    radial-gradient(62% 52% at 52% 82%, rgba(224, 92, 57, 0.30) 0%, rgba(224, 92, 57, 0.08) 46%, transparent 80%),
-    radial-gradient(44% 40% at 76% 70%, rgba(240, 130, 80, 0.22) 0%, transparent 78%);
+    radial-gradient(58% 52% at 14% 26%, rgba(var(--ice-rgb), 0.55) 0%, rgba(var(--ice-rgb), 0.14) 46%, transparent 78%),
+    radial-gradient(54% 46% at 86% 38%, rgba(96, 176, 168, 0.42) 0%, rgba(96, 176, 168, 0.10) 46%, transparent 78%),
+    radial-gradient(62% 52% at 52% 82%, rgba(170, 220, 208, 0.50) 0%, rgba(170, 220, 208, 0.12) 46%, transparent 80%),
+    radial-gradient(44% 40% at 76% 70%, rgba(var(--deep-rgb), 0.20) 0%, transparent 78%);
 
   /* The section clips at its own edge, so a bloom still bright at an edge
      gets sliced flat and reads as a seam against the neighbouring section's
      ground. Fade the whole layer out before it ever reaches either one.
 
-     The bottom was already handled; the top was not, so the red and blue
-     arrived at full strength against the black the Vision section ends on —
-     a hard line exactly where the two sections meet. Same treatment, shorter
+     The bottom was already handled; the top was not, so the blooms arrived
+     at full strength against the section edge — a hard line exactly where
+     the two sections meet. Same treatment, shorter
      ramp, because the top-left bloom is doing real work behind the heading
      and should not be washed out to buy the blend. */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 9%, #000 22%, #000 58%, rgba(0, 0, 0, 0.45) 82%, transparent 100%);
@@ -117,13 +118,13 @@
      re-sample the backdrop for all 0.8s of the hover transition (which moves
      and reshadows this box) and tear repaint seams across the card. */
   background:
-    linear-gradient(158deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.045) 52%, rgba(255, 255, 255, 0.08) 100%),
-    linear-gradient(0deg, rgba(15, 15, 16, 0.34), rgba(15, 15, 16, 0.34));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+    linear-gradient(158deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.62) 52%, rgba(255, 255, 255, 0.78) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),   /* specular top edge */
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
-    0 22px 50px -24px rgba(0, 0, 0, 0.9);
+    inset 0 1px 0 #fff,                          /* specular top edge */
+    inset 0 -1px 0 rgba(var(--deep-rgb), 0.08),
+    0 0 0 1px rgba(var(--deep-rgb), 0.06),
+    0 22px 50px -26px rgba(var(--deep-rgb), 0.45);
 
   transition:
     transform var(--dur-base) var(--ease-out),
@@ -132,11 +133,12 @@
 }
 .card:hover .card__inner {
   transform: translateY(-6px);
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: #fff;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
-    0 34px 60px -26px rgba(0, 0, 0, 0.95);
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(var(--deep-rgb), 0.1),
+    0 0 0 1px rgba(var(--deep-rgb), 0.14),
+    0 36px 64px -28px rgba(var(--deep-rgb), 0.6);
 }
 .card:focus-visible .card__inner {
   outline: 2px solid var(--accent);
@@ -156,8 +158,8 @@
   opacity: 0;
   background: radial-gradient(
     22rem 22rem at var(--mx, 50%) var(--my, 0%),
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.05) 32%,
+    rgba(var(--ice-rgb), 0.22) 0%,
+    rgba(var(--ice-rgb), 0.07) 32%,
     transparent 62%
   );
   transition: opacity var(--dur-base) var(--ease-out);
@@ -177,9 +179,9 @@
      No backdrop-filter of its own: nesting one inside .card__inner's makes
      Chrome leave repaint seams across the card. An <img> covers it fully. */
   background:
-    radial-gradient(120% 96% at 26% 12%, rgba(255, 255, 255, 0.12) 0%, transparent 58%),
-    linear-gradient(152deg, var(--thumb-a, rgba(224, 57, 63, 0.18)) 0%, var(--thumb-b, rgba(12, 12, 13, 0.55)) 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    radial-gradient(120% 96% at 26% 12%, rgba(255, 255, 255, 0.6) 0%, transparent 58%),
+    linear-gradient(152deg, var(--thumb-a, rgba(var(--ice-rgb), 0.35)) 0%, var(--thumb-b, rgba(var(--deep-rgb), 0.25)) 100%);
+  box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), 0.06);
 }
 .card__thumb img {
   position: absolute;
@@ -231,7 +233,7 @@
   font-size: clamp(0.55rem, 0.68vw, 0.64rem);
   font-weight: 400;
   letter-spacing: 0.17em;
-  color: rgba(243, 244, 246, 0.5);
+  color: rgba(var(--ink-rgb), 0.5);
 }
 
 /* ---------- the arrow pill ---------- */
@@ -249,16 +251,18 @@
   color: var(--ink);
 
   /* no backdrop-filter here either — it transforms on hover */
-  background: rgba(17, 17, 18, 0.52);
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(var(--ink-rgb), 0.08);
+  box-shadow: inset 0 1px 0 #fff, 0 6px 16px -8px rgba(var(--deep-rgb), 0.45);
 
   transition:
     transform var(--dur-base) var(--ease-out),
-    background-color var(--dur-base) var(--ease-out);
+    background-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
 }
 .card:hover .card__arrow {
   transform: translate(2px, -2px);
+  color: #fff;
   background: var(--accent);
 }
 
@@ -288,7 +292,7 @@
    than a mock screenshot: each uses that project's own palette and type, so it
    reads as identity, not as a fake capture of a page. Layout is shared; the
    palette and motif come from a per-project modifier. */
-.card__thumb--plate { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09); }
+.card__thumb--plate { box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), 0.08); }
 
 .plate {
   position: absolute;

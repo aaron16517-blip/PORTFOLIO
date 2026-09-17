@@ -2,14 +2,31 @@
    TOKENS + RESET
    ============================================================ */
 :root {
-  /* colour */
-  --bg:            #09090a;
-  --bg-lift:       #161618;
-  --ink:           #f3f4f6;
-  --ink-muted:     rgba(243, 244, 246, 0.55);
-  --ink-faint:     rgba(243, 244, 246, 0.14);
-  --accent:        #e0393f;
-  --accent-soft:   rgba(224, 57, 63, 0.35);
+  /* colour — "ice". A frost-white ground, deep sea-ink type, and the teal
+     of a frozen lake. --ice is the reference colour itself; it is too light
+     to carry text on white, so --accent is the same hue taken deep enough to
+     pass AA (4.8:1 on --bg). Use --ice for fills, glows and light; --accent
+     for anything that has to be read. The *-rgb triplets exist so a section
+     can write rgba(var(--ink-rgb), .6) instead of inventing a colour. */
+  --ink-rgb:       15, 34, 32;
+  --ice-rgb:       127, 196, 181;
+  --deep-rgb:      43, 122, 111;
+
+  --bg:            #f7faf9;
+  --bg-lift:       #ebf4f1;
+  --ink:           rgb(var(--ink-rgb));
+  --ink-muted:     rgba(var(--ink-rgb), 0.62);
+  --ink-faint:     rgba(var(--ink-rgb), 0.12);
+  --ice:           rgb(var(--ice-rgb));
+  --ice-pale:      #d6ede7;
+  --accent:        rgb(var(--deep-rgb));
+  --accent-hover:  #226a60;
+  --accent-soft:   rgba(var(--ice-rgb), 0.45);
+
+  /* the one elevation recipe for light surfaces: a teal-tinted, soft drop
+     rather than grey, so shadows read as depth in ice, not dirt on paper */
+  --shadow-soft:   0 1px 2px rgba(var(--ink-rgb), 0.05), 0 18px 40px -22px rgba(var(--deep-rgb), 0.35);
+  --shadow-lift:   0 2px 4px rgba(var(--ink-rgb), 0.05), 0 30px 60px -26px rgba(var(--deep-rgb), 0.45);
 
   /* type
      Was Montserrat + Inter. That pairing is the default of every generated
@@ -55,9 +72,9 @@
 
   /* the preloader curtain: one image, split across five panels */
   --curtain:
-    radial-gradient(120% 80% at 50% 18%, rgba(200, 200, 204, 0.18) 0%, rgba(27, 27, 29, 0.06) 42%, transparent 70%),
-    linear-gradient(168deg, rgba(228, 228, 232, 0.08) 0%, transparent 38%),
-    radial-gradient(100% 100% at 50% 100%, rgba(0, 0, 0, 0.55) 0%, transparent 60%);
+    radial-gradient(120% 80% at 50% 18%, rgba(255, 255, 255, 0.9) 0%, rgba(214, 237, 231, 0.35) 46%, transparent 72%),
+    linear-gradient(168deg, rgba(255, 255, 255, 0.6) 0%, transparent 38%),
+    radial-gradient(100% 100% at 50% 100%, rgba(var(--ice-rgb), 0.38) 0%, transparent 62%);
 
   /* layout */
   --gutter: clamp(1.25rem, 4vw, 3.5rem);
@@ -95,7 +112,7 @@ a { color: inherit; text-decoration: none; }
 
 img, video { display: block; max-width: 100%; }
 
-::selection { background: var(--accent); color: #fff; }
+::selection { background: var(--ice); color: var(--ink); }
 
 /* the site sits under the preloader and is revealed by it */
 .site {
@@ -103,3 +120,9 @@ img, video { display: block; max-width: 100%; }
   z-index: 1;
 }
 body.is-loading .site { pointer-events: none; }
+
+/* keyboard focus in the accent, not the browser's default ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

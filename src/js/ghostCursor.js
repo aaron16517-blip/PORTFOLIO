@@ -157,7 +157,11 @@ const GRAIN_SHADER = (intensity) => ({
 /* the composer works in premultiplied alpha; this puts it back to straight
    alpha so the canvas composites correctly against the page behind it */
 const UNPREMULTIPLY_SHADER = {
-  uniforms: { tDiffuse: { value: null } },
+  uniforms: {
+    tDiffuse: { value: null },
+    uTint: { value: new THREE.Vector3(1, 1, 1) },
+    uUseTint: { value: 0 }
+  },
   vertexShader: `
     varying vec2 vUv;
     void main(){
@@ -167,11 +171,14 @@ const UNPREMULTIPLY_SHADER = {
   `,
   fragmentShader: `
     uniform sampler2D tDiffuse;
+    uniform vec3 uTint;
+    uniform float uUseTint;
     varying vec2 vUv;
     void main(){
       vec4 c = texture2D(tDiffuse, vUv);
       float coverage = clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0);
       vec3 straight = coverage > 1e-5 ? c.rgb / coverage : vec3(0.0);
+      straight = mix(straight, uTint, uUseTint);
       gl_FragColor = vec4(clamp(straight, 0.0, 1.0), coverage);
     }
   `
@@ -200,6 +207,9 @@ export function createGhostCursor(host, options = {}) {
     bloomThreshold = 0.025,
     brightness = 1,
     color = '#B497CF',
+    /* when set, the smoke's coverage is painted in this one colour instead
+       of the (normalised) accumulated hue — what a 'multiply' trail wants */
+    tint = null,
     mixBlendMode = 'screen',
     edgeIntensity = 0,
     maxDevicePixelRatio = 0.5,
@@ -286,7 +296,13 @@ export function createGhostCursor(host, options = {}) {
 
   const filmPass = new ShaderPass(GRAIN_SHADER(grainIntensity));
   composer.addPass(filmPass);
-  composer.addPass(new ShaderPass(UNPREMULTIPLY_SHADER));
+  const unpremultiply = new ShaderPass(UNPREMULTIPLY_SHADER);
+  if (tint) {
+    const t = new THREE.Color(tint);
+    unpremultiply.uniforms.uTint.value.set(t.r, t.g, t.b);
+    unpremultiply.uniforms.uUseTint.value = 1;
+  }
+  composer.addPass(unpremultiply);
 
   /* ---------- sizing ---------- */
   function resize() {

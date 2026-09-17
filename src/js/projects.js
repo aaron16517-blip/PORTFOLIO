@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
    Two jobs: reveal the heading and cards on scroll, and track the
    cursor across each card so the sheen has something to follow.
 
-   Like the Vision section, this always runs the full motion.
+   Like every section, this always runs the full motion.
    ============================================================ */
 
 export function initProjects() {

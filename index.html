@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#09090a" />
+  <meta name="theme-color" content="#f7faf9" />
   <title>Aaron Michael — Portfolio</title>
   <meta name="description" content="Portfolio of Aaron Michael." />
 
@@ -11,6 +11,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap" rel="stylesheet" />
+  <!-- the Eden opening scene's own faces -->
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="/eden/ice.webp" />
+  <link rel="preload" as="image" href="/eden/sky.jpg" />
+  <link rel="preload" as="image" href="/eden/meadow-wide.webp" />
 
   <script type="module" src="/src/js/main.js"></script>
 </head>
@@ -19,14 +24,8 @@
   <!-- ===================== PRELOADER ===================== -->
   <div class="preloader" id="preloader" role="status" aria-label="Loading">
 
-    <!-- reveal panels: slide up at the end to uncover the site -->
-    <div class="preloader__panels" aria-hidden="true">
-      <span class="panel"></span>
-      <span class="panel"></span>
-      <span class="panel"></span>
-      <span class="panel"></span>
-      <span class="panel"></span>
-    </div>
+    <!-- one frost ground; the whole layer dissolves onto the Eden ice sheet -->
+    <div class="preloader__ground" aria-hidden="true"></div>
 
     <div class="preloader__grain" aria-hidden="true"></div>
 
@@ -54,6 +53,57 @@
   <!-- ===================== SITE ===================== -->
   <main class="site" id="site">
 
+    <!-- EDEN — the opening scene. The ice sheet sits fixed over the page
+         until the first screens of scroll crack it open. -->
+    <div class="eden-intro" id="edenIntro" aria-hidden="true"><canvas id="edenIce"></canvas></div>
+    <div class="eden-hint" id="edenHint" aria-hidden="true"><i></i>SCROLL</div>
+
+    <section class="eden" id="eden" aria-label="Opening">
+      <div class="eden-stage" id="edenStage">
+        <div class="eden-world" id="edenWorld">
+          <div class="eden-layer" id="edenSky"><img src="/eden/sky.jpg" alt="" decoding="async" /></div>
+          <div class="eden-sunwash"></div>
+          <div class="eden-rays"></div>
+          <div class="eden-layer" id="edenMeadow"><img src="/eden/meadow-wide.webp" alt="" decoding="async" /></div>
+          <canvas class="eden-petals" id="edenPetalsBack"></canvas>
+          <div class="eden-copy">
+            <div class="eden-job-wrap">
+              <h2 class="eden-job" id="edenJob" aria-label="Vision"><span>V</span><span>I</span><span>S</span><span>I</span><span>O</span><span>N</span></h2>
+            </div>
+          </div>
+          <img class="eden-hand eden-hand--l" id="edenHandL" src="/eden/hand-left.webp" alt="" decoding="async" />
+          <img class="eden-hand eden-hand--r" id="edenHandR" src="/eden/hand-right.webp" alt="" decoding="async" />
+          <div class="eden-copy">
+            <p class="eden-statement" id="edenS1">I believe true mastery is born at the intersection of <em>reason</em> and <em>divine intuition.</em></p>
+            <p class="eden-statement" id="edenS2">Every stroke, every silhouette, and every silent space is a <em>sacred devotion</em></p>
+            <p class="eden-statement" id="edenS3">to bring order out of chaos, stirring the human soul to <em>remember beauty.</em></p>
+          </div>
+          <div class="eden-spark" id="edenSpark"></div>
+          <div class="eden-haze"></div>
+          <canvas class="eden-petals" id="edenPetalsFront"></canvas>
+        </div>
+        <button type="button" class="eden-hold" id="edenHold" aria-label="Press and hold to connect">
+          <span class="eden-hold__glow"></span>
+          <span class="eden-hold__ripple"></span><span class="eden-hold__ripple"></span>
+          <span class="eden-hold__lens"></span>
+          <svg class="eden-hold__rings" viewBox="0 0 104 104" aria-hidden="true">
+            <defs>
+              <linearGradient id="edenArcGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffffff"/>
+                <stop offset="1" stop-color="#ffffff" stop-opacity=".8"/>
+              </linearGradient>
+            </defs>
+            <g id="edenHoldTicks"><circle cx="52" cy="52" r="52" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="5" stroke-dasharray="0.9 7.27"/></g>
+            <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+            <circle class="eden-hold__arc" id="edenHoldArc" cx="52" cy="52" r="44" fill="none" stroke="url(#edenArcGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <span class="eden-hold__core"></span>
+          <span class="eden-hold__pill" id="edenHoldLbl" aria-hidden="true">Press &amp; hold</span>
+        </button>
+        <div class="eden-flash" id="edenFlash"></div>
+      </div>
+    </section>
+
     <!-- HERO -->
     <section class="hero" id="hero">
       <canvas class="hero__canvas" id="clouds" aria-hidden="true"></canvas>
@@ -80,32 +130,6 @@
         </div>
       </footer>
     </section>
-
-    <!-- VISION -->
-    <section class="vision" id="vision">
-      <div class="vision__sticky">
-
-        <figure class="vision__media" id="visionMedia">
-          <img src="/assets/vision.jpg" alt="" loading="lazy" decoding="async" />
-        </figure>
-
-        <h2 class="vision__title" id="visionTitle">THE VISION</h2>
-
-        <!-- header + statement are one centred stack -->
-        <div class="vision__block">
-          <p class="vision__label" id="visionLabel">VISION</p>
-
-          <p class="vision__copy" id="visionCopy">
-            I BELIEVE TRUE MASTERY IS BORN AT THE INTERSECTION OF REASON AND
-            DIVINE INTUITION. EVERY STROKE, EVERY SILHOUETTE, AND EVERY SILENT
-            SPACES IS A SACRED DEVOTION TO BRING ORDER OUT OF CHAOS, STIRRING
-            THE HUMAN SOUL TO REMEMBER BEAUTY.
-          </p>
-        </div>
-
-      </div>
-    </section>
-
 
     <!-- PROJECTS -->
     <section class="projects" id="projects">
@@ -601,7 +625,6 @@
         <a href="#projects">Projects</a>
         <a href="#experience">Experience</a>
         <a href="#practice">How I Work</a>
-        <a href="#vision">Vision</a>
         <a href="#contact">Contact</a>
       </nav>
 

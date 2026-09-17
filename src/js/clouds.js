@@ -2,7 +2,7 @@ import gsap from 'gsap';
 import { isLowPower, isTouch } from './device.js';
 
 /* ============================================================
-   Interactive red smoke — a single full-screen WebGL quad.
+   Ice smoke — a single full-screen WebGL quad, teal on frost white.
 
    Domain-warped fBm noise (the Inigo Quilez pattern) drifting
    upward. Rendered at a fraction of device resolution because smoke
@@ -12,7 +12,12 @@ import { isLowPower, isTouch } from './device.js';
    Deliberately NOT cursor-reactive: the hooks are marked below if
    pointer interaction gets added back later.
 
-   createClouds(canvas) -> { ignite, destroy }
+   createClouds(canvas) -> { ignite, setRise, destroy }
+
+   setRise(0..1) is scroll-driven. The hero slides up over the last screen
+   of Eden's dive, and while it does the canvas is see-through above a
+   turbulent front: a wall of frost and smoke billows up from the bottom
+   and swallows the dive. At 1 the canvas is fully opaque, as before.
    ============================================================ */
 
 const VERT = `
@@ -26,6 +31,7 @@ precision highp float;
 uniform vec2  uRes;
 uniform float uTime;
 uniform float uIntro;
+uniform float uRise;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
@@ -60,6 +66,10 @@ void main() {
 
   float t = uTime * 0.042;
 
+  /* while rising, the whole field is carried up with the scroll */
+  float lift = (1.0 - uRise) * 0.9;
+  p.y -= lift;
+
   /* --- domain warp, drifting upward --- */
   vec2 q = vec2(fbm(p * 2.1 - vec2(0.0, t * 2.2)),
                 fbm(p * 2.1 + vec2(5.2, 1.3) - vec2(0.0, t * 1.7)));
@@ -79,25 +89,53 @@ void main() {
 
   float d = clamp(density * 2.4 - 0.34, 0.0, 1.0);
 
-  /* --- colour: near-black -> ember -> hot core --- */
-  vec3 deep  = vec3(0.026, 0.025, 0.026);
-  vec3 ember = vec3(0.52, 0.055, 0.035);
-  vec3 hot   = vec3(1.0, 0.33, 0.10);
+  /* --- colour: frost white -> pale ice -> lake teal -> deep sea-glass ---
+     GROUND must match --bg in base.css, or the hero shows its edge */
+  vec3 ground = vec3(0.969, 0.980, 0.976);
+  vec3 pale   = vec3(0.839, 0.929, 0.906);
+  vec3 ice    = vec3(0.498, 0.769, 0.710);
+  vec3 deep   = vec3(0.235, 0.545, 0.498);
 
-  vec3 pale  = vec3(1.0, 0.94, 0.90);
+  vec3 col = mix(ground, pale, smoothstep(0.0, 0.34, d));
+  col = mix(col, ice,  smoothstep(0.22, 0.78, d));
+  col = mix(col, deep, smoothstep(0.72, 1.0, d) * 0.6);
 
-  vec3 col = mix(deep, ember, smoothstep(0.0, 0.62, d));
-  col = mix(col, hot, smoothstep(0.62, 1.0, d) * 0.55);
-  /* just a breath of white where the smoke burns hottest */
-  col = mix(col, pale, smoothstep(0.86, 1.0, d) * 0.2);
-  col += vec3(0.2, 0.04, 0.018) * pow(length(q), 2.0) * 0.22 * mask;
+  /* the cracks: a thin contour of the same field, so the veins bend with
+     the smoke instead of sitting on it like a texture. Only inside the ice —
+     white lines on the white ground would just be noise. */
+  float vein = pow(1.0 - abs(f * 2.0 - 1.0), 22.0) * smoothstep(0.18, 0.6, d);
+  col = mix(col, vec3(1.0), vein * 0.6);
+  /* light caught in the warp, as the reference's frosted streaks */
+  col = mix(col, vec3(1.0), pow(length(q), 3.0) * 0.08 * mask);
 
-  /* --- vignette + dither so the gradients don't band --- */
+  /* --- vignette falls off to the ground, not to black; dither so the
+     gradients don't band --- */
   float vig = smoothstep(1.6, 0.15, length((uv - 0.5) * vec2(1.08, 1.0)) * 1.65);
-  col *= vig;
-  col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.014;
+  col = mix(ground, col, vig);
 
-  gl_FragColor = vec4(col * uIntro, 1.0);
+  /* the rising front: a line that climbs with uRise, pushed around by the
+     smoke's own density so it arrives as billows, not a wipe */
+  float front = mix(0.0, 1.9, uRise);
+  float edge  = uv.y - (f - 0.5) * 1.1 - (q.x - 0.5) * 0.3;
+  float shown = 1.0 - smoothstep(front - 0.34, front + 0.02, edge);
+  /* the billows run thicker while they climb, then settle */
+  float surge = sin(uRise * 3.14159) * 0.45;
+  float body  = smoothstep(0.0, 0.8, d + surge * shown);
+  col = mix(col, mix(pale, ice, body), surge * 0.8 * smoothstep(0.05, 0.4, d + surge * 0.3));
+  /* a pale ice lip glows where the smoke meets the light */
+  float lip = exp(-pow((edge - front + 0.1) / 0.08, 2.0)) * (1.0 - uRise * uRise);
+  col = mix(col, ice, lip * 0.35);
+
+  col = mix(ground, col, uIntro);
+  col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.012;
+
+  /* premultiplied: see-through above the front, solid once risen */
+  /* and the top edge stays feathered until the hero has fully arrived,
+     so its border never shows against the light it rises into */
+  float feather = max(0.0, 0.6 * (1.0 - uRise));
+  float top = 1.0 - smoothstep(1.0 - feather, 1.0, uv.y);
+  float a = uRise > 0.999 ? 1.0 : clamp(shown * top, 0.0, 1.0);
+  gl_FragColor = vec4(col * a, a);
 }
 `;
 
@@ -116,14 +154,15 @@ function compile(gl, type, src) {
 export function createClouds(canvas) {
   const gl = canvas.getContext('webgl', {
     antialias: false,
-    alpha: false,
+    /* see-through while it rises over the end of Eden */
+    alpha: true,
     powerPreference: 'high-performance'
   });
 
   /* no WebGL: the CSS gradient underneath is the fallback */
   if (!gl) {
     canvas.style.display = 'none';
-    return { ignite() {}, destroy() {} };
+    return { ok: false, ignite() {}, setRise() {}, destroy() {} };
   }
 
   /* fbm runs five times a pixel; the top octave is detail a phone's
@@ -140,7 +179,7 @@ export function createClouds(canvas) {
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     console.error(gl.getProgramInfoLog(program));
     canvas.style.display = 'none';
-    return { ignite() {}, destroy() {} };
+    return { ok: false, ignite() {}, setRise() {}, destroy() {} };
   }
   gl.useProgram(program);
 
@@ -155,6 +194,10 @@ export function createClouds(canvas) {
   const uRes   = gl.getUniformLocation(program, 'uRes');
   const uTime  = gl.getUniformLocation(program, 'uTime');
   const uIntro = gl.getUniformLocation(program, 'uIntro');
+  const uRise  = gl.getUniformLocation(program, 'uRise');
+
+  /* the ground colour, for any frame the shader has not drawn yet */
+  gl.clearColor(0.969, 0.980, 0.976, 1);
 
   /* smoke is soft — render at a fraction of the real pixels.
      Phones: about half a CSS pixel, which on a 3x screen is a sixth of
@@ -182,6 +225,9 @@ export function createClouds(canvas) {
     canvas.width = w;
     canvas.height = h;
     gl.viewport(0, 0, w, h);
+    /* a resized buffer is black until the next draw — paint it the ground
+       so a paused (off-screen) hero never comes back as a black frame */
+    gl.clear(gl.COLOR_BUFFER_BIT);
   };
   resize();
   window.addEventListener('resize', resize);
@@ -202,7 +248,7 @@ export function createClouds(canvas) {
   const FRAME_MS = isLowPower ? 1000 / 30 : 1000 / 60;
   let sinceDraw = 0;
 
-  const state = { intro: 0 };
+  const state = { intro: 0, rise: 1 };
   let time = 0;
 
   const render = (_t, deltaMs) => {
@@ -217,15 +263,21 @@ export function createClouds(canvas) {
     gl.uniform2f(uRes, w, h);
     gl.uniform1f(uTime, time);
     gl.uniform1f(uIntro, state.intro);
+    gl.uniform1f(uRise, state.rise);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 
   gsap.ticker.add(render);
 
   return {
+    ok: true,
     /* fade the smoke up — called when the curtain lifts */
     ignite(duration = 2.4) {
       gsap.to(state, { intro: 1, duration, ease: 'power2.out' });
+    },
+    /* scroll-linked: 0 = bare frost, 1 = the full plume */
+    setRise(v) {
+      state.rise = Math.min(1, Math.max(0, v));
     },
     destroy() {
       gsap.ticker.remove(render);

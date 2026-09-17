@@ -1,5 +1,5 @@
 /* ============================================================
-   PRELOADER — counts 0 → 100, then lifts to reveal the site
+   PRELOADER — counts 0 → 100, then dissolves onto the Eden ice
    ============================================================ */
 .preloader {
   position: fixed;
@@ -10,51 +10,24 @@
   overflow: hidden;
 }
 
-/* --- the five columns that slide away at the end ---
-       Each panel carries the SAME background image, offset by its own
-       width, so at rest they read as one seamless screen — and when they
-       lift in sequence the image tears apart into columns. --- */
-.preloader__panels {
+/* --- the ground ---
+       The countdown used to end by lifting five panels. It now dissolves
+       as one layer onto the Eden ice sheet underneath, so the ground is a
+       single plate carrying the frost curtain. --- */
+.preloader__ground {
   position: absolute;
   inset: 0;
-  display: flex;
-}
-.preloader__panels .panel {
-  flex: 1 1 20%;
   background-color: var(--bg);
   background-image: var(--curtain);
-  /* 500% wide = exactly five panels; percentage positioning then slots each
-     panel onto its own fifth of the image, immune to viewport-unit quirks */
-  background-size: 500% 100%;
-  background-repeat: no-repeat;
 }
-
-/* Everything that makes a panel look like its own box is held back until the
-   wipe actually starts. `is-done` lands on the root the instant the panels
-   begin lifting; before that the five must read as one seamless screen.
-     - box-shadow  — the column hairline. At 3.5% white it is NOT invisible
-       at rest, whatever the old comment claimed; it drew five vertical rules.
-     - will-change — promotes each panel to its own composited layer, so each
-       rasterises and snaps to device pixels independently. Panel edges land
-       on fractional device pixels (flex 20% of an odd viewport, ×1.5 DPR),
-       and the ones whose fraction crosses .5 tore a hairline seam. */
-.preloader.is-done .preloader__panels .panel {
-  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.035);
-  will-change: transform;
-}
-.preloader__panels .panel:nth-child(1) { background-position: 0% 0; }
-.preloader__panels .panel:nth-child(2) { background-position: 25% 0; }
-.preloader__panels .panel:nth-child(3) { background-position: 50% 0; }
-.preloader__panels .panel:nth-child(4) { background-position: 75% 0; }
-.preloader__panels .panel:nth-child(5) { background-position: 100% 0; }
 
 /* --- film grain --- */
 .preloader__grain {
   position: absolute;
   inset: -50%;
   pointer-events: none;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 0.6s steps(2) infinite;
 }
@@ -88,7 +61,7 @@
   inset: -45% -35%;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(closest-side, rgba(243, 244, 246, 0.1), transparent);
+  background: radial-gradient(closest-side, rgba(var(--ice-rgb), 0.28), transparent);
 }
 
 .counter__mask,
@@ -123,12 +96,12 @@
   letter-spacing: 0.46em;
   /* pull back the trailing letter-space so it stays optically centred */
   margin-right: -0.46em;
-  color: rgba(243, 244, 246, 0.82);
+  color: rgba(var(--ink-rgb), 0.72);
   white-space: nowrap;
   will-change: transform;
 }
 
-/* --- the red progress rule --- */
+/* --- the ice progress rule --- */
 .bar {
   position: relative;
   width: clamp(150px, 22vw, 240px);
