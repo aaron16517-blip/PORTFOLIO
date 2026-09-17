@@ -54,13 +54,57 @@ export function initProcess() {
   let paused = false;
   let live = false;
 
+  /* the rail fill is its own element, moved with a transform — writing a
+     custom property every frame restyled the whole step */
+  const fills = steps.map((s) => {
+    const f = document.createElement('span');
+    f.className = 'pr-step__fill';
+    f.setAttribute('aria-hidden', 'true');
+    s.prepend(f);
+    return f;
+  });
+
+  /* Phones: the list is one column above the panel, so a step opening and
+     another closing moved everything below it, re-laying out the page for
+     half a second every few seconds. The list is held at the height of its
+     tallest state and contained, so the work stays inside it and nothing
+     below moves. */
+  const list = section.querySelector('.process__list');
+  const narrow = window.matchMedia('(max-width: 900px)');
+  let lockedW = 0;
+  function lockHeight(force) {
+    if (!list) return;
+    if (!narrow.matches) {
+      list.style.height = '';
+      list.style.contain = '';
+      lockedW = 0;
+      return;
+    }
+    if (!force && lockedW === window.innerWidth) return;
+    lockedW = window.innerWidth;
+    list.style.height = '';
+    list.style.contain = '';
+    list.classList.add('is-measuring');
+    let tallest = 0;
+    steps.forEach((_, k) => {
+      steps.forEach((t, j) => t.classList.toggle('is-on', j === k));
+      tallest = Math.max(tallest, list.offsetHeight);
+    });
+    steps.forEach((t, j) => t.classList.toggle('is-on', j === index));
+    list.style.height = Math.ceil(tallest) + 'px';
+    list.style.contain = 'size layout';
+    void list.offsetHeight;
+    list.classList.remove('is-measuring');
+  }
+  lockHeight(true);
+  window.addEventListener('resize', () => lockHeight(false));
+  if (document.fonts?.ready) document.fonts.ready.then(() => { lockHeight(true); ScrollTrigger.refresh(); });
+
   function show(i) {
     index = ((i % steps.length) + steps.length) % steps.length;
     elapsed = 0;
-    steps.forEach((s, k) => {
-      s.classList.toggle('is-on', k === index);
-      s.style.setProperty('--fill', '0');
-    });
+    steps.forEach((s, k) => s.classList.toggle('is-on', k === index));
+    fills.forEach((f) => { f.style.transform = 'scaleY(0)'; });
     panes.forEach((p, k) => p.classList.toggle('is-on', k === index));
     if (index === 2) runShip();
   }
@@ -72,7 +116,7 @@ export function initProcess() {
     if (!live || paused || document.hidden) return;
     elapsed += deltaMs || 16;
     if (elapsed >= DWELL) { show(index + 1); return; }
-    steps[index].style.setProperty('--fill', (elapsed / DWELL).toFixed(4));
+    fills[index].style.transform = `scaleY(${(elapsed / DWELL).toFixed(4)})`;
   };
   const start = () => { if (!live) { live = true; gsap.ticker.add(tick); } };
   const stop = () => { live = false; gsap.ticker.remove(tick); };

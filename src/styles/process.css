@@ -137,32 +137,36 @@
 .pr-step + .pr-step { border-top: 1px solid rgba(var(--ink-rgb), 0.08); }
 
 /* the marker — a faint track on the active step, and a fill that runs down
-   it as the step's time runs out (process.js writes --fill, 0..1) */
+   it as the step's time runs out (process.js moves .pr-step__fill) */
 .pr-step::before,
-.pr-step::after {
-  content: '';
+.pr-step__fill {
   position: absolute;
   left: -1px;
   top: 0;
   bottom: 0;
   width: 2px;
   transform-origin: 50% 0;
+  pointer-events: none;
 }
 .pr-step::before {
+  content: '';
   background: rgba(var(--ice-rgb), 0.35);
   transform: scaleY(0);
   transition: transform 0.45s var(--ease-out);
 }
 .pr-step.is-on::before { transform: scaleY(1); }
-.pr-step::after {
+.pr-step__fill {
   width: 3px;
   left: -1.5px;
   border-radius: 2px;
   background: linear-gradient(180deg, rgba(var(--ice-rgb), 0.6), var(--accent));
   box-shadow: 0 0 10px rgba(var(--ice-rgb), 0.7);
   transform: scaleY(0);
+  will-change: transform;
 }
-.pr-step.is-on::after { transform: scaleY(var(--fill, 0)); }
+/* measuring the list's tallest state (process.js) — no transitions */
+.process__list.is-measuring .pr-step__copy,
+.process__list.is-measuring .pr-step::before { transition: none; }
 
 .pr-step__num {
   font-family: var(--font-display);
@@ -500,7 +504,14 @@
 @media (max-width: 900px) {
   .process__body { grid-template-columns: 1fr; gap: clamp(2rem, 6vh, 3rem); }
   /* one column: the light sits behind the panel, which is now full width */
-  .process__body::before { top: auto; bottom: -4%; right: 0; width: 100%; height: 70%; }
+  .process__body::before {
+    top: auto; bottom: -4%; right: 0; width: 100%; height: 70%;
+    /* the desktop ellipses are still coloured where this taller box ends,
+       which drew a hard band across the steps — these fade out inside it */
+    background:
+      radial-gradient(closest-side at 32% 58%, rgba(var(--ice-rgb), 0.55), rgba(var(--ice-rgb), 0.16) 50%, transparent 100%),
+      radial-gradient(closest-side at 72% 76%, rgba(var(--deep-rgb), 0.3), rgba(var(--deep-rgb), 0.08) 50%, transparent 100%);
+  }
   /* Only smooth gradients sit behind the panel, and blurring a smooth
      gradient returns the same gradient — so on a phone the frost is pure
      cost. The glass reads from the translucent fill, the rim and the sheen. */

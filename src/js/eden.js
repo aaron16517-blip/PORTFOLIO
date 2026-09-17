@@ -76,7 +76,7 @@ float hash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 float E(float x){return 1.-pow(1.-x,3.);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
   return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}
-float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<5;i++){v+=a*noise(p);p=m*p;a*=.5;}return v;}
+float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<ICE_OCT;i++){v+=a*noise(p);p=m*p;a*=.5;}return v;}
 // hairline fractures radiating from the centre; len = reach in screen-heights
 float cracks(vec2 p,float len,float rays,float seed){
   float d=length(p);
@@ -148,7 +148,10 @@ function createIce(canvas) {
   };
   const prog = gl.createProgram();
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, ICE_VS));
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ICE_FS));
+  /* the fbm only nudges UVs and the portal rim — three octaves read the
+     same on a phone and cost far less per pixel */
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ICE_FS.replace('precision highp float;',
+    `precision highp float;\n#define ICE_OCT ${isLowPower ? 3 : 5}`)));
   gl.linkProgram(prog);
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
     console.error(gl.getProgramInfoLog(prog));
@@ -194,7 +197,9 @@ function createIce(canvas) {
        stretches a few percent — reallocating it blanked the frame */
     if (isTouch && lastW === innerWidth && canvas.width) return;
     lastW = innerWidth;
-    const scale = Math.min(window.devicePixelRatio || 1, 1.5);
+    /* phones draw it at one buffer pixel per CSS pixel: the shader is heavy
+       and this is the very first thing on screen */
+    const scale = isLowPower ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     const w = innerWidth * scale;
     const h = innerHeight * scale;
     const k = Math.min(1, Math.sqrt(3e6 / (w * h)));
@@ -847,6 +852,10 @@ export function initEden({ lenis } = {}) {
     const past = window.scrollY >= hero.offsetTop + hero.offsetHeight - H - 1;
     if (past && wasPast) return;
     wasPast = past;
+    /* the last update before sleeping must land on the end state, not
+       partway along the smoothing — or a jump past the scene leaves the
+       ice sheet frozen over the page */
+    if (past) { oS = 1; pS = 1; }
     update(dt, time);
     if (ice && iceGL && oS < 1) ice.draw(time);
   });

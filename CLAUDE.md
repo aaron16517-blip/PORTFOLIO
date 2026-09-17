@@ -80,6 +80,12 @@ a section.
   and the practice sphere run at 60fps on phones too. On touch the hero
   name drops its outline copy, is size/layout-contained on phones, and
   steps its axes coarsely from the rest pose (so shapes cache).
+  The ice shader renders at 1x with 3 fbm octaves on phones.
+- **Process on phones** (≤900px): the step list is held at its tallest
+  state and contained (`lockHeight` in process.js), so opening a step never
+  moves the panel below; the rail fill is `.pr-step__fill`, moved by
+  transform. The glow behind the panel uses closest-side gradients there
+  (the desktop ellipses cut off in a hard band).
 - The hero cursor trail blends `multiply` with a `tint` (main.js);
   `heroInk.js` is no longer wired in.
 - No `backdrop-filter` over smooth gradients or on moving elements, no
