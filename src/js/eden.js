@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { isTouch, isLowPower } from './device.js';
 
 /* ============================================================
    EDEN — the opening scene, after the countdown.
@@ -25,6 +26,22 @@ import gsap from 'gsap';
    ============================================================ */
 
 const $ = (s) => document.querySelector(s);
+/* Phones pay for every style write, even an unchanged one — this scene
+   writes a lot of them each frame, so each goes through a cache. */
+const put = (el, prop, v) => {
+  const k = '_' + prop;
+  if (el[k] === v) return;
+  el[k] = v;
+  el.style[prop] = v;
+};
+const putVar = (el, name, v) => {
+  const k = '_v' + name;
+  if (el[k] === v) return;
+  el[k] = v;
+  el.style.setProperty(name, v);
+};
+/* scrubbed blurs re-rasterise every frame; a phone GPU drops frames on them */
+const BLUR = !isLowPower;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 const seg = (p, a, b) => clamp((p - a) / (b - a));
@@ -171,7 +188,12 @@ function createIce(canvas) {
   img.onerror = () => onFail();
   img.src = ICE_SRC;
 
+  let lastW = 0;
   function resize() {
+    /* a phone's address bar changes only the height; the buffer simply
+       stretches a few percent — reallocating it blanked the frame */
+    if (isTouch && lastW === innerWidth && canvas.width) return;
+    lastW = innerWidth;
     const scale = Math.min(window.devicePixelRatio || 1, 1.5);
     const w = innerWidth * scale;
     const h = innerHeight * scale;
@@ -260,7 +282,7 @@ function petalField(canvas, opts, SPR) {
   };
 
   function resize(w, h) {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.5 : 2);
     W = w; H = h;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
@@ -378,6 +400,7 @@ const mixPose = (a, b, t) => {
 export function initEden({ lenis } = {}) {
   const hero = $('#eden');
   if (!hero) return { reveal() {} };
+  document.documentElement.classList.toggle('is-lowpower', isLowPower);
 
   const introEl = $('#edenIntro');
   const stage = $('#edenStage');
@@ -487,9 +510,10 @@ export function initEden({ lenis } = {}) {
       const inn = E.out(seg(p, a + off, b + off * 0.2));
       const out = E.in(seg(p, c + off * 0.4, d));
       const o = inn * (1 - out);
-      el.style.opacity = o.toFixed(3);
-      el.style.transform = `translate3d(0,${((1 - inn) * 34 - out * 30).toFixed(2)}px,0)`;
-      el.style.filter = o < 0.995 ? `blur(${((1 - inn) * 12 + out * 10).toFixed(2)}px)` : '';
+      put(el, 'opacity', o.toFixed(3));
+      /* hidden words keep their last position — nothing to see moving */
+      if (o > 0.001) put(el, 'transform', `translate3d(0,${((1 - inn) * 34 - out * 30).toFixed(1)}px,0)`);
+      if (BLUR) put(el, 'filter', o < 0.995 && o > 0.001 ? `blur(${((1 - inn) * 12 + out * 10).toFixed(1)}px)` : '');
     });
   }
 
@@ -529,8 +553,8 @@ export function initEden({ lenis } = {}) {
       introEl.style.setProperty('--r', (portal * H).toFixed(1) + 'px');
       introEl.style.opacity = sheetA;
     }
-    scrollHint.style.opacity = (hintOn * (1 - seg(oRaw, 0.01, 0.08))).toFixed(3);
-    jobWrap.style.opacity = E.smooth(seg(o, 0.5, 0.9)).toFixed(3);
+    put(scrollHint, 'opacity', (hintOn * (1 - seg(oRaw, 0.01, 0.08))).toFixed(3));
+    put(jobWrap, 'opacity', E.smooth(seg(o, 0.5, 0.9)).toFixed(3));
 
     const pRaw = clamp((y - hero.offsetTop - OPEN * H) / (hero.offsetHeight - H - OPEN * H));
     /* a softer follow than the wheel itself, so each beat glides in */
@@ -562,9 +586,7 @@ export function initEden({ lenis } = {}) {
     const touchT = connected ? 1 : Math.max(E.inOut(holdV) * 0.92, auto);
     touchS = lerp(touchS, touchT, 1 - Math.exp(-dt * (connected ? 6 : 10)));
     holdArc.style.strokeDashoffset = (ARC * (1 - (connected ? 1 : holdV))).toFixed(2);
-    hold.style.setProperty('--hv', (connected ? 1 : holdE).toFixed(3));
-    tickA = (tickA + dt * (14 + 260 * holdE * holdE)) % 360;
-    holdTicks.setAttribute('transform', `rotate(${tickA.toFixed(2)} 52 52)`);
+    putVar(hold, '--hv', (connected ? 1 : holdE).toFixed(2));
     nudgeT = Math.max(0, nudgeT - dt);
     const lbl = connected ? 'Connected'
       : pressing ? 'Keep holding'
@@ -593,42 +615,51 @@ export function initEden({ lenis } = {}) {
     const hy = mY * 10;
     setPose(handL, IMG.L, C.x + pose.lx * U + hx, C.y + pose.ly * U + Math.sin(t * 0.9) * 5 * idle + hy, pose.lr + Math.sin(t * 0.6) * 0.6 * idle + mX * 1.2, sc);
     setPose(handR, IMG.R, C.x + pose.rx * U + hx, C.y + pose.ry * U + Math.sin(t * 0.75 + 1.3) * 6 * idle + hy, pose.rr + Math.sin(t * 0.55 + 2) * 0.7 * idle + mX * 1.2, sc);
-    handL.style.opacity = handR.style.opacity = clamp(introT * 3).toFixed(3);
+    const handO = clamp(introT * 3).toFixed(3);
+    put(handL, 'opacity', handO);
+    put(handR, 'opacity', handO);
 
     /* contact glow */
     const cx = C.x + (pose.lx + pose.rx) / 2 * U + hx;
     const cy = C.y + (pose.ly + pose.ry) / 2 * U + U * 0.004 + hy;
     sparkPulse = Math.max(0, sparkPulse - dt * 0.9);
     const glow = Math.pow(touchS, 4) * (0.75 + 0.25 * Math.sin(t * 3)) + sparkPulse * 1.2;
-    spark.style.opacity = clamp(glow * (1 - retreat)).toFixed(3);
-    spark.style.transform = `translate3d(${cx}px,${cy}px,0) scale(${(0.32 + glow * 0.5 + dive * 3).toFixed(3)})`;
+    put(spark, 'opacity', clamp(glow * (1 - retreat)).toFixed(3));
+    if (glow * (1 - retreat) > 0.001) spark.style.transform = `translate3d(${cx}px,${cy}px,0) scale(${(0.32 + glow * 0.5 + dive * 3).toFixed(3)})`;
 
     /* hold control — blooms in from small, a touch past full size, and
        settles, so the eye is pulled to it before the copy asks */
     const holdIn = seg(p, 0.6, 0.66);
     const holdVis = holdIn * (1 - seg(p, 0.8, 0.84)) * (connected ? 0 : 1) * (uiOn ? 1 : 0);
     const bloom = holdIn < 1 ? 0.55 + 0.45 * E.out(holdIn) + 0.08 * Math.sin(holdIn * Math.PI) : 1;
-    hold.style.opacity = E.out(holdVis).toFixed(3);
-    hold.style.transform = `translate3d(${cx}px,${cy}px,0) scale(${bloom.toFixed(3)})`;
+    put(hold, 'opacity', E.out(holdVis).toFixed(3));
+    if (holdVis > 0) {
+      put(hold, 'transform', `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0) scale(${bloom.toFixed(3)})`);
+      /* the tick ring turns on its own compositor layer */
+      tickA = (tickA + dt * (14 + 260 * holdE * holdE)) % 360;
+      holdTicks.style.transform = `rotate(${tickA.toFixed(1)}deg)`;
+    }
     hold.classList.toggle('is-live', holdVis > 0.5);
     if (holdVis < 0.5 && pressing) endPress();
 
     /* copy — the title holds a beat, then the belief reads in three
        lines, the last one staying up through the hold */
     const jobOut = seg(p, 0.08, 0.2);
-    job.style.opacity = (1 - E.smooth(jobOut)).toFixed(3);
-    job.style.filter = jobOut > 0.001 ? `blur(${(jobOut * 14).toFixed(2)}px)` : '';
-    jobLetters.forEach((l, i) => {
-      const off = i - (jobLetters.length - 1) / 2;
-      l.style.transform = `translate3d(${(off * jobOut * 60).toFixed(2)}px,${(-jobOut * 40 - Math.abs(off) * jobOut * 10).toFixed(2)}px,0) scale(${(1 + jobOut * 0.25).toFixed(3)})`;
-    });
+    put(job, 'opacity', (1 - E.smooth(jobOut)).toFixed(3));
+    if (BLUR) put(job, 'filter', jobOut > 0.001 && jobOut < 0.999 ? `blur(${(jobOut * 14).toFixed(1)}px)` : '');
+    if (jobOut < 1) {
+      jobLetters.forEach((l, i) => {
+        const off = i - (jobLetters.length - 1) / 2;
+        put(l, 'transform', `translate3d(${(off * jobOut * 60).toFixed(1)}px,${(-jobOut * 40 - Math.abs(off) * jobOut * 10).toFixed(1)}px,0) scale(${(1 + jobOut * 0.25).toFixed(3)})`);
+      });
+    }
     words(w1, p, 0.2, 0.28, 0.37, 0.42);
     words(w2, p, 0.42, 0.5, 0.56, 0.6);
     words(w3, p, 0.6, 0.68, 0.8, 0.85);
     /* the light: a white bloom first, then it settles to the hero's flat
        frost ground, which is what the hero's smoke rises out of */
-    flash.style.opacity = E.smooth(seg(p, 0.86, 0.96)).toFixed(3);
-    flash.style.setProperty('--bloom', (1 - E.smooth(seg(p, 0.95, 1))).toFixed(3));
+    put(flash, 'opacity', E.smooth(seg(p, 0.86, 0.96)).toFixed(3));
+    putVar(flash, '--bloom', (1 - E.smooth(seg(p, 0.95, 1))).toFixed(3));
 
     /* petals */
     back.step(dt, 18 + k * 10, vel * 0.5);
@@ -750,7 +781,13 @@ export function initEden({ lenis } = {}) {
   });
 
   let rT;
+  let resizeW = innerWidth;
   addEventListener('resize', () => {
+    /* a phone's address bar showing or hiding fires resize on every scroll
+       direction change. The stage is 100vh (the large viewport), so nothing
+       here depends on it — rebuilding re-scattered every petal. */
+    if (isTouch && innerWidth === resizeW) return;
+    resizeW = innerWidth;
     clearTimeout(rT);
     rT = setTimeout(() => { layout(); setWall(); }, 80);
   });

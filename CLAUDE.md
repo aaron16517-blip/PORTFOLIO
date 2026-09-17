@@ -64,7 +64,12 @@ a section.
   from one PNG at the gap between them). `IMG` in eden.js holds their 1x
   size and fingertip fractions; `HS` sizes them (27% of the width on desktop,
   48% on phones). The current cut includes forearms.
-  The hold control's light is white only (no mint).
+  The hold control's light is white only (no mint). The sleeve-end fades are
+  baked into the webps (no CSS masks on the moving hands).
+- **Eden on phones** (`html.is-lowpower`, set by eden.js): no scrubbed text
+  blur, no arc glow filter, no backdrop blur on the SCROLL pill; resize
+  ignores height-only changes (address bar); style writes go through the
+  `put`/`putVar` cache; the tick ring rotates as its own layer.
 - The hero cursor trail blends `multiply` with a `tint` (main.js);
   `heroInk.js` is no longer wired in.
 - No `backdrop-filter` over smooth gradients or on moving elements, no

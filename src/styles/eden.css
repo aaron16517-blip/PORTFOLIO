@@ -129,14 +129,11 @@ html.eden-gated .foot { display: none; }
   backface-visibility: hidden;
 }
 .eden-hand--l {
-  /* only the sleeve end softens; the arm itself stays solid */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.7) 6%, #000 16%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.7) 6%, #000 16%);
+  /* the sleeve-end fade is baked into the image: a CSS mask on an element
+     that moves every frame is re-rasterised on some phones */
 }
 .eden-hand--r {
-  /* its forearm leaves through the right edge */
-  -webkit-mask-image: linear-gradient(270deg, transparent 0%, rgba(0, 0, 0, 0.7) 6%, #000 16%);
-  mask-image: linear-gradient(270deg, transparent 0%, rgba(0, 0, 0, 0.7) 6%, #000 16%);
+  /* its forearm leaves through the right edge (fade baked in, as above) */
 }
 
 .eden-spark {
@@ -305,7 +302,8 @@ html.eden-gated .foot { display: none; }
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
 }
 
-.eden-hold__rings {
+.eden-hold__rings,
+.eden-hold__ticks {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -313,6 +311,8 @@ html.eden-gated .foot { display: none; }
   overflow: visible;
   transform: rotate(-90deg);
 }
+/* turned every frame by eden.js — its own layer, so nothing repaints */
+.eden-hold__ticks { will-change: transform; }
 .eden-hold__arc {
   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
 }
@@ -429,6 +429,16 @@ html.eden-gated .foot { display: none; }
   animation: eden-dot 1.6s ease-in-out infinite;
 }
 @keyframes eden-dot { 50% { transform: translateY(5px); } }
+
+/* phones (html.is-lowpower, set by eden.js): the arc glow is an SVG filter
+   re-rendered as the arc fills, and the SCROLL pill's backdrop blur sits
+   over the ice, which moves every frame — both are pure cost there */
+.is-lowpower .eden-hold__arc { filter: none; stroke-width: 3.5; }
+.is-lowpower .eden-hint {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: rgba(255, 255, 255, 0.84);
+}
 
 @media (max-width: 820px) {
   .eden-statement { top: 9%; font-size: clamp(26px, 7vw, 40px); width: min(90vw, 18ch); }
